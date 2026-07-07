@@ -174,5 +174,112 @@ export const kuanyinClient = {
       activeAppointments: activeAppts?.length || 0,
       pendingProofs: proofs?.length || 0,
     };
-  }
+  },
+
+  async getGuardianAppointments(): Promise<{ data?: any[]; error?: string }> {
+    const biz = await this.getGuardianBusiness();
+    if (!biz) return { data: [] };
+
+    const { data, error } = await supabase
+      .from('appointments')
+      .select(`
+        *,
+        clients (
+          id,
+          name,
+          phone,
+          email
+        ),
+        services (
+          id,
+          name,
+          price,
+          duration_minutes
+        )
+      `)
+      .eq('business_id', biz.id)
+      .order('created_at', { ascending: false });
+
+    if (error) return { error: error.message };
+    return { data: data || [] };
+  },
+
+  async updateAppointmentStatus(
+    id: string,
+    status: 'requested' | 'proposed' | 'confirmed' | 'cancelled' | 'completed'
+  ): Promise<{ success?: boolean; error?: string }> {
+    const biz = await this.getGuardianBusiness();
+    if (!biz) return { error: 'Sem negócio' };
+
+    const { error } = await supabase
+      .from('appointments')
+      .update({ status })
+      .eq('id', id)
+      .eq('business_id', biz.id);
+
+    if (error) return { error: error.message };
+    return { success: true };
+  },
+
+  async getGuardianPaymentProofs(): Promise<{ data?: any[]; error?: string }> {
+    const biz = await this.getGuardianBusiness();
+    if (!biz) return { data: [] };
+
+    const { data, error } = await supabase
+      .from('payment_proofs')
+      .select(`
+        *,
+        clients (
+          id,
+          name,
+          phone
+        ),
+        appointments!inner (
+          id,
+          business_id,
+          status,
+          requested_date,
+          requested_time,
+          service_id,
+          services (
+            id,
+            name,
+            price
+          )
+        )
+      `)
+      .eq('appointments.business_id', biz.id)
+      .order('created_at', { ascending: false });
+
+    if (error) return { error: error.message };
+    return { data: data || [] };
+  },
+
+  async updatePaymentProofStatus(
+    id: string,
+    status: 'pending_verification' | 'verified' | 'rejected'
+  ): Promise<{ success?: boolean; error?: string }> {
+    const biz = await this.getGuardianBusiness();
+    if (!biz) return { error: 'Sem negócio' };
+
+    // Validar pertencimento antes de atualizar
+    const { data: proof } = await supabase
+      .from('payment_proofs')
+      .select('appointments!inner(business_id)')
+      .eq('id', id)
+      .single();
+
+    const appt = proof?.appointments as any;
+    if (!appt || appt.business_id !== biz.id) {
+      return { error: 'Comprovante não pertence a este negócio' };
+    }
+
+    const { error } = await supabase
+      .from('payment_proofs')
+      .update({ status })
+      .eq('id', id);
+
+    if (error) return { error: error.message };
+    return { success: true };
+  },
 };

@@ -174,15 +174,240 @@ const GuardianServices = () => {
   );
 };
 
-const GuardianAgenda = () => {
+const STATUS_LABELS: Record<string, string> = {
+  requested: 'Solicitado',
+  proposed: 'Proposto',
+  confirmed: 'Confirmado',
+  cancelled: 'Cancelado',
+  completed: 'Concluído',
+};
+
+const PROOF_STATUS_LABELS: Record<string, string> = {
+  pending_verification: 'Pendente',
+  verified: 'Verificado',
+  rejected: 'Rejeitado',
+};
+
+const StatusBadge = ({ status, type = 'appt' }: { status: string; type?: 'appt' | 'proof' }) => {
+  const map = type === 'appt' ? STATUS_LABELS : PROOF_STATUS_LABELS;
+  const label = map[status] || status;
+  const colorMap: Record<string, string> = {
+    requested: 'bg-amber-500/10 text-amber-400 border-amber-500/20',
+    proposed: 'bg-blue-500/10 text-blue-400 border-blue-500/20',
+    confirmed: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
+    cancelled: 'bg-red-500/10 text-red-400 border-red-500/20',
+    completed: 'bg-purple-500/10 text-purple-400 border-purple-500/20',
+    pending_verification: 'bg-amber-500/10 text-amber-400 border-amber-500/20',
+    verified: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
+    rejected: 'bg-red-500/10 text-red-400 border-red-500/20',
+  };
   return (
-    <div className="space-y-6">
+    <span className={`text-[9px] font-black px-2 py-0.5 rounded border uppercase tracking-wider ${colorMap[status] || 'bg-[#252936] text-[#A89F96] border-[#252936]'}`}>
+      {label}
+    </span>
+  );
+};
+
+const GuardianAgenda = () => {
+  const [appointments, setAppointments] = useState<any[]>([]);
+  const [proofs, setProofs] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [updatingId, setUpdatingId] = useState<string | null>(null);
+  const [feedback, setFeedback] = useState<string | null>(null);
+
+  const load = async () => {
+    setLoading(true);
+    const [apptRes, proofRes] = await Promise.all([
+      kuanyinClient.getGuardianAppointments(),
+      kuanyinClient.getGuardianPaymentProofs(),
+    ]);
+    setAppointments(apptRes.data || []);
+    setProofs(proofRes.data || []);
+    setLoading(false);
+  };
+
+  useEffect(() => { load(); }, []);
+
+  const showFeedback = (msg: string) => {
+    setFeedback(msg);
+    setTimeout(() => setFeedback(null), 3000);
+  };
+
+  const handleApptStatus = async (
+    id: string,
+    status: 'requested' | 'proposed' | 'confirmed' | 'cancelled' | 'completed'
+  ) => {
+    setUpdatingId(id);
+    const res = await kuanyinClient.updateAppointmentStatus(id, status);
+    if (res.error) showFeedback(`Erro: ${res.error}`);
+    else { showFeedback('Status atualizado.'); await load(); }
+    setUpdatingId(null);
+  };
+
+  const handleProofStatus = async (
+    id: string,
+    status: 'verified' | 'rejected'
+  ) => {
+    setUpdatingId(id);
+    const res = await kuanyinClient.updatePaymentProofStatus(id, status);
+    if (res.error) showFeedback(`Erro: ${res.error}`);
+    else { showFeedback('Comprovante atualizado.'); await load(); }
+    setUpdatingId(null);
+  };
+
+  if (loading) return <Loader2 className="w-6 h-6 animate-spin text-[#BE185D]" />;
+
+  return (
+    <div className="space-y-8">
       <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-serif font-bold text-[#F7EFE7]">Agenda e Solicitações</h2>
+        <h2 className="text-2xl font-serif font-bold text-[#F7EFE7]">Agenda & Solicitações</h2>
+        <button onClick={load} className="text-xs px-3 py-1.5 rounded-lg border border-[#252936] text-[#A89F96] hover:text-[#F7EFE7] transition-colors">
+          Atualizar
+        </button>
       </div>
-      <div className="p-6 bg-[#10131A] border border-[#252936] rounded-2xl">
-        <p className="text-[#A89F96]">Recurso completo da agenda em construção na Forja. (As solicitações existem no banco, a visualização completa chegará na próxima fundição).</p>
-      </div>
+
+      {feedback && (
+        <div className="p-3 bg-[#BE185D]/10 border border-[#BE185D]/20 rounded-xl text-sm text-[#F7EFE7]">
+          {feedback}
+        </div>
+      )}
+
+      {/* Solicitações */}
+      <section>
+        <h3 className="text-xs font-black text-[#A89F96] uppercase tracking-widest mb-3">
+          Solicitações ({appointments.length})
+        </h3>
+        {appointments.length === 0 ? (
+          <div className="p-6 bg-[#10131A] border border-[#252936] rounded-2xl text-[#A89F96] text-sm">
+            Nenhuma solicitação encontrada.
+          </div>
+        ) : (
+          <div className="space-y-3">
+            {appointments.map((appt) => {
+              const client = appt.clients as any;
+              const service = appt.services as any;
+              return (
+                <div key={appt.id} className="p-5 bg-[#10131A] border border-[#252936] rounded-2xl space-y-3">
+                  <div className="flex items-start justify-between gap-4 flex-wrap">
+                    <div>
+                      <p className="font-bold text-[#F7EFE7]">{client?.name || 'Cliente'}</p>
+                      <p className="text-xs text-[#A89F96]">{client?.phone || '—'}</p>
+                    </div>
+                    <StatusBadge status={appt.status} type="appt" />
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-2 text-xs text-[#A89F96]">
+                    <span>Serviço: <span className="text-[#F7EFE7]">{service?.name || '—'}</span></span>
+                    <span>Data: <span className="text-[#F7EFE7]">{appt.requested_date || '—'}</span></span>
+                    <span>Hora: <span className="text-[#F7EFE7]">{appt.requested_time || '—'}</span></span>
+                    {appt.notes && <span className="col-span-2">Obs: <span className="text-[#F7EFE7]">{appt.notes}</span></span>}
+                  </div>
+
+                  <div className="flex flex-wrap gap-2 pt-1">
+                    {appt.status !== 'confirmed' && (
+                      <button
+                        disabled={updatingId === appt.id}
+                        onClick={() => handleApptStatus(appt.id, 'confirmed')}
+                        className="px-3 py-1.5 text-xs font-bold rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 hover:bg-emerald-500/20 transition-colors disabled:opacity-50"
+                      >
+                        Confirmar
+                      </button>
+                    )}
+                    {appt.status !== 'proposed' && (
+                      <button
+                        disabled={updatingId === appt.id}
+                        onClick={() => handleApptStatus(appt.id, 'proposed')}
+                        className="px-3 py-1.5 text-xs font-bold rounded-lg bg-blue-500/10 border border-blue-500/20 text-blue-400 hover:bg-blue-500/20 transition-colors disabled:opacity-50"
+                      >
+                        Propor
+                      </button>
+                    )}
+                    {appt.status !== 'completed' && (
+                      <button
+                        disabled={updatingId === appt.id}
+                        onClick={() => handleApptStatus(appt.id, 'completed')}
+                        className="px-3 py-1.5 text-xs font-bold rounded-lg bg-purple-500/10 border border-purple-500/20 text-purple-400 hover:bg-purple-500/20 transition-colors disabled:opacity-50"
+                      >
+                        Concluir
+                      </button>
+                    )}
+                    {appt.status !== 'cancelled' && (
+                      <button
+                        disabled={updatingId === appt.id}
+                        onClick={() => handleApptStatus(appt.id, 'cancelled')}
+                        className="px-3 py-1.5 text-xs font-bold rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 hover:bg-red-500/20 transition-colors disabled:opacity-50"
+                      >
+                        Cancelar
+                      </button>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </section>
+
+      {/* Comprovantes */}
+      <section>
+        <h3 className="text-xs font-black text-[#A89F96] uppercase tracking-widest mb-1">
+          Comprovantes Pendentes ({proofs.filter((p) => p.status === 'pending_verification').length})
+        </h3>
+        <p className="text-[10px] text-amber-400 font-bold mb-3">
+          Comprovante informado pelo cliente. Verificação manual do Guardião necessária.
+        </p>
+        {proofs.length === 0 ? (
+          <div className="p-6 bg-[#10131A] border border-[#252936] rounded-2xl text-[#A89F96] text-sm">
+            Nenhum comprovante encontrado.
+          </div>
+        ) : (
+          <div className="space-y-3">
+            {proofs.map((proof) => {
+              const client = proof.clients as any;
+              const appt = proof.appointments as any;
+              const service = appt?.services as any;
+              return (
+                <div key={proof.id} className="p-5 bg-[#10131A] border border-[#252936] rounded-2xl space-y-3">
+                  <div className="flex items-start justify-between gap-4 flex-wrap">
+                    <div>
+                      <p className="font-bold text-[#F7EFE7]">{client?.name || 'Cliente'}</p>
+                      <p className="text-xs text-[#A89F96]">{client?.phone || '—'}</p>
+                    </div>
+                    <StatusBadge status={proof.status} type="proof" />
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-2 text-xs text-[#A89F96]">
+                    <span>Referência: <span className="text-[#F7EFE7]">{proof.reference || '—'}</span></span>
+                    <span>Valor: <span className="text-[#F7EFE7]">{proof.amount != null ? `R$ ${Number(proof.amount).toFixed(2)}` : '—'}</span></span>
+                    <span>Serviço: <span className="text-[#F7EFE7]">{service?.name || '—'}</span></span>
+                    <span>Envio: <span className="text-[#F7EFE7]">{proof.created_at ? proof.created_at.slice(0, 10) : '—'}</span></span>
+                    {proof.notes && <span className="col-span-2">Obs: <span className="text-[#F7EFE7]">{proof.notes}</span></span>}
+                  </div>
+
+                  {proof.status === 'pending_verification' && (
+                    <div className="flex gap-2 pt-1">
+                      <button
+                        disabled={updatingId === proof.id}
+                        onClick={() => handleProofStatus(proof.id, 'verified')}
+                        className="px-3 py-1.5 text-xs font-bold rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 hover:bg-emerald-500/20 transition-colors disabled:opacity-50"
+                      >
+                        Marcar Verificado
+                      </button>
+                      <button
+                        disabled={updatingId === proof.id}
+                        onClick={() => handleProofStatus(proof.id, 'rejected')}
+                        className="px-3 py-1.5 text-xs font-bold rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 hover:bg-red-500/20 transition-colors disabled:opacity-50"
+                      >
+                        Rejeitar
+                      </button>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </section>
     </div>
   );
 };
