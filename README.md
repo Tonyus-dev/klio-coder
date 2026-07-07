@@ -1,20 +1,26 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://ai.google.dev/static/site-assets/images/share-ais-513315318.png" />
-</div>
+# K∧LINE v27
 
-# Run and deploy your AI Studio app
+Presença que acolhe.
 
-This contains everything you need to run your app locally.
+K∧LINE v27 é a estação central do ecossistema Kaline: presença, memória, facetas, estação local, forja de IA e operação comercial Kuan-Yin.
 
-View your app in AI Studio: https://ai.studio/apps/d320a7ef-8b08-4511-8fb5-aa1c86a67cac
+## Facetas
 
-## Run Locally
+- Kaline: totalidade e orquestração.
+- Klio: vibe code, arquitetura e raciocínio técnico.
+- Kháris: cuidado, acolhimento e simplicidade.
+- Kuan-Yin: negócios, Guardiões e clientes.
+- Héstia: estação física e servidor local.
+- Hefaístia: forja de IA e execução técnica.
+- Códice: biblioteca viva.
 
-**Prerequisites:**  Node.js
+## Rodar localmente
 
+```bash
+npm install
+npm run dev
+```
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+## Variáveis
+
+Copie `.env.example` para `.env.local`.

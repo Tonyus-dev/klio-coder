@@ -1,10 +1,7 @@
-const CACHE_NAME = 'rotina-v1';
+const CACHE_NAME = 'kaline-v27';
 const ASSETS_TO_CACHE = [
   '/',
   '/index.html',
-  '/src/main.tsx',
-  '/src/App.tsx',
-  '/src/index.css',
   '/manifest.json'
 ];
 
