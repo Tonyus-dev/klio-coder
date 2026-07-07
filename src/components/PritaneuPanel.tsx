@@ -20,15 +20,38 @@ import {
 } from 'lucide-react';
 import { fetchHestiaStatus, HestiaStatus } from '../lib/station/hestia-client';
 import { fetchHefaistiaStatus, HefaistiaStatus } from '../lib/forge/hefaistia-client';
+import { fetchCodiceBooks } from '../lib/codiceClient';
 import { APP_REGISTRY } from '../lib/app-registry';
+import { RuntimeEnvelope } from '../lib/runtime-status';
 
 interface PritaneuPanelProps {
   onNavigateTab: (tabId: string) => void;
 }
 
+const getBadgeText = (status?: string) => {
+  switch (status) {
+    case 'real': return 'Ativo';
+    case 'mock': return 'Simulado';
+    case 'offline': return 'Offline';
+    case 'planned': return 'Planejado';
+    default: return 'Planejado';
+  }
+};
+
+const getBadgeClasses = (status?: string, color: string = 'gray') => {
+  switch (status) {
+    case 'real': return `bg-${color}-500/10 text-${color}-400 border border-${color}-500/20`;
+    case 'mock': return `bg-amber-500/10 text-amber-400 border border-amber-500/20`;
+    case 'offline': return `bg-red-500/10 text-red-400 border border-red-500/20`;
+    case 'planned': return `bg-[#0B0D12] text-[#A89F96] border border-[#252936]`;
+    default: return `bg-[#0B0D12] text-[#A89F96] border border-[#252936]`;
+  }
+};
+
 export default function PritaneuPanel({ onNavigateTab }: PritaneuPanelProps) {
-  const [hestia, setHestia] = useState<HestiaStatus | null>(null);
-  const [forge, setForge] = useState<HefaistiaStatus | null>(null);
+  const [hestia, setHestia] = useState<RuntimeEnvelope<HestiaStatus> | null>(null);
+  const [forge, setForge] = useState<RuntimeEnvelope<HefaistiaStatus> | null>(null);
+  const [codiceStatus, setCodiceStatus] = useState<string>('planned');
   const [loading, setLoading] = useState<boolean>(false);
   const [showImportDialog, setShowImportDialog] = useState<boolean>(false);
   const [pasteBlock, setPasteBlock] = useState<string>('');
@@ -36,12 +59,14 @@ export default function PritaneuPanel({ onNavigateTab }: PritaneuPanelProps) {
 
   const loadData = async () => {
     setLoading(true);
-    const [hData, fData] = await Promise.all([
+    const [hData, fData, cData] = await Promise.all([
       fetchHestiaStatus(),
-      fetchHefaistiaStatus()
+      fetchHefaistiaStatus(),
+      fetchCodiceBooks()
     ]);
     setHestia(hData);
     setForge(fData);
+    setCodiceStatus(cData.status);
     setLoading(false);
   };
 
@@ -79,9 +104,9 @@ export default function PritaneuPanel({ onNavigateTab }: PritaneuPanelProps) {
             O fogo central entre a nuvem, a estação e a forja.
           </p>
           <div className="pt-2 flex flex-wrap gap-x-4 gap-y-1 text-[10px] font-mono text-[#FF4C1F]">
-            <span>├─ Totalidade online.</span>
-            <span>├─ Héstia observa.</span>
-            <span>├─ Hefaístia executa.</span>
+            <span>├─ Totalidade: Planejado</span>
+            <span>├─ Héstia: {getBadgeText(hestia?.status)}</span>
+            <span>├─ Hefaístia: {getBadgeText(forge?.status)}</span>
           </div>
         </div>
 
@@ -100,7 +125,9 @@ export default function PritaneuPanel({ onNavigateTab }: PritaneuPanelProps) {
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <span className="text-[10px] font-extrabold uppercase tracking-widest text-[#A89F96]">Mente Canônica</span>
-              <span className="text-[9px] bg-emerald-500/10 text-emerald-400 font-extrabold px-2 py-0.5 rounded border border-emerald-500/20 uppercase">Online</span>
+              <span className={`text-[9px] font-extrabold px-2 py-0.5 rounded border uppercase ${getBadgeClasses('real', 'emerald')}`}>
+                {getBadgeText('real')}
+              </span>
             </div>
 
             <div className="space-y-1">
@@ -114,11 +141,11 @@ export default function PritaneuPanel({ onNavigateTab }: PritaneuPanelProps) {
             <div className="space-y-2 pt-3 border-t border-[#252936] font-mono text-[10px] text-[#A89F96]">
               <div className="flex items-center justify-between">
                 <span className="flex items-center gap-1.5"><Database className="w-3.5 h-3.5 text-[#C98A65]" /> Supabase DB:</span>
-                <span className="text-emerald-400 font-bold flex items-center gap-1">Ativo <CheckCircle className="w-3 h-3 text-emerald-400" /></span>
+                <span className="text-emerald-400 font-bold flex items-center gap-1">Ativo</span>
               </div>
               <div className="flex items-center justify-between">
                 <span className="flex items-center gap-1.5"><Cloud className="w-3.5 h-3.5 text-[#C98A65]" /> OpenRouter API:</span>
-                <span className="text-emerald-400 font-bold flex items-center gap-1">Conectado <CheckCircle className="w-3 h-3 text-emerald-400" /></span>
+                <span className="text-amber-400 font-bold flex items-center gap-1">Simulado</span>
               </div>
             </div>
           </div>
@@ -136,12 +163,8 @@ export default function PritaneuPanel({ onNavigateTab }: PritaneuPanelProps) {
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <span className="text-[10px] font-extrabold uppercase tracking-widest text-[#A89F96]">Estação Física</span>
-              <span className={`text-[9px] font-extrabold px-2 py-0.5 rounded border uppercase ${
-                hestia?.online 
-                  ? 'bg-amber-600/10 text-amber-400 border-amber-500/20' 
-                  : 'bg-amber-500/5 text-amber-400 border-amber-500/20 animate-pulse'
-              }`}>
-                {hestia?.online ? 'Loopback Real' : 'Local Protegido'}
+              <span className={`text-[9px] font-extrabold px-2 py-0.5 rounded border uppercase ${getBadgeClasses(hestia?.status, 'amber')}`}>
+                {getBadgeText(hestia?.status)}
               </span>
             </div>
 
@@ -160,8 +183,8 @@ export default function PritaneuPanel({ onNavigateTab }: PritaneuPanelProps) {
               </div>
               <div className="flex items-center justify-between">
                 <span className="flex items-center gap-1.5"><Activity className="w-3.5 h-3.5 text-[#EAB308]" /> Presença Ativa:</span>
-                <span className="text-emerald-400 font-bold truncate max-w-[120px] text-right">
-                  {hestia?.presence.mode || 'Aguardando'}
+                <span className={`${hestia?.status === 'real' ? 'text-emerald-400' : 'text-amber-400'} font-bold truncate max-w-[120px] text-right`}>
+                  {hestia?.data?.presence?.mode || 'Aguardando'}
                 </span>
               </div>
             </div>
@@ -180,12 +203,8 @@ export default function PritaneuPanel({ onNavigateTab }: PritaneuPanelProps) {
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <span className="text-[10px] font-extrabold uppercase tracking-widest text-[#A89F96]">Forja de IA</span>
-              <span className={`text-[9px] font-extrabold px-2 py-0.5 rounded border uppercase ${
-                forge?.online 
-                  ? 'bg-orange-600/10 text-orange-400 border-orange-500/20' 
-                  : 'bg-orange-500/5 text-orange-400 border-orange-500/20'
-              }`}>
-                {forge?.online ? 'Loopback Real' : 'Forja Acesa'}
+              <span className={`text-[9px] font-extrabold px-2 py-0.5 rounded border uppercase ${getBadgeClasses(forge?.status, 'orange')}`}>
+                {getBadgeText(forge?.status)}
               </span>
             </div>
 
@@ -204,8 +223,8 @@ export default function PritaneuPanel({ onNavigateTab }: PritaneuPanelProps) {
               </div>
               <div className="flex items-center justify-between">
                 <span className="flex items-center gap-1.5"><Layers className="w-3.5 h-3.5 text-orange-500" /> Modelo Ativo:</span>
-                <span className="text-orange-400 font-bold truncate max-w-[120px] text-right">
-                  {forge?.currentModel || 'qwen2.5-coder'}
+                <span className={`${forge?.status === 'real' ? 'text-emerald-400' : 'text-amber-400'} font-bold truncate max-w-[120px] text-right`}>
+                  {forge?.data?.currentModel || 'Nenhum'}
                 </span>
               </div>
             </div>
@@ -256,20 +275,16 @@ export default function PritaneuPanel({ onNavigateTab }: PritaneuPanelProps) {
               <div className="space-y-1.5 pt-2 border-t border-[#252936]">
                 <span className="block text-[8px] font-extrabold uppercase tracking-wider text-[#A89F96]/70">Superfícies:</span>
                 <div className="space-y-1">
-                  {domain.surfaces.map(s => (
+                  {domain.surfaces.map(s => {
+                    const finalStatus = s.id === 'codice' ? codiceStatus : s.status;
+                    return (
                     <div key={s.id} className="flex justify-between items-center text-[9px] font-mono">
                       <span className="text-[#A89F96] font-bold">{s.name}</span>
-                      <span className={`px-1.5 py-0.2 rounded-full text-[7px] font-extrabold uppercase ${
-                        s.status === 'real' 
-                          ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' 
-                          : s.status === 'mock' 
-                            ? 'bg-amber-500/10 text-amber-400 border border-amber-500/20' 
-                            : 'bg-[#0B0D12] text-[#A89F96] border border-[#252936]'
-                      }`}>
-                        {s.status === 'real' ? 'Ativa' : s.status === 'mock' ? 'Simulada' : 'Planejada'}
+                      <span className={`px-1.5 py-0.2 rounded-full text-[7px] font-extrabold uppercase ${getBadgeClasses(finalStatus, 'emerald')}`}>
+                        {getBadgeText(finalStatus)}
                       </span>
                     </div>
-                  ))}
+                  )})}
                 </div>
               </div>
             </div>

@@ -7,25 +7,21 @@ import {
   Server, 
   Terminal, 
   ExternalLink, 
-  RefreshCw, 
-  Check, 
-  AlertTriangle,
-  Play,
-  RotateCcw
+  RefreshCw,
+  AlertTriangle
 } from 'lucide-react';
 import { fetchHestiaStatus, HestiaStatus } from '../lib/station/hestia-client';
+import { RuntimeEnvelope } from '../lib/runtime-status';
 
 export default function StationPanel() {
   const [hestiaUrl, setHestiaUrl] = useState<string>('http://127.0.0.1:4517');
-  const [status, setStatus] = useState<HestiaStatus | null>(null);
+  const [envelope, setEnvelope] = useState<RuntimeEnvelope<HestiaStatus> | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
-  const [savingConfig, setSavingConfig] = useState<boolean>(false);
-  const [confirmingService, setConfirmingService] = useState<string | null>(null);
 
   const loadStatus = async () => {
     setLoading(true);
     const data = await fetchHestiaStatus(hestiaUrl);
-    setStatus(data);
+    setEnvelope(data);
     setLoading(false);
   };
 
@@ -34,34 +30,53 @@ export default function StationPanel() {
   }, [hestiaUrl]);
 
   const toggleService = (svcName: string) => {
-    if (!status) return;
-    setStatus(prev => {
-      if (!prev) return null;
-      return {
-        ...prev,
-        services: prev.services.map(s => 
+    if (!envelope || !envelope.data) return;
+    const currentData = envelope.data;
+    
+    setEnvelope({
+      ...envelope,
+      data: {
+        ...currentData,
+        services: currentData.services.map(s => 
           s.name === svcName ? { ...s, active: !s.active } : s
         ),
         presence: {
-          ...prev.presence,
+          ...currentData.presence,
           recentEvents: [
             { 
               time: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }), 
               event: `Serviço '${svcName}' alterado via painel`, 
               level: 'info' 
             },
-            ...prev.presence.recentEvents
+            ...currentData.presence.recentEvents
           ]
         }
-      };
+      }
     });
   };
 
-  if (!status) {
+  if (!envelope) {
     return (
       <div className="flex flex-col items-center justify-center py-12 text-slate-400">
         <RefreshCw className="w-8 h-8 animate-spin text-amber-500 mb-3" />
         <p className="text-xs font-bold uppercase tracking-wider">Aguardando Héstia Station...</p>
+      </div>
+    );
+  }
+
+  const isMock = envelope.status === 'mock';
+  const isOffline = envelope.status === 'offline';
+  const statusData = envelope.data;
+
+  if (isOffline || !statusData) {
+    return (
+      <div className="flex flex-col items-center justify-center h-full p-8 text-[#A89F96]">
+        <AlertTriangle className="w-12 h-12 text-red-500 mb-4" />
+        <h2 className="text-xl font-bold text-white mb-2">Serviço offline</h2>
+        <p>Nenhum dado real disponível no momento.</p>
+        <button onClick={loadStatus} className="mt-6 px-4 py-2 border border-[#252936] rounded hover:bg-[#10131A]">
+          Tentar novamente
+        </button>
       </div>
     );
   }
@@ -74,9 +89,9 @@ export default function StationPanel() {
         
         <div className="space-y-3 z-10">
           <div className="flex items-center gap-2">
-            <span className={`w-2 h-2 rounded-full shadow-[0_0_8px_#EAB308] ${status.online ? 'bg-emerald-400 shadow-[0_0_8px_#10B981]' : 'bg-[#EAB308] animate-pulse'}`}></span>
+            <span className={`w-2 h-2 rounded-full shadow-[0_0_8px_currentColor] ${!isMock ? 'bg-emerald-400 text-[#10B981]' : 'bg-[#EAB308] text-[#EAB308] animate-pulse'}`}></span>
             <span className="text-[9px] font-black uppercase tracking-widest text-[#A89F96]">
-              {status.online ? 'Conexão Direta Loopback' : 'Modo Protegido / Sincronização Ativa'}
+              {!isMock ? 'Loopback Real' : 'Héstia não respondeu. Exibindo simulação local.'}
             </span>
           </div>
           <h1 className="text-3xl font-semibold tracking-tight text-[#F7EFE7] font-serif leading-none flex items-center gap-2">
@@ -115,98 +130,115 @@ export default function StationPanel() {
         </div>
       </div>
 
+      {isMock && (
+        <div className="p-4 bg-amber-500/10 border border-amber-500/20 rounded-xl flex items-start gap-3">
+          <AlertTriangle className="w-5 h-5 text-amber-400 shrink-0 mt-0.5" />
+          <p className="text-sm text-amber-400/90 font-medium leading-relaxed">
+            Aviso: os dados apresentados abaixo são decorativos (Modo Simulado). 
+          </p>
+        </div>
+      )}
+
       {/* Grid of Metrics */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {/* Hardware Status */}
         <div className="bg-[#0B0D12] border border-[#252936] rounded-[24px] p-5 text-[#F7EFE7] space-y-4 shadow-sm">
-          <h3 className="text-[11px] font-extrabold uppercase tracking-widest text-[#A89F96] flex items-center gap-2">
-            <Cpu className="w-4 h-4 text-[#EAB308]" /> Hardware & Carga
-          </h3>
+          <div className="flex justify-between items-center">
+            <h3 className="text-[11px] font-extrabold uppercase tracking-widest text-[#A89F96] flex items-center gap-2">
+              <Cpu className="w-4 h-4 text-[#EAB308]" /> Hardware & Carga
+            </h3>
+            {isMock && <span className="bg-amber-500/10 border border-amber-500/20 text-amber-400 text-[8px] font-bold px-1.5 py-0.5 rounded uppercase tracking-wider">Simulado</span>}
+          </div>
           
           <div className="space-y-3 font-mono text-xs text-[#A89F96]">
             <div className="flex justify-between items-center border-b border-[#252936]/40 pb-2">
               <span>Uptime:</span>
-              <span className="text-[#F7EFE7] font-bold">{status.uptime}</span>
+              <span className="text-[#F7EFE7] font-bold">{statusData.uptime}</span>
             </div>
             
             <div className="flex justify-between items-center border-b border-[#252936]/40 pb-2">
               <span>Uso de CPU:</span>
-              <span className="text-[#F7EFE7] font-bold">{status.cpu}%</span>
+              <span className="text-[#F7EFE7] font-bold">{statusData.cpu}%</span>
             </div>
 
             <div className="space-y-1">
               <div className="flex justify-between">
                 <span>Memória RAM:</span>
-                <span className="text-[#F7EFE7] font-bold">{status.memory.percent}%</span>
+                <span className="text-[#F7EFE7] font-bold">{statusData.memory.percent}%</span>
               </div>
               <div className="w-full bg-[#10131A] h-1.5 rounded-full overflow-hidden">
                 <div 
                   className="bg-[#EAB308] h-full rounded-full transition-all duration-500"
-                  style={{ width: `${status.memory.percent}%` }}
+                  style={{ width: `${statusData.memory.percent}%` }}
                 ></div>
               </div>
-              <p className="text-[9px] text-[#A89F96]/50 text-right">{status.memory.used} / {status.memory.total}</p>
+              <p className="text-[9px] text-[#A89F96]/50 text-right">{statusData.memory.used} / {statusData.memory.total}</p>
             </div>
           </div>
         </div>
 
         {/* Storage status */}
         <div className="bg-[#0B0D12] border border-[#252936] rounded-[24px] p-5 text-[#F7EFE7] space-y-4 shadow-sm">
-          <h3 className="text-[11px] font-extrabold uppercase tracking-widest text-[#A89F96] flex items-center gap-2">
-            <HardDrive className="w-4 h-4 text-[#EAB308]" /> Volumes & /KALINE
-          </h3>
+          <div className="flex justify-between items-center">
+            <h3 className="text-[11px] font-extrabold uppercase tracking-widest text-[#A89F96] flex items-center gap-2">
+              <HardDrive className="w-4 h-4 text-[#EAB308]" /> Volumes & /KALINE
+            </h3>
+            {isMock && <span className="bg-amber-500/10 border border-amber-500/20 text-amber-400 text-[8px] font-bold px-1.5 py-0.5 rounded uppercase tracking-wider">Simulado</span>}
+          </div>
 
           <div className="space-y-3 font-mono text-xs text-[#A89F96]">
             <div className="flex justify-between items-center border-b border-[#252936]/40 pb-2">
               <span>Diretório de Escrita:</span>
-              <span className="text-[#EAB308] font-bold">{status.storage.path}</span>
+              <span className="text-[#EAB308] font-bold">{statusData.storage.path}</span>
             </div>
 
             <div className="flex justify-between items-center border-b border-[#252936]/40 pb-2">
               <span>Notas Localizadas:</span>
-              <span className="text-[#F7EFE7] font-bold">{status.storage.kalineFilesCount} arquivos</span>
+              <span className="text-[#F7EFE7] font-bold">{statusData.storage.kalineFilesCount} arquivos</span>
             </div>
 
             <div className="space-y-1">
               <div className="flex justify-between">
                 <span>Espaço Ocupado:</span>
-                <span className="text-[#F7EFE7] font-bold">{status.storage.percent}%</span>
+                <span className="text-[#F7EFE7] font-bold">{statusData.storage.percent}%</span>
               </div>
               <div className="w-full bg-[#10131A] h-1.5 rounded-full overflow-hidden">
                 <div 
                   className="bg-[#EAB308] h-full rounded-full transition-all duration-500"
-                  style={{ width: `${status.storage.percent}%` }}
+                  style={{ width: `${statusData.storage.percent}%` }}
                 ></div>
               </div>
-              <p className="text-[9px] text-[#A89F96]/50 text-right">{status.storage.used} / {status.storage.total} total</p>
+              <p className="text-[9px] text-[#A89F96]/50 text-right">{statusData.storage.used} / {statusData.storage.total} total</p>
             </div>
           </div>
         </div>
 
         {/* Presence / Chameleon */}
         <div className="bg-[#0B0D12] border border-[#252936] rounded-[24px] p-5 text-[#F7EFE7] space-y-4 shadow-sm">
-          <h3 className="text-[11px] font-extrabold uppercase tracking-widest text-[#A89F96] flex items-center gap-2">
-            <Activity className="w-4 h-4 text-[#EAB308]" /> Presença & Atividade
-          </h3>
+          <div className="flex justify-between items-center">
+            <h3 className="text-[11px] font-extrabold uppercase tracking-widest text-[#A89F96] flex items-center gap-2">
+              <Activity className="w-4 h-4 text-[#EAB308]" /> Presença & Atividade
+            </h3>
+            {isMock && <span className="bg-amber-500/10 border border-amber-500/20 text-amber-400 text-[8px] font-bold px-1.5 py-0.5 rounded uppercase tracking-wider">Simulado</span>}
+          </div>
 
           <div className="space-y-3 font-mono text-xs text-[#A89F96]">
             <div className="flex justify-between items-center border-b border-[#252936]/40 pb-2">
-              <span>Modo Ativo:</span>
-              <span className="text-emerald-400 font-bold uppercase tracking-wider flex items-center gap-1">
-                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
-                {status.presence.mode}
+              <span>Modo Atual:</span>
+              <span className="text-[#A89F96] font-bold uppercase tracking-wider flex items-center gap-1">
+                {statusData.presence.mode}
               </span>
             </div>
 
             <div className="flex justify-between items-center border-b border-[#252936]/40 pb-2">
               <span>Tempo Focado Hoje:</span>
-              <span className="text-[#F7EFE7] font-bold">{status.presence.timeInFocusToday}</span>
+              <span className="text-[#F7EFE7] font-bold">{statusData.presence.timeInFocusToday}</span>
             </div>
 
             <div className="space-y-1">
-              <span className="block text-[10px] text-[#A89F96]/70">Janela Ativa Registrada:</span>
+              <span className="block text-[10px] text-[#A89F96]/70">Janela Registrada:</span>
               <span className="text-xs text-[#F7EFE7] block bg-[#10131A] p-2 rounded border border-[#252936] truncate font-semibold">
-                {status.presence.activeWindow}
+                {statusData.presence.activeWindow}
               </span>
             </div>
           </div>
@@ -220,7 +252,7 @@ export default function StationPanel() {
         </h3>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-          {status.services.map((svc) => (
+          {statusData.services.map((svc) => (
             <div 
               key={svc.name} 
               className="p-4 bg-[#10131A] border border-[#252936] rounded-2xl flex flex-col justify-between h-28"
@@ -229,11 +261,13 @@ export default function StationPanel() {
                 <div className="flex items-center justify-between">
                   <span className="font-mono text-xs font-extrabold text-[#F7EFE7] uppercase tracking-tight">{svc.name}</span>
                   <span className={`text-[8px] px-1.5 py-0.5 rounded-full font-extrabold uppercase ${
-                    svc.active 
+                    svc.active && !isMock
                       ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' 
+                      : svc.active && isMock
+                        ? 'bg-amber-500/10 text-amber-400 border border-amber-500/20'
                       : 'bg-[#0B0D12] text-[#A89F96] border border-[#252936]'
                   }`}>
-                    {svc.active ? 'Ativo' : 'Parado'}
+                    {svc.active ? (isMock ? 'Simulado' : 'Ativo') : 'Parado'}
                   </span>
                 </div>
                 <p className="text-[10px] text-[#A89F96] leading-tight">{svc.description}</p>
@@ -261,11 +295,11 @@ export default function StationPanel() {
         </h3>
 
         <div className="bg-[#10131A] border border-[#252936] rounded-xl p-4 font-mono text-xs space-y-2 h-44 overflow-y-auto no-scrollbar">
-          {status.presence.recentEvents.map((ev, i) => (
+          {statusData.presence.recentEvents.map((ev, i) => (
             <div key={i} className="flex items-start gap-2 border-b border-[#252936]/20 pb-1.5 last:border-0 last:pb-0">
               <span className="text-[#A89F96]/50 font-bold text-[10px] shrink-0">[{ev.time}]</span>
               <span className={`text-[10px] font-medium leading-relaxed ${
-                ev.level === 'success' ? 'text-emerald-400' :
+                ev.level === 'success' ? (isMock ? 'text-amber-400' : 'text-emerald-400') :
                 ev.level === 'warn' ? 'text-amber-400' : 'text-[#A89F96]'
               }`}>
                 {ev.event}

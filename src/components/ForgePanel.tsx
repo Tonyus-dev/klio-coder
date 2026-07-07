@@ -13,13 +13,15 @@ import {
   CheckSquare, 
   Server,
   FileText,
-  RefreshCw
+  RefreshCw,
+  AlertTriangle
 } from 'lucide-react';
 import { fetchHefaistiaStatus, HefaistiaStatus, ForgeModel, ForgeTask } from '../lib/forge/hefaistia-client';
+import { RuntimeEnvelope } from '../lib/runtime-status';
 
 export default function ForgePanel() {
   const [forgeUrl, setForgeUrl] = useState<string>('http://127.0.0.1:4518');
-  const [status, setStatus] = useState<HefaistiaStatus | null>(null);
+  const [envelope, setEnvelope] = useState<RuntimeEnvelope<HefaistiaStatus> | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [benchmarkRunning, setBenchmarkRunning] = useState<boolean>(false);
   
@@ -33,7 +35,7 @@ export default function ForgePanel() {
   const loadStatus = async () => {
     setLoading(true);
     const data = await fetchHefaistiaStatus(forgeUrl);
-    setStatus(data);
+    setEnvelope(data);
     setLoading(false);
   };
 
@@ -51,19 +53,19 @@ export default function ForgePanel() {
     if (benchmarkRunning) return;
     setBenchmarkRunning(true);
     setTimeout(() => {
-      if (status) {
-        setStatus(prev => {
-          if (!prev) return null;
-          return {
-            ...prev,
+      if (envelope && envelope.data) {
+        setEnvelope({
+          ...envelope,
+          data: {
+            ...envelope.data,
             benchmark: {
               lastTest: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
-              model: prev.currentModel,
+              model: envelope.data.currentModel,
               tps: Number((30 + Math.random() * 15).toFixed(1)),
               latencyMs: Math.round(110 + Math.random() * 40),
               ramUsed: `${(4.8 + Math.random() * 1.5).toFixed(1)} GB`
             }
-          };
+          }
         });
       }
       setBenchmarkRunning(false);
@@ -75,7 +77,7 @@ export default function ForgePanel() {
     setRunningTask(true);
     
     setTimeout(() => {
-      if (status) {
+      if (envelope && envelope.data) {
         let code = ``;
         let desc = ``;
         
@@ -98,12 +100,12 @@ export default function ForgePanel() {
           status: 'completed'
         };
 
-        setStatus(prev => {
-          if (!prev) return null;
-          return {
-            ...prev,
-            tasks: [newTask, ...prev.tasks]
-          };
+        setEnvelope({
+          ...envelope,
+          data: {
+            ...envelope.data,
+            tasks: [newTask, ...envelope.data.tasks]
+          }
         });
       }
       setTaskPrompt('');
@@ -111,18 +113,22 @@ export default function ForgePanel() {
     }, 1200);
   };
 
+  const statusData = envelope?.data;
+  const isMock = envelope?.status === 'mock';
+  const isOffline = envelope?.status === 'offline';
+
   // Generate assistida Totalidade block (PR 6)
   const generateExportBlock = (): string => {
-    if (!status) return '';
+    if (!statusData) return '';
     return `### 🜂 BLOCO DE EXPORTAÇÃO HEFAÍSTIA PARA TOTALIDADE
 **Data de Emissão:** ${new Date().toLocaleDateString('pt-BR')} ${new Date().toLocaleTimeString('pt-BR')}
-**Status Técnico:** Ollama Local Conectado (${status.currentModel})
-**Último Benchmark:** ${status.benchmark.tps} TPS / ${status.benchmark.latencyMs}ms de Latência
+**Status Técnico:** Ollama Local Conectado (${statusData.currentModel})
+**Último Benchmark:** ${statusData.benchmark.tps} TPS / ${statusData.benchmark.latencyMs}ms de Latência
 
 #### ⚙️ Preferências & Atividades Observadas
 - Conexão de rede local estabelecida em modo loopback na porta :4518.
 - Forjador executou tarefas locais com os seguintes modelos ativos:
-  ${status.localModels.map(m => `- \`${m.name}\` (${m.parameterCount}, ${m.size})`).join('\n  ')}
+  ${statusData.localModels.map(m => `- \`${m.name}\` (${m.parameterCount}, ${m.size})`).join('\n  ')}
 
 #### 🛠️ Próximos Passos Decididos
 1. Manter a mente canônica integrada ao PWA principal.
@@ -130,11 +136,24 @@ export default function ForgePanel() {
 3. Consumir dados estruturados das notas locais no /KALINE.`;
   };
 
-  if (!status) {
+  if (!envelope) {
     return (
       <div className="flex flex-col items-center justify-center py-12 text-slate-400">
         <RefreshCw className="w-8 h-8 animate-spin text-orange-500 mb-3" />
         <p className="text-xs font-bold uppercase tracking-wider">Aguardando Hefaístia Forge...</p>
+      </div>
+    );
+  }
+
+  if (isOffline || !statusData) {
+    return (
+      <div className="flex flex-col items-center justify-center h-full p-8 text-[#A89F96]">
+        <AlertTriangle className="w-12 h-12 text-red-500 mb-4" />
+        <h2 className="text-xl font-bold text-white mb-2">Serviço offline</h2>
+        <p>A forja está inacessível. Inicie o Hefaístia Daemon localmente.</p>
+        <button onClick={loadStatus} className="mt-6 px-4 py-2 border border-[#252936] rounded hover:bg-[#10131A]">
+          Tentar novamente
+        </button>
       </div>
     );
   }
@@ -147,9 +166,9 @@ export default function ForgePanel() {
 
         <div className="space-y-3 z-10">
           <div className="flex items-center gap-2">
-            <span className={`w-2 h-2 rounded-full shadow-[0_0_8px_#FF4C1F] ${status.online ? 'bg-emerald-400 shadow-[0_0_8px_#10B981]' : 'bg-[#FF4C1F] animate-pulse'}`}></span>
+            <span className={`w-2 h-2 rounded-full shadow-[0_0_8px_currentColor] ${!isMock ? 'bg-emerald-400 text-[#10B981]' : 'bg-[#FF4C1F] text-[#FF4C1F] animate-pulse'}`}></span>
             <span className="text-[9px] font-black uppercase tracking-widest text-[#A89F96]">
-              {status.online ? 'Conexão Hefaístia Direta' : 'Modo Protegido / Forja Local'}
+              {!isMock ? 'Conexão Hefaístia Direta' : 'A Forja não respondeu. Exibindo simulação.'}
             </span>
           </div>
           <h1 className="text-3xl font-semibold tracking-tight text-[#F7EFE7] font-serif leading-none flex items-center gap-2">
@@ -177,22 +196,34 @@ export default function ForgePanel() {
             </button>
           </div>
           
-          <div className="text-[10px] font-extrabold text-center bg-[#10131A] border border-[#252936] text-[#FF4C1F] py-1 px-3 rounded-lg uppercase">
-            Ollama: {status.ollamaOnline ? 'Conectado' : 'Offline'}
+          <div className={`text-[10px] font-extrabold text-center bg-[#10131A] border border-[#252936] py-1 px-3 rounded-lg uppercase ${!isMock && statusData.ollamaOnline ? 'text-emerald-400' : 'text-[#FF4C1F]'}`}>
+            Ollama: {statusData.ollamaOnline ? 'Conectado' : (isMock ? 'Simulado' : 'Offline')}
           </div>
         </div>
       </div>
+
+      {isMock && (
+        <div className="p-4 bg-amber-500/10 border border-amber-500/20 rounded-xl flex items-start gap-3">
+          <AlertTriangle className="w-5 h-5 text-amber-400 shrink-0 mt-0.5" />
+          <p className="text-sm text-amber-400/90 font-medium leading-relaxed">
+            Aviso: os dados apresentados abaixo são decorativos (Modo Simulado). 
+          </p>
+        </div>
+      )}
 
       {/* Grid: Models List & Benchmark */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {/* Model Registry List */}
         <div className="bg-[#0B0D12] rounded-[24px] border border-[#252936] p-5 space-y-4 shadow-md">
-          <h3 className="text-xs font-black uppercase tracking-wider text-[#F7EFE7] flex items-center gap-2">
-            <Layers className="w-4.5 h-4.5 text-[#FF4C1F]" /> Modelos Ollama Instalados
-          </h3>
+          <div className="flex justify-between items-center">
+            <h3 className="text-xs font-black uppercase tracking-wider text-[#F7EFE7] flex items-center gap-2">
+              <Layers className="w-4.5 h-4.5 text-[#FF4C1F]" /> Modelos Ollama Instalados
+            </h3>
+            {isMock && <span className="bg-amber-500/10 border border-amber-500/20 text-amber-400 text-[8px] font-bold px-1.5 py-0.5 rounded uppercase tracking-wider">Simulado</span>}
+          </div>
 
           <div className="space-y-2.5">
-            {status.localModels.map((m) => (
+            {statusData.localModels.map((m) => (
               <div 
                 key={m.name}
                 className={`p-3 rounded-xl border flex items-center justify-between transition-all ${
@@ -224,24 +255,27 @@ export default function ForgePanel() {
         <div className="bg-[#0B0D12] border border-[#252936] rounded-[24px] p-5 text-[#F7EFE7] flex flex-col justify-between shadow-md">
           <div className="space-y-4">
             <div className="flex justify-between items-center">
-              <h3 className="text-[11px] font-extrabold uppercase tracking-widest text-[#A89F96] flex items-center gap-2">
-                <Activity className="w-4 h-4 text-[#FF4C1F]" /> Teste de Latência & TPS
-              </h3>
-              <span className="text-[8px] font-mono text-[#A89F96]/50 uppercase">Último: {status.benchmark.lastTest}</span>
+              <div className="flex gap-2 items-center">
+                <h3 className="text-[11px] font-extrabold uppercase tracking-widest text-[#A89F96] flex items-center gap-2">
+                  <Activity className="w-4 h-4 text-[#FF4C1F]" /> Teste de Latência & TPS
+                </h3>
+                {isMock && <span className="bg-amber-500/10 border border-amber-500/20 text-amber-400 text-[8px] font-bold px-1.5 py-0.5 rounded uppercase tracking-wider">Simulado</span>}
+              </div>
+              <span className="text-[8px] font-mono text-[#A89F96]/50 uppercase">Último: {statusData.benchmark.lastTest}</span>
             </div>
 
             <div className="grid grid-cols-2 gap-3 bg-[#10131A] border border-[#252936] p-4 rounded-xl font-mono text-xs text-[#A89F96]">
               <div className="space-y-1">
                 <span className="text-[9px] text-[#A89F96]/50 uppercase">Tokens por Segundo:</span>
-                <p className="text-xl font-extrabold text-[#F7EFE7]">{status.benchmark.tps} <span className="text-[10px] text-[#FF4C1F]">t/s</span></p>
+                <p className="text-xl font-extrabold text-[#F7EFE7]">{statusData.benchmark.tps} <span className="text-[10px] text-[#FF4C1F]">t/s</span></p>
               </div>
               <div className="space-y-1">
                 <span className="text-[9px] text-[#A89F96]/50 uppercase">Latência Inicial:</span>
-                <p className="text-xl font-extrabold text-[#F7EFE7]">{status.benchmark.latencyMs} <span className="text-[10px] text-[#FF4C1F]">ms</span></p>
+                <p className="text-xl font-extrabold text-[#F7EFE7]">{statusData.benchmark.latencyMs} <span className="text-[10px] text-[#FF4C1F]">ms</span></p>
               </div>
               <div className="space-y-1 col-span-2 border-t border-[#252936] pt-2.5 mt-1">
                 <span className="text-[9px] text-[#A89F96]/50 uppercase">Modelo Testado:</span>
-                <p className="text-xs font-semibold text-[#F7EFE7] truncate">{status.benchmark.model} ({status.benchmark.ramUsed} RAM)</p>
+                <p className="text-xs font-semibold text-[#F7EFE7] truncate">{statusData.benchmark.model} ({statusData.benchmark.ramUsed} RAM)</p>
               </div>
             </div>
           </div>
@@ -283,7 +317,7 @@ export default function ForgePanel() {
 
         {/* Task lists / outputs */}
         <div className="space-y-3">
-          {status.tasks.map((task) => (
+          {statusData.tasks.map((task) => (
             <div key={task.id} className="p-4 bg-[#10131A] border border-[#252936] rounded-xl space-y-3">
               <div className="flex justify-between items-center border-b border-[#252936]/40 pb-2">
                 <span className="text-xs font-extrabold text-[#F7EFE7] uppercase tracking-tight">{task.title}</span>

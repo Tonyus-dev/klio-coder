@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { BookOpen, Search, Settings, Server, ExternalLink, Library, Tag } from 'lucide-react';
-import { getCodiceUrl, setCodiceUrl, searchCodiceBooks, getCodiceContext, CodiceBook } from '../lib/codiceClient';
+import { BookOpen, Search, Settings, Server, ExternalLink, Library, AlertTriangle } from 'lucide-react';
+import { getCodiceUrl, setCodiceUrl, searchCodiceBooks, CodiceBook } from '../lib/codiceClient';
 
 export default function CodicePanel() {
   const [books, setBooks] = useState<CodiceBook[]>([]);
@@ -8,6 +8,7 @@ export default function CodicePanel() {
   const [loading, setLoading] = useState(true);
   const [showSettings, setShowSettings] = useState(false);
   const [tailscaleUrl, setTailscaleUrl] = useState(getCodiceUrl());
+  const [isMock, setIsMock] = useState(false);
 
   useEffect(() => {
     loadBooks('');
@@ -16,7 +17,8 @@ export default function CodicePanel() {
   const loadBooks = async (query: string) => {
     setLoading(true);
     const results = await searchCodiceBooks(query);
-    setBooks(results);
+    setBooks(results.data || []);
+    setIsMock(results.status === 'mock');
     setLoading(false);
   };
 
@@ -69,9 +71,19 @@ export default function CodicePanel() {
         </button>
       </div>
 
+      {/* Alerta de Mock Obrigatório */}
+      {isMock && (
+        <div className="mx-6 mt-6 p-4 bg-amber-500/10 border border-amber-500/20 rounded-xl flex items-start gap-3">
+          <AlertTriangle className="w-5 h-5 text-amber-400 shrink-0 mt-0.5" />
+          <p className="text-sm text-amber-400/90 font-medium leading-relaxed">
+            Códice em modo simulado. Configure a rota Héstia/Tailscale para consultar seu acervo real.
+          </p>
+        </div>
+      )}
+
       {/* Configurações (Tailscale) */}
       {showSettings && (
-        <div className="p-6 bg-[#0B0D12] border-b border-[#252936]">
+        <div className="mx-6 mt-6 p-6 bg-[#0B0D12] border border-[#252936] rounded-xl">
           <h3 className="text-sm font-bold text-[#F7EFE7] flex items-center gap-2 mb-4">
             <Server className="w-4 h-4 text-[#FF4C1F]" /> Conexão Héstia (Tailscale Serve)
           </h3>
@@ -114,7 +126,7 @@ export default function CodicePanel() {
         {/* Lista de Livros */}
         <div>
           <h3 className="text-[10px] font-black uppercase tracking-widest text-[#A89F96] mb-4 border-b border-[#252936] pb-2">
-            Acervo ({books.length})
+            Acervo {isMock ? '(Simulado)' : `(${books.length})`}
           </h3>
           
           {loading ? (

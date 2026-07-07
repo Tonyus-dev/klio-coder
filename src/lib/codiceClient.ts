@@ -1,5 +1,6 @@
 // Cliente API do Códice
 // Conecta a Estação Kaline (Frontend) com o servidor local Héstia (Backend via Tailscale)
+import { RuntimeEnvelope } from './runtime-status';
 
 export const getCodiceUrl = () => {
   return localStorage.getItem('kaline_codice_url') || 'http://hestia:8080/api/codice';
@@ -27,52 +28,77 @@ export interface CodiceContextResult {
   excerpt: string;
 }
 
-export const fetchCodiceBooks = async (): Promise<CodiceBook[]> => {
+export const fetchCodiceBooks = async (): Promise<RuntimeEnvelope<CodiceBook[]>> => {
   const baseUrl = getCodiceUrl();
   try {
     const res = await fetch(`${baseUrl}/books`);
     if (!res.ok) throw new Error('API do Códice inacessível');
-    return await res.json();
+    return {
+      status: 'real',
+      source: baseUrl,
+      data: await res.json()
+    };
   } catch (err) {
     console.warn('Usando mock do Códice (Servidor Inativo)');
-    return MOCK_BOOKS;
+    return {
+      status: 'mock',
+      source: 'fallback-local',
+      data: MOCK_BOOKS
+    };
   }
 };
 
-export const searchCodiceBooks = async (query: string): Promise<CodiceBook[]> => {
+export const searchCodiceBooks = async (query: string): Promise<RuntimeEnvelope<CodiceBook[]>> => {
   if (!query) return fetchCodiceBooks();
   
   const baseUrl = getCodiceUrl();
   try {
     const res = await fetch(`${baseUrl}/search?q=${encodeURIComponent(query)}`);
     if (!res.ok) throw new Error('API do Códice inacessível');
-    return await res.json();
+    return {
+      status: 'real',
+      source: baseUrl,
+      data: await res.json()
+    };
   } catch (err) {
     const q = query.toLowerCase();
-    return MOCK_BOOKS.filter(b => 
+    const data = MOCK_BOOKS.filter(b => 
       b.title.toLowerCase().includes(q) || 
       b.author.toLowerCase().includes(q)
     );
+    return {
+      status: 'mock',
+      source: 'fallback-local',
+      data
+    };
   }
 };
 
-export const getCodiceContext = async (query: string): Promise<CodiceContextResult[]> => {
+export const getCodiceContext = async (query: string): Promise<RuntimeEnvelope<CodiceContextResult[]>> => {
   const baseUrl = getCodiceUrl();
   try {
     const res = await fetch(`${baseUrl}/context?q=${encodeURIComponent(query)}`);
     if (!res.ok) throw new Error('API do Códice inacessível');
-    return await res.json();
+    return {
+      status: 'real',
+      source: baseUrl,
+      data: await res.json()
+    };
   } catch (err) {
     console.warn('Usando mock de contexto Códice');
-    return [
-      {
-        book: "Teoria da Conduta e Direito Penal",
-        author: "Desconhecido",
-        chapter: "Capítulo 2",
-        location: "Seção 4",
-        excerpt: "Este é um trecho simulado retornado pelo Códice. Configure a URL real do Tailscale para buscar textos do seu acervo vivo."
-      }
-    ];
+    return {
+      status: 'mock',
+      source: 'fallback-local',
+      data: [
+        {
+          book: "Teoria da Conduta e Direito Penal",
+          author: "Desconhecido",
+          chapter: "Capítulo 2",
+          location: "Seção 4",
+          excerpt: "Este é um trecho simulado retornado pelo Códice. Configure a URL real do Tailscale para buscar textos do seu acervo vivo."
+        }
+      ]
+    };
   }
 };
 
