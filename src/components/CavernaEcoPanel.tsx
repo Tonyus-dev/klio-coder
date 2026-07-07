@@ -139,7 +139,7 @@ const mediaRecorderRef = React.useRef<MediaRecorder | null>(null);
     } catch(e: any) {
       console.error('Falha ao iniciar microfone', e);
       setIsRecording(false);
-      setCurrentView('sessions');
+      setCurrentView('home');
       setActiveSession(null);
     }
   };
@@ -160,14 +160,8 @@ const mediaRecorderRef = React.useRef<MediaRecorder | null>(null);
 
           if (activeSession) {
             const kalineUrl = import.meta.env.VITE_KALINE_API_URL;
-            let transcription = "Transcrevendo...";
-            
-            if (!kalineUrl) throw new Error("API da Kaline ainda não configurada. Defina VITE_KALINE_API_URL.");
-            if (kalineUrl) {
-              transcription = "API da Kaline ainda não configurada para áudio.";
-            } else {
-              transcription = "API da Kaline ainda não configurada.";
-            }
+            let transcription = "API da Kaline ainda não configurada para áudio.";
+
 
             const finalBlocks = activeSession.blocks.map(b => 
               b.status === 'current' ? { ...b, endTime: formatTime(recordingTime), status: 'transcribed' as BlockStatus, transcription } : b
@@ -197,10 +191,7 @@ const analyzeSession = async () => {
       setActiveSession({ ...activeSession, status: 'analisando' });
       
       const kalineUrl = import.meta.env.VITE_KALINE_API_URL;
-      if (!kalineUrl) throw new Error("API da Kaline ainda não configurada. Defina VITE_KALINE_API_URL.");
-      if (kalineUrl) {
-        activeSession.blocks.push({ id: 'analysis', order: 99, startTime: '0', endTime: '0', status: 'transcribed', transcription: "API da Kaline ainda não configurada." });
-      }
+      activeSession.blocks.push({ id: 'analysis', order: 99, startTime: '0', endTime: '0', status: 'transcribed', transcription: "API da Kaline ainda não configurada." });
 
       setTimeout(() => {
         setActiveSession({ ...activeSession, status: 'analisada', isAnalyzed: true });

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { importTotalidadeCanonToLocalStorage } from '../lib/canon';
 import { 
   Leaf, 
   Eye, 
@@ -26,6 +27,7 @@ interface Context {
   ativo: boolean;
   arquivado: boolean;
   ultimaEdicao: string;
+  source?: string;
 }
 
 interface Sediment {
@@ -204,6 +206,24 @@ export default function MemoryPanel({ subTab }: MemoryPanelProps) {
   const [editingGardenTags, setEditingGardenTags] = useState('');
 
   // --- HANDLERS FOR IDENTITY / CONTEXTS ---
+  const [canonImportMessage, setCanonImportMessage] = useState<string | null>(null);
+
+  const handleImportTotalidadeCanon = () => {
+    const added = importTotalidadeCanonToLocalStorage();
+    
+    const stored = localStorage.getItem('kaline_contexts');
+    if (stored) {
+      setContexts(JSON.parse(stored));
+    }
+    
+    if (added > 0) {
+      setCanonImportMessage(`Cânone da Totalidade importado: ${added} contexto(s) novo(s).`);
+    } else {
+      setCanonImportMessage('Cânone da Totalidade já estava importado.');
+    }
+    
+    setTimeout(() => setCanonImportMessage(null), 3500);
+  };
   const handleImportContext = () => {
     if (!importText.trim()) return;
     const newContext: Context = {
@@ -386,12 +406,27 @@ export default function MemoryPanel({ subTab }: MemoryPanelProps) {
               </p>
             </div>
 
-            <button 
-              onClick={() => setShowImportModal(true)}
-              className="px-4 py-2.5 bg-[#FF4C1F] hover:bg-[#FF7A3D] text-[#06070A] text-[10px] font-black rounded-xl transition-all uppercase tracking-wider flex items-center gap-1.5 shrink-0 z-10 shadow-[0_0_15px_rgba(255,76,31,0.2)]"
-            >
-              <Plus className="w-3.5 h-3.5" /> Importar Contexto
-            </button>
+            <div className="flex flex-col gap-2 shrink-0 z-10">
+              <button 
+                onClick={() => setShowImportModal(true)}
+                className="px-4 py-2.5 bg-[#FF4C1F] hover:bg-[#FF7A3D] text-[#06070A] text-[10px] font-black rounded-xl transition-all uppercase tracking-wider flex items-center justify-center gap-1.5 shadow-[0_0_15px_rgba(255,76,31,0.2)] w-full"
+              >
+                <Plus className="w-3.5 h-3.5" /> Importar Contexto
+              </button>
+
+              <button 
+                onClick={handleImportTotalidadeCanon}
+                className="px-4 py-2.5 bg-[#10131A] hover:bg-[#1C202E] border border-[#252936] text-[#F7EFE7] text-[10px] font-black rounded-xl transition-all uppercase tracking-wider flex flex-col items-center justify-center gap-1 shadow-sm w-full"
+              >
+                <span>Importar Cânone da Totalidade</span>
+              </button>
+              
+              {canonImportMessage && (
+                <div className="text-[9px] font-bold text-[#EAB308] text-center animate-fade-in p-1 max-w-[200px]">
+                  {canonImportMessage}
+                </div>
+              )}
+            </div>
           </div>
 
           {/* Context Cards Grid */}
@@ -449,13 +484,20 @@ export default function MemoryPanel({ subTab }: MemoryPanelProps) {
                       <div className="space-y-4 flex-grow flex flex-col justify-between">
                         <div className="space-y-2">
                           <div className="flex items-center justify-between">
-                            <span className={`text-[8px] font-black px-2 py-0.5 rounded border uppercase tracking-wider ${
-                              ctx.tipo === 'identidade' 
-                                ? 'bg-[#FF4C1F]/10 text-[#FF4C1F] border-[#FF4C1F]/20' 
-                                : 'bg-blue-500/10 text-blue-400 border-blue-500/20'
-                            }`}>
-                              {ctx.tipo === 'identidade' ? 'Identidade' : 'Relação com Ká'}
-                            </span>
+                            <div className="flex gap-2 items-center">
+                              <span className={`text-[8px] font-black px-2 py-0.5 rounded border uppercase tracking-wider ${
+                                ctx.tipo === 'identidade' 
+                                  ? 'bg-[#FF4C1F]/10 text-[#FF4C1F] border-[#FF4C1F]/20' 
+                                  : 'bg-blue-500/10 text-blue-400 border-blue-500/20'
+                              }`}>
+                                {ctx.tipo === 'identidade' ? 'Identidade' : 'Relação com Ká'}
+                              </span>
+                              {ctx.source === 'totalidade' && (
+                                <span className="text-[8px] font-black px-2 py-0.5 rounded border uppercase tracking-wider bg-purple-500/10 text-purple-400 border-purple-500/20">
+                                  Totalidade
+                                </span>
+                              )}
+                            </div>
                             <span className="text-[8px] font-mono text-[#A89F96]">Edição: {ctx.ultimaEdicao}</span>
                           </div>
                           <h4 className="text-sm font-bold text-[#F7EFE7] font-serif">{ctx.titulo}</h4>

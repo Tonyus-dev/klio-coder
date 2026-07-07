@@ -21,15 +21,19 @@ export function importTotalidadeCanonToLocalStorage(): number {
     for (const seed of CANONICAL_CONTEXT_SEEDS) {
       const exists = contexts.some((ctx: any) => ctx.id === seed.id);
       if (!exists) {
+        const mappedTipo = ['identity', 'facet', 'system'].includes(seed.scope) 
+          ? 'identidade' 
+          : 'memoria_relacional';
+
         contexts.push({
           id: seed.id,
           titulo: seed.title,
-          tipo: seed.scope,
+          tipo: mappedTipo,
           conteudo: seed.content,
           ativo: true,
           arquivado: false,
           source: seed.source,
-          createdAt: new Date().toISOString()
+          ultimaEdicao: new Date().toISOString().split('T')[0]
         });
         addedCount++;
       }

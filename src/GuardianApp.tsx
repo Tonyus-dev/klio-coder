@@ -49,8 +49,8 @@ const GuardianDashboard = () => {
             </div>
             <div className="p-6 bg-[#10131A] border border-[#252936] rounded-2xl border-b-4 border-b-[#BE185D]">
               <h3 className="text-xs uppercase tracking-widest text-[#A89F96] font-bold">Status Kuan</h3>
-              <p className="text-lg font-bold text-[#BE185D] mt-2 flex items-center gap-2">
-                <Flame className="w-5 h-5" /> Online
+              <p className="text-lg font-bold text-amber-400 mt-2 flex items-center gap-2">
+                <Flame className="w-5 h-5" /> Chat planejado
               </p>
             </div>
           </div>

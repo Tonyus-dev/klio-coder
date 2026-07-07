@@ -141,11 +141,11 @@ export default function PritaneuPanel({ onNavigateTab }: PritaneuPanelProps) {
             <div className="space-y-2 pt-3 border-t border-[#252936] font-mono text-[10px] text-[#A89F96]">
               <div className="flex items-center justify-between">
                 <span className="flex items-center gap-1.5"><Database className="w-3.5 h-3.5 text-[#C98A65]" /> Supabase DB:</span>
-                <span className="text-emerald-400 font-bold flex items-center gap-1">Ativo</span>
+                <span className="text-amber-500 font-bold flex items-center gap-1">Não verificado</span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="flex items-center gap-1.5"><Cloud className="w-3.5 h-3.5 text-[#C98A65]" /> OpenRouter API:</span>
-                <span className="text-amber-400 font-bold flex items-center gap-1">Simulado</span>
+                <span className="flex items-center gap-1.5"><Cloud className="w-3.5 h-3.5 text-[#C98A65]" /> Kaline API:</span>
+                <span className="text-amber-500 font-bold flex items-center gap-1">Não verificado</span>
               </div>
             </div>
           </div>
