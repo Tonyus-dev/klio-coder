@@ -42,7 +42,6 @@ import ForgePanel from './components/ForgePanel';
 import MemoryPanel from './components/MemoryPanel';
 import GuardiaoPanel from './components/GuardiaoPanel';
 import AgendaPanel from './components/AgendaPanel';
-import BrandingPanel from './components/BrandingPanel';
 import PerfilPanel from './components/PerfilPanel';
 import { CavernaEcoPanel } from './components/CavernaEcoPanel';
 import CriacaoAppPanel from './components/CriacaoAppPanel';
