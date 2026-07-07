@@ -55,7 +55,7 @@ export default function ClientPortal() {
     if (!client) return;
     const res = await kuanyinClient.sendPaymentProof({
       appointment_id: appointmentId,
-      client_id: client.id,
+      token: token as string,
       amount,
       reference: ref
     });

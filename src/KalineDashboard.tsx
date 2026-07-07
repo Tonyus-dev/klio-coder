@@ -31,7 +31,6 @@ import TodayDashboard from './components/TodayDashboard';
 import HabitStatsView from './components/HabitStatsView';
 import DesktopMonitorView from './components/DesktopMonitorView';
 import TailscaleShareView from './components/TailscaleShareView';
-import CacheDashboardView from './components/CacheDashboardView';
 //  from './components/TailscaleShareView';
 import KalineChat from './components/KalineChat';
 import PRPlanView from './components/PRPlanView';
@@ -47,8 +46,6 @@ import BrandingPanel from './components/BrandingPanel';
 import PerfilPanel from './components/PerfilPanel';
 import { CavernaEcoPanel } from './components/CavernaEcoPanel';
 import CriacaoAppPanel from './components/CriacaoAppPanel';
-import HestiaStationPanel from './components/HestiaStationPanel';
-import ModoFalaPanel from './components/ModoFalaPanel';
 import CodicePanel from './components/CodicePanel';
 import LeiaMePanel from './components/LeiaMePanel';
 
@@ -221,7 +218,6 @@ export default function KalineDashboard() {
     { id: 'station', label: 'Héstia Station', icon: Server, category: 'Estação' },
     { id: 'monitor', label: 'Computador', icon: Monitor, category: 'Estação' },
     { id: 'tailscale', label: 'Tailscale', icon: Share2, category: 'Estação' },
-    { id: 'cache', label: 'Estação de Cache', icon: Database, category: 'Estação' },
     { id: 'forge', label: 'Hefaístia Forge', icon: Zap, category: 'Forja' },
     { id: 'criacao', label: 'Criador de App', icon: Code, category: 'Forja' },
     { id: 'revisao', label: 'Revisão', icon: Eye, category: 'Memória' },
@@ -363,7 +359,6 @@ export default function KalineDashboard() {
           {activeTab === 'stats' && <HabitStatsView habits={habits} />}
           {activeTab === 'monitor' && <DesktopMonitorView />}
           {activeTab === 'tailscale' && <TailscaleShareView />}
-          {activeTab === 'cache' && <CacheDashboardView />}
           {activeTab === 'kaline' && <KalineChat />}
           {activeTab === 'caverna' && <CavernaEcoPanel />}
           {activeTab === 'guardiao' && <GuardiaoPanel />}
@@ -372,8 +367,6 @@ export default function KalineDashboard() {
           {activeTab === 'station' && <StationPanel />}
           {activeTab === 'forge' && <ForgePanel />}
           {activeTab === 'criacao' && <CriacaoAppPanel />}
-          {activeTab === 'station' && <HestiaStationPanel />}
-          {activeTab === 'fala' && <ModoFalaPanel onClose={() => setActiveTab('kaline')} />}
           {activeTab === 'github' && <PRPlanView />}
           { activeTab === 'revisao' && <MemoryPanel subTab="revisao" /> }
           { activeTab === 'jardim' && <MemoryPanel subTab="jardim" /> }
@@ -381,7 +374,6 @@ export default function KalineDashboard() {
           { activeTab === 'codice' && <CodicePanel /> }
           { activeTab === 'agenda' && <AgendaPanel /> }
           { activeTab === 'leiame' && <LeiaMePanel /> }
-          {activeTab === 'branding' && <BrandingPanel onClose={() => setActiveTab('kaline')} />}
         </main>
       </div>
 

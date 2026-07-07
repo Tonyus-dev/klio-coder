@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { GoogleGenAI } from '@google/genai';
 import { 
   Mic, Square, FileText, CheckCircle2, Clock, AlertCircle, RefreshCw, 
   ChevronRight, Download, Eye, Plus, Send, Play, BarChart2, MessageSquare, 
@@ -160,29 +159,14 @@ const mediaRecorderRef = React.useRef<MediaRecorder | null>(null);
           base64data = base64data.split(',')[1] || '';
 
           if (activeSession) {
-            const geminiKey = import.meta.env.VITE_KALINE_API_URL;
+            const kalineUrl = import.meta.env.VITE_KALINE_API_URL;
             let transcription = "Transcrevendo...";
             
-            if (!geminiKey) throw new Error("API da Kaline ainda não configurada. Defina VITE_KALINE_API_URL.");
-            if (geminiKey) {
-try {
-                const ai = new GoogleGenAI({ apiKey: geminiKey });
-                const response = await ai.models.generateContent({
-                  model: 'gemini-2.5-flash',
-                  contents: [
-                    { role: 'user', parts: [
-                      { text: "Por favor, transcreva o seguinte áudio:" },
-                      { inlineData: { mimeType: audioBlob.type || 'audio/webm', data: base64data } }
-                    ]}
-                  ]
-                });
-                transcription = response.text || "Sem transcrição.";
-              } catch(e) {
-                console.error(e);
-                transcription = "Erro na transcrição.";
-              }
+            if (!kalineUrl) throw new Error("API da Kaline ainda não configurada. Defina VITE_KALINE_API_URL.");
+            if (kalineUrl) {
+              transcription = "API da Kaline ainda não configurada para áudio.";
             } else {
-              transcription = "Gemini API Key não configurada. Use o Painel Guardião.";
+              transcription = "API da Kaline ainda não configurada.";
             }
 
             const finalBlocks = activeSession.blocks.map(b => 
@@ -212,31 +196,10 @@ const analyzeSession = async () => {
     if (activeSession) {
       setActiveSession({ ...activeSession, status: 'analisando' });
       
-      const openRouterKey = import.meta.env.VITE_KALINE_API_URL;
-      if (!openRouterKey) throw new Error("API da Kaline ainda não configurada. Defina VITE_KALINE_API_URL.");
-      if (openRouterKey) {
-        try {
-          const textToAnalyze = activeSession.blocks.map(b => b.transcription || '').join(' ');
-          const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': 'Bearer ' + openRouterKey,
-              'HTTP-Referer': 'https://kaline.app',
-              'X-Title': 'Kaline'
-            },
-            body: JSON.stringify({
-              model: 'google/gemini-pro-1.5',
-              messages: [{ role: 'user', content: 'Estruture o seguinte pensamento em tópicos organizados: ' + textToAnalyze }]
-            })
-          });
-          const data = await res.json();
-          // Simplesmente guardamos a resposta num block ou na sessao
-          // Para ser simples (Ponytail), so definimos
-          activeSession.blocks.push({ id: 'analysis', order: 99, startTime: '0', endTime: '0', status: 'transcribed', transcription: data.choices[0].message.content });
-        } catch(e) {
-           console.error(e);
-        }
+      const kalineUrl = import.meta.env.VITE_KALINE_API_URL;
+      if (!kalineUrl) throw new Error("API da Kaline ainda não configurada. Defina VITE_KALINE_API_URL.");
+      if (kalineUrl) {
+        activeSession.blocks.push({ id: 'analysis', order: 99, startTime: '0', endTime: '0', status: 'transcribed', transcription: "API da Kaline ainda não configurada." });
       }
 
       setTimeout(() => {

@@ -11,17 +11,3 @@ const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || 'mock-key';
 
 export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey);
 
-// Serviço temporário de mock para testar a UI sem bater no banco real
-export const mockService = {
-  getBusinessBySlug: async (slug: string) => {
-    return {
-      id: '123',
-      slug,
-      name: slug.replace(/-/g, ' '),
-      description: 'Atendimento especializado',
-      services: [
-        { id: '1', name: 'Consulta Inicial', price: 150, duration: 60 }
-      ]
-    };
-  }
-};

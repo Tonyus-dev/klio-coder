@@ -1,4 +1,3 @@
-import { GoogleGenAI } from '@google/genai';
 import React, { useState, useRef, useEffect } from 'react';
 import { promptCacheManager } from '../lib/PromptCacheManager';
 import { cacheStatsTracker } from '../lib/CacheStatsTracker';
@@ -173,10 +172,7 @@ export default function KalineChat() {
   const [cloudflareWorkerUrl, setCloudflareWorkerUrl] = useState<string>(() => {
     return localStorage.getItem('kaline_cloudflare_worker_url') || 'https://kaline-worker.workers.dev';
   });
-  const [openrouterKey, setOpenrouterKey] = useState<string>(() => {
-    return localStorage.getItem('kaline_openrouter_key') || '';
-  });
-
+  // Removed openrouterKey state
   // Semaphore (Semáforo) State synced with localStorage
   const [presencaRegime, setPresencaRegime] = useState<'green' | 'yellow' | 'blue' | 'red'>(() => {
     return (localStorage.getItem('kaline_presenca_regime') as any) || 'green';
@@ -261,10 +257,7 @@ export default function KalineChat() {
     localStorage.setItem('kaline_cloudflare_worker_url', cloudflareWorkerUrl);
   }, [cloudflareWorkerUrl]);
 
-  useEffect(() => {
-    localStorage.setItem('kaline_openrouter_key', openrouterKey);
-  }, [openrouterKey]);
-
+  // Removed openrouterKey effect
   useEffect(() => {
     localStorage.setItem('kaline_thread_summary', JSON.stringify(threadSummary));
   }, [threadSummary]);
@@ -324,28 +317,12 @@ export default function KalineChat() {
       setMessages(prev => [...prev, fileMsg]);
       setLoading(true);
 
-      try {
-        const geminiKey = import.meta.env.VITE_KALINE_API_URL;
-        if (!geminiKey) {
+        const kalineUrl = import.meta.env.VITE_KALINE_API_URL;
+        if (!kalineUrl) {
            throw new Error("API da Kaline ainda não configurada. Defina VITE_KALINE_API_URL.");
         }
-        const ai = new GoogleGenAI({ apiKey: geminiKey });
-
-        
-        const response = await ai.models.generateContent({
-          model: 'gemini-2.5-flash',
-          contents: [
-            {
-               role: 'user',
-               parts: [
-                 { text: prompt },
-                 { inlineData: { mimeType: file.type || (isPdf ? 'application/pdf' : 'image/jpeg'), data: base64 } }
-               ]
-            }
-          ]
-        });
-        
-        const text = response.text || "Análise concluída, sem resposta visual.";
+        // AI removed.
+        const text = "API da Kaline ainda não configurada.";
         const reply: Message = {
            sender: activeMode,
            text: text,
@@ -448,23 +425,12 @@ const mediaRecorderRef = useRef<MediaRecorder | null>(null);
              base64data = base64data.split(',')[1] || '';
              
              try {
-                const geminiKey = import.meta.env.VITE_KALINE_API_URL;
-                if (!geminiKey) {
+                const kalineUrl = import.meta.env.VITE_KALINE_API_URL;
+                if (!kalineUrl) {
                    setInput(prev => prev + " [Erro: API da Kaline ainda não configurada para STT]");
                    return;
                 }
-                const ai = new GoogleGenAI({ apiKey: geminiKey });
-
-                const response = await ai.models.generateContent({
-                   model: 'gemini-2.5-flash',
-                   contents: [
-                      { role: 'user', parts: [
-                          { text: "Transcreva o seguinte áudio. Escreva apenas a transcrição, sem aspas e sem explicações." },
-                          { inlineData: { mimeType: audioBlob.type || 'audio/webm', data: base64data } }
-                      ]}
-                   ]
-                });
-                const transcription = response.text;
+                const transcription = " [STT via Kaline API não configurado] ";
                 if (transcription) {
                    setInput(prev => prev + (prev ? ' ' : '') + transcription.trim());
                 }
@@ -694,27 +660,10 @@ Estou aqui, ativa no seu mobile via Cloudflare Workers e OpenRouter, sintonizada
             ? `[Kháris V27 - Mobile via Workers & OpenRouter] Regime Amarelo (Atenção Mediada). Respire fundo e reduza o ritmo. Vamos focar em uma coisa simples.`
             : `[Kaline V27 - Mobile via Workers & OpenRouter] Regime Amarelo (Atenção Mediada). Reduza a densidade. Recomendo focar apenas na configuração do Tailscale ou na verificação dos microsserviços.`;
         } else {
-          
-      const geminiKey = import.meta.env.VITE_KALINE_API_URL;
-      if (!geminiKey) throw new Error("API da Kaline ainda não configurada. Defina VITE_KALINE_API_URL.");
-      if (geminiKey && !lower.includes('código')) {
-try {
-          const ai = new GoogleGenAI({ apiKey: geminiKey });
-          let cachedTokenId = null;          if (isPromptCachingEnabled) {            cachedTokenId = await promptCacheManager.getValidCacheToken(              'gemini',              contextBlock,              async () => {                await new Promise(r => setTimeout(r, 600));                return { id: `cache_${Date.now()}` };              }            );          }
-          const systemInstructionText = activeMode === 'kharis'
-            ? "Você é a Kaline operando sob a faceta Kháris. Seu foco é cuidado e simplicidade. Dê respostas curtas, certeiras, gentis, acolhedoras, sem infantilizar e sem ser condescendente ou paternalista. Vá direto ao ponto de forma humana."
-            : "Você é a Kaline. Responda de forma rápida e concisa.";
-          const response = await ai.models.generateContent({
-            model: 'gemini-3.1-flash-lite',
-            contents: [{ role: 'user', parts: [{ text: contextBlock + "\n\nUsuário: " + userText }] }],
-            config: {
-               systemInstruction: { parts: [{ text: systemInstructionText }] }
-            }
-          });
-          responseText = response.text || "[Resposta vazia]";
-        } catch(e) {
-          responseText = "[Erro de rede com Gemini API]";
-        }
+      const kalineUrl = import.meta.env.VITE_KALINE_API_URL;
+      if (!kalineUrl) throw new Error("API da Kaline ainda não configurada. Defina VITE_KALINE_API_URL.");
+      if (kalineUrl && !lower.includes('código')) {
+        responseText = "[API da Kaline ainda não configurada para chat.]";
       }
 
           if (!responseText) {

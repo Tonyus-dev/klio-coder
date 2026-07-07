@@ -1,8 +1,8 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, ReactNode } from 'react';
 import { Navigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 
-export default function ProtectedGuardianRoute({ children }: { children: JSX.Element }) {
+export default function ProtectedGuardianRoute({ children }: { children: ReactNode }) {
   const [state, setState] = useState<'loading' | 'in' | 'out'>('loading');
 
   useEffect(() => {
