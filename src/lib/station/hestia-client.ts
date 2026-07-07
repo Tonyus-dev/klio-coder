@@ -34,19 +34,34 @@ export interface HestiaStatus {
   };
 }
 
-const DEFAULT_URL = 'http://127.0.0.1:4517';
+const DEFAULT_HESTIA_URL = 'http://127.0.0.1:4517';
 
-export async function fetchHestiaStatus(baseUrl: string = DEFAULT_URL): Promise<RuntimeEnvelope<HestiaStatus>> {
+export function getHestiaUrl(): string {
+  if (typeof window !== 'undefined') {
+    const stored = localStorage.getItem('kaline_hestia_url');
+    if (stored) return stored;
+  }
+  return (import.meta.env.VITE_HESTIA_URL as string | undefined) || DEFAULT_HESTIA_URL;
+}
+
+export function setHestiaUrl(url: string): void {
+  if (typeof window === 'undefined') return;
+  const clean = url.endsWith('/') ? url.slice(0, -1) : url;
+  localStorage.setItem('kaline_hestia_url', clean);
+}
+
+export async function fetchHestiaStatus(baseUrl?: string): Promise<RuntimeEnvelope<HestiaStatus>> {
+  const url = baseUrl ?? getHestiaUrl();
   try {
     const controller = new AbortController();
     const id = setTimeout(() => controller.abort(), 1200);
-    const res = await fetch(`${baseUrl}/api/server/status`, { signal: controller.signal });
+    const res = await fetch(`${url}/api/server/status`, { signal: controller.signal });
     clearTimeout(id);
     if (res.ok) {
       const data = await res.json();
       return {
         status: 'real',
-        source: baseUrl,
+        source: url,
         data: { ...data, online: true }
       };
     }

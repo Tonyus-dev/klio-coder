@@ -8,6 +8,7 @@ export default function CodicePanel() {
   const [loading, setLoading] = useState(true);
   const [showSettings, setShowSettings] = useState(false);
   const [tailscaleUrl, setTailscaleUrl] = useState(getCodiceUrl());
+  const [connectionStatus, setConnectionStatus] = useState<'real' | 'mock' | 'offline'>('mock');
   const [isMock, setIsMock] = useState(false);
 
   useEffect(() => {
@@ -18,7 +19,9 @@ export default function CodicePanel() {
     setLoading(true);
     const results = await searchCodiceBooks(query);
     setBooks(results.data || []);
-    setIsMock(results.status === 'mock');
+    const st = results.status as 'real' | 'mock' | 'offline';
+    setConnectionStatus(st);
+    setIsMock(st !== 'real');
     setLoading(false);
   };
 
@@ -30,7 +33,7 @@ export default function CodicePanel() {
   const handleSaveSettings = () => {
     setCodiceUrl(tailscaleUrl);
     setShowSettings(false);
-    loadBooks(search); // recarrega com a nova url
+    loadBooks(search);
   };
 
   const getStatusColor = (status: string) => {
@@ -62,13 +65,27 @@ export default function CodicePanel() {
           <p className="text-xs text-[#A89F96] mt-1 font-medium tracking-wide">
             Biblioteca Viva da Estação Kaline
           </p>
+          <p className="text-[9px] font-mono text-[#A89F96]/60 mt-1 truncate max-w-xs">
+            {getCodiceUrl()}
+          </p>
         </div>
-        <button 
-          onClick={() => setShowSettings(!showSettings)}
-          className="flex items-center gap-2 px-3 py-1.5 bg-[#10131A] border border-[#252936] rounded-lg text-xs font-bold text-[#A89F96] hover:text-[#F7EFE7] transition-colors"
-        >
-          <Settings className="w-4 h-4" /> Configurar Acesso
-        </button>
+        <div className="flex items-center gap-2">
+          <span className={`text-[9px] font-black px-2 py-0.5 rounded border uppercase tracking-wider ${
+            connectionStatus === 'real'
+              ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'
+              : connectionStatus === 'offline'
+              ? 'bg-red-500/10 text-red-400 border-red-500/20'
+              : 'bg-amber-500/10 text-amber-400 border-amber-500/20'
+          }`}>
+            {connectionStatus === 'real' ? 'Real' : connectionStatus === 'offline' ? 'Offline' : 'Simulado'}
+          </span>
+          <button 
+            onClick={() => setShowSettings(!showSettings)}
+            className="flex items-center gap-2 px-3 py-1.5 bg-[#10131A] border border-[#252936] rounded-lg text-xs font-bold text-[#A89F96] hover:text-[#F7EFE7] transition-colors"
+          >
+            <Settings className="w-4 h-4" /> Configurar Acesso
+          </button>
+        </div>
       </div>
 
       {/* Alerta de Mock Obrigatório */}
@@ -99,7 +116,7 @@ export default function CodicePanel() {
               onClick={handleSaveSettings}
               className="px-6 py-2.5 bg-[#FF4C1F] hover:bg-[#E03C12] text-[#F7EFE7] rounded-xl text-sm font-bold transition-colors"
             >
-              Salvar Rota
+              Salvar e Testar
             </button>
           </div>
           <p className="text-xs text-[#A89F96] mt-3">
@@ -147,8 +164,12 @@ export default function CodicePanel() {
                       <span className={`text-[10px] font-bold px-2 py-0.5 rounded border ${getStatusColor(book.status)}`}>
                         {getStatusLabel(book.status)}
                       </span>
-                      <button className="text-[10px] font-bold uppercase tracking-wider text-[#FF4C1F] opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1 hover:underline">
-                        Ler <ExternalLink className="w-3 h-3" />
+                      <button 
+                        disabled={!book.cover_path}
+                        title={book.cover_path ? 'Abrir no servidor' : 'Disponível no servidor'}
+                        className="text-[10px] font-bold uppercase tracking-wider text-[#FF4C1F] opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1 hover:underline disabled:opacity-30 disabled:cursor-not-allowed disabled:no-underline"
+                      >
+                        {book.cover_path ? 'Ler' : 'Disponível no servidor'} <ExternalLink className="w-3 h-3" />
                       </button>
                     </div>
                   </div>

@@ -10,11 +10,11 @@ import {
   RefreshCw,
   AlertTriangle
 } from 'lucide-react';
-import { fetchHestiaStatus, HestiaStatus } from '../lib/station/hestia-client';
+import { fetchHestiaStatus, getHestiaUrl, setHestiaUrl, HestiaStatus } from '../lib/station/hestia-client';
 import { RuntimeEnvelope } from '../lib/runtime-status';
 
 export default function StationPanel() {
-  const [hestiaUrl, setHestiaUrl] = useState<string>('http://127.0.0.1:4517');
+  const [hestiaUrl, setHestiaUrlState] = useState<string>(() => getHestiaUrl());
   const [envelope, setEnvelope] = useState<RuntimeEnvelope<HestiaStatus> | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
 
@@ -29,30 +29,14 @@ export default function StationPanel() {
     loadStatus();
   }, [hestiaUrl]);
 
-  const toggleService = (svcName: string) => {
-    if (!envelope || !envelope.data) return;
-    const currentData = envelope.data;
-    
-    setEnvelope({
-      ...envelope,
-      data: {
-        ...currentData,
-        services: currentData.services.map(s => 
-          s.name === svcName ? { ...s, active: !s.active } : s
-        ),
-        presence: {
-          ...currentData.presence,
-          recentEvents: [
-            { 
-              time: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }), 
-              event: `Serviço '${svcName}' alterado via painel`, 
-              level: 'info' 
-            },
-            ...currentData.presence.recentEvents
-          ]
-        }
-      }
-    });
+  const handleSaveAndTest = () => {
+    setHestiaUrl(hestiaUrl);
+    loadStatus();
+  };
+
+  const toggleService = (_svcName: string) => {
+    // Toggle real de serviços requer endpoint POST na Héstia.
+    // Desabilitado até existir endpoint real.
   };
 
   if (!envelope) {
@@ -108,12 +92,19 @@ export default function StationPanel() {
             <input 
               type="text" 
               value={hestiaUrl} 
-              onChange={(e) => setHestiaUrl(e.target.value)}
+              onChange={(e) => setHestiaUrlState(e.target.value)}
               className="bg-transparent text-[#F7EFE7] font-semibold font-mono text-[11px] focus:outline-none w-36" 
             />
             <button 
+              onClick={handleSaveAndTest}
+              title="Salvar e testar"
+              className="ml-2 px-2 py-0.5 text-[9px] font-black uppercase tracking-wider bg-amber-500/10 border border-amber-500/20 text-amber-400 hover:bg-amber-500/20 rounded transition-colors"
+            >
+              Salvar
+            </button>
+            <button 
               onClick={loadStatus}
-              className="ml-2 text-[#A89F96] hover:text-[#EAB308] transition-colors"
+              className="ml-1 text-[#A89F96] hover:text-[#EAB308] transition-colors"
             >
               <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
             </button>
@@ -275,13 +266,11 @@ export default function StationPanel() {
 
               <button 
                 onClick={() => toggleService(svc.name)}
-                className={`w-full py-1 text-[10px] font-black rounded-lg transition-all uppercase tracking-wider border ${
-                  svc.active 
-                    ? 'border-[#252936] hover:bg-[#0B0D12] text-[#A89F96]' 
-                    : 'bg-[#EAB308] hover:bg-yellow-500 text-black border-transparent shadow-sm'
-                }`}
+                disabled={true}
+                title="Controle real de serviços ainda não configurado."
+                className="w-full py-1 text-[10px] font-black rounded-lg uppercase tracking-wider border border-[#252936] text-[#A89F96] opacity-40 cursor-not-allowed"
               >
-                {svc.active ? 'Parar Serviço' : 'Iniciar Serviço'}
+                {isMock ? 'Simulado' : 'Indisponível'}
               </button>
             </div>
           ))}

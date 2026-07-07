@@ -2,12 +2,18 @@
 // Conecta a Estação Kaline (Frontend) com o servidor local Héstia (Backend via Tailscale)
 import { RuntimeEnvelope } from './runtime-status';
 
+const DEFAULT_CODICE_URL = 'http://127.0.0.1:4517/api/codice';
+
 export const getCodiceUrl = () => {
-  return localStorage.getItem('kaline_codice_url') || 'http://hestia:8080/api/codice';
+  if (typeof window !== 'undefined') {
+    const stored = localStorage.getItem('kaline_codice_url');
+    if (stored) return stored;
+  }
+  return (import.meta.env.VITE_CODICE_URL as string | undefined) || DEFAULT_CODICE_URL;
 };
 
 export const setCodiceUrl = (url: string) => {
-  // Remove trailing slash se houver
+  if (typeof window === 'undefined') return;
   const cleanUrl = url.endsWith('/') ? url.slice(0, -1) : url;
   localStorage.setItem('kaline_codice_url', cleanUrl);
 };

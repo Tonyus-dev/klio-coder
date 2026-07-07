@@ -74,3 +74,18 @@ Não fazer deploy se:
 - A Kaline API (`VITE_KALINE_API_URL`) pode estar vazia no primeiro deploy. O app degrada graciosamente retornando `not_configured`.
 - O SPA fallback (`public/_redirects`) já existe no repositório.
 - PWA assets (`icon-192.png`, `icon-512.png`, `apple-touch-icon.png`, `manifest.json`, `sw.js`) já existem em `public/`.
+
+---
+
+## Héstia e Códice
+
+- [ ] `VITE_HESTIA_URL` definido, se Héstia real estiver disponível.
+- [ ] `VITE_CODICE_URL` definido, se Códice real estiver disponível.
+- [ ] Héstia responde `GET /api/server/status`.
+- [ ] Códice responde `GET /books`.
+- [ ] Códice responde `GET /search?q=teste`.
+- [ ] Códice responde `GET /context?q=teste`.
+- [ ] Dados mockados aparecem marcados como Simulado.
+- [ ] Nenhum dado simulado aparece como Real.
+- [ ] Controle de serviços (ligar/desligar) permanece desabilitado até existir endpoint POST na Héstia.
+
