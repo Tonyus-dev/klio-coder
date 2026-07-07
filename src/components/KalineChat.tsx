@@ -39,6 +39,7 @@ import {
 } from 'lucide-react';
 
 interface Message {
+  // coder = Klio, faceta de vibe code da Kaline.
   sender: 'user' | 'system' | 'kaline' | 'coder' | 'kharis';
   text: string;
   timestamp: string;
@@ -148,7 +149,7 @@ export default function KalineChat() {
     shadow12: 'shadow-[0_0_12px_rgba(229,9,20,0.35)]', shadow8: 'shadow-[0_0_8px_rgba(229,9,20,0.2)]', shadow16: 'shadow-[0_0_16px_rgba(229,9,20,0.5)]',
     avatarFrom: 'from-[#1A0303]', avatarTo: 'to-[#2A0606]', bubbleSelf: 'bg-[#1A0303]/95', bubbleOther: 'bg-[#0F0202]/95',
     tagName: 'KLIO', tagAvatar: 'KL', tagImage: '/brand/klio.png',
-    modeName: 'Klio (Programação)', modeIcon: <span className="text-[#E50914] font-serif">K</span>
+    modeName: 'Klio — Vibe Code', modeIcon: <span className="text-[#E50914] font-serif">K</span>
   };
 
   const [ollamaUrl, setOllamaUrl] = useState<string>('http://localhost:11434');

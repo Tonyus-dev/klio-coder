@@ -155,7 +155,7 @@ export default function GuardiaoPanel() {
             >
               <option value="kora">Kora / Kaline (Naturalidade e Presença)</option>
               <option value="kharis">Kháris (Cuidado, Simplicidade e Gentileza)</option>
-              <option value="klio">Klio (Pensamento e Programação Técnica)</option>
+              <option value="klio">Klio (Vibe Code, Arquitetura e Implementação)</option>
             </select>
             <p className="text-[8px] text-[#A89F96]">
               O administrador escolhe com qual faceta da Kaline os outros usuários podem conversar.

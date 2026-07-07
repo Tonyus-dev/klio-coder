@@ -1,5 +1,6 @@
 // APP_REGISTRY Canônico da Kaline Pritaneu V27
 // Define os domínios de trabalho, facetas de IA, permissões e status.
+import { FACETS } from './facets';
 
 export interface Surface {
   id: string;
@@ -31,13 +32,36 @@ export const APP_REGISTRY: Record<string, DomainRegistry> = {
       { id: 'juridico', name: 'Jurídico', description: 'Salvaguardas e contratos legais', status: 'mock', path: '/juridico' }
     ]
   },
+  klio: {
+    id: 'klio',
+    name: 'Klio',
+    icon: 'Code',
+    color: FACETS.klio.color,
+    description: FACETS.klio.description,
+    surfaces: [
+      {
+        id: 'vibe-code',
+        name: 'Vibe Code',
+        description: 'Arquitetura, prompts, revisão e implementação assistida.',
+        status: 'real',
+        path: '/kaline'
+      }
+    ]
+  },
   kharis: {
     id: 'kharis',
-    name: 'Kháris/Klio',
-    icon: 'BookOpen',
-    color: '#2563EB', // Azul Cuidado
-    description: 'Cuidado pessoal, pedagogia e códice.',
+    name: 'Kháris',
+    icon: 'Heart',
+    color: FACETS.kharis.color,
+    description: FACETS.kharis.description,
     surfaces: [
+      {
+        id: 'cuidado',
+        name: 'Cuidado e Simplicidade',
+        description: 'Faceta de acolhimento e presença reguladora.',
+        status: 'real',
+        path: '/kaline'
+      },
       { id: 'codice', name: 'Códice', description: 'Documentação pedagógica e guias de rotina', status: 'mock', path: '/codice' },
       { id: 'eco', name: 'Câmara do Eco', description: 'Ambiente acústico de foco analítico', status: 'mock', path: '/eco' }
     ]
