@@ -160,9 +160,10 @@ const mediaRecorderRef = React.useRef<MediaRecorder | null>(null);
           base64data = base64data.split(',')[1] || '';
 
           if (activeSession) {
-            const geminiKey = localStorage.getItem('kaline_gemini_key');
+            const geminiKey = import.meta.env.VITE_KALINE_API_URL;
             let transcription = "Transcrevendo...";
             
+            if (!geminiKey) throw new Error("API da Kaline ainda não configurada. Defina VITE_KALINE_API_URL.");
             if (geminiKey) {
 try {
                 const ai = new GoogleGenAI({ apiKey: geminiKey });
@@ -211,7 +212,8 @@ const analyzeSession = async () => {
     if (activeSession) {
       setActiveSession({ ...activeSession, status: 'analisando' });
       
-      const openRouterKey = localStorage.getItem('kaline_openrouter_key');
+      const openRouterKey = import.meta.env.VITE_KALINE_API_URL;
+      if (!openRouterKey) throw new Error("API da Kaline ainda não configurada. Defina VITE_KALINE_API_URL.");
       if (openRouterKey) {
         try {
           const textToAnalyze = activeSession.blocks.map(b => b.transcription || '').join(' ');

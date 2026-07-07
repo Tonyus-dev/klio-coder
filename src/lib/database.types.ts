@@ -9,33 +9,80 @@ export type Json =
 export interface Database {
   public: {
     Tables: {
-      businesses: {
+      guardians: {
         Row: {
           id: string
-          owner_id: string
-          name: string
-          slug: string
-          description: string | null
-          category: string | null
-          created_at: string
+          display_name: string | null
+          nickname: string | null
+          pronouns: string | null
+          avatar_url: string | null
+          theme_preference: string | null
+          created_at: string | null
+          updated_at: string | null
         }
         Insert: {
-          id?: string
-          owner_id: string
-          name: string
-          slug: string
-          description?: string | null
-          category?: string | null
-          created_at?: string
+          id: string
+          display_name?: string | null
+          nickname?: string | null
+          pronouns?: string | null
+          avatar_url?: string | null
+          theme_preference?: string | null
+          created_at?: string | null
+          updated_at?: string | null
         }
         Update: {
           id?: string
-          owner_id?: string
+          display_name?: string | null
+          nickname?: string | null
+          pronouns?: string | null
+          avatar_url?: string | null
+          theme_preference?: string | null
+          created_at?: string | null
+          updated_at?: string | null
+        }
+      }
+      businesses: {
+        Row: {
+          id: string
+          guardian_id: string
+          name: string
+          slug: string
+          description: string | null
+          public_phone: string | null
+          public_email: string | null
+          address: string | null
+          tone_notes: string | null
+          is_active: boolean | null
+          created_at: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          id?: string
+          guardian_id: string
+          name: string
+          slug: string
+          description?: string | null
+          public_phone?: string | null
+          public_email?: string | null
+          address?: string | null
+          tone_notes?: string | null
+          is_active?: boolean | null
+          created_at?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          id?: string
+          guardian_id?: string
           name?: string
           slug?: string
           description?: string | null
-          category?: string | null
-          created_at?: string
+          public_phone?: string | null
+          public_email?: string | null
+          address?: string | null
+          tone_notes?: string | null
+          is_active?: boolean | null
+          created_at?: string | null
+          updated_at?: string | null
         }
       }
       services: {
@@ -46,7 +93,9 @@ export interface Database {
           description: string | null
           duration_minutes: number | null
           price: number | null
-          active: boolean
+          active: boolean | null
+          created_at: string | null
+          updated_at: string | null
         }
         Insert: {
           id?: string
@@ -55,7 +104,9 @@ export interface Database {
           description?: string | null
           duration_minutes?: number | null
           price?: number | null
-          active?: boolean
+          active?: boolean | null
+          created_at?: string | null
+          updated_at?: string | null
         }
         Update: {
           id?: string
@@ -64,11 +115,119 @@ export interface Database {
           description?: string | null
           duration_minutes?: number | null
           price?: number | null
-          active?: boolean
+          active?: boolean | null
+          created_at?: string | null
+          updated_at?: string | null
         }
       }
-      // Outras tabelas omitidas para o mock, 
-      // serão adicionadas no deploy final do Supabase.
+      clients: {
+        Row: {
+          id: string
+          business_id: string
+          name: string | null
+          phone: string | null
+          email: string | null
+          portal_token: string
+          created_at: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          id?: string
+          business_id: string
+          name?: string | null
+          phone?: string | null
+          email?: string | null
+          portal_token?: string
+          created_at?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          id?: string
+          business_id?: string
+          name?: string | null
+          phone?: string | null
+          email?: string | null
+          portal_token?: string
+          created_at?: string | null
+          updated_at?: string | null
+        }
+      }
+      appointments: {
+        Row: {
+          id: string
+          business_id: string
+          client_id: string | null
+          service_id: string | null
+          requested_date: string | null
+          requested_time: string | null
+          starts_at: string | null
+          status: string
+          notes: string | null
+          created_at: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          id?: string
+          business_id: string
+          client_id?: string | null
+          service_id?: string | null
+          requested_date?: string | null
+          requested_time?: string | null
+          starts_at?: string | null
+          status?: string
+          notes?: string | null
+          created_at?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          id?: string
+          business_id?: string
+          client_id?: string | null
+          service_id?: string | null
+          requested_date?: string | null
+          requested_time?: string | null
+          starts_at?: string | null
+          status?: string
+          notes?: string | null
+          created_at?: string | null
+          updated_at?: string | null
+        }
+      }
+      payment_proofs: {
+        Row: {
+          id: string
+          appointment_id: string | null
+          client_id: string | null
+          amount: number | null
+          reference: string | null
+          notes: string | null
+          status: string
+          created_at: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          id?: string
+          appointment_id?: string | null
+          client_id?: string | null
+          amount?: number | null
+          reference?: string | null
+          notes?: string | null
+          status?: string
+          created_at?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          id?: string
+          appointment_id?: string | null
+          client_id?: string | null
+          amount?: number | null
+          reference?: string | null
+          notes?: string | null
+          status?: string
+          created_at?: string | null
+          updated_at?: string | null
+        }
+      }
     }
   }
 }

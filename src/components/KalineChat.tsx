@@ -325,9 +325,9 @@ export default function KalineChat() {
       setLoading(true);
 
       try {
-        const geminiKey = localStorage.getItem('kaline_gemini_key');
+        const geminiKey = import.meta.env.VITE_KALINE_API_URL;
         if (!geminiKey) {
-           throw new Error("Chave Gemini não configurada");
+           throw new Error("API da Kaline ainda não configurada. Defina VITE_KALINE_API_URL.");
         }
         const ai = new GoogleGenAI({ apiKey: geminiKey });
 
@@ -448,9 +448,9 @@ const mediaRecorderRef = useRef<MediaRecorder | null>(null);
              base64data = base64data.split(',')[1] || '';
              
              try {
-                const geminiKey = localStorage.getItem('kaline_gemini_key');
+                const geminiKey = import.meta.env.VITE_KALINE_API_URL;
                 if (!geminiKey) {
-                   setInput(prev => prev + " [Erro: Chave Gemini não configurada para STT]");
+                   setInput(prev => prev + " [Erro: API da Kaline ainda não configurada para STT]");
                    return;
                 }
                 const ai = new GoogleGenAI({ apiKey: geminiKey });
@@ -695,7 +695,8 @@ Estou aqui, ativa no seu mobile via Cloudflare Workers e OpenRouter, sintonizada
             : `[Kaline V27 - Mobile via Workers & OpenRouter] Regime Amarelo (Atenção Mediada). Reduza a densidade. Recomendo focar apenas na configuração do Tailscale ou na verificação dos microsserviços.`;
         } else {
           
-      const geminiKey = localStorage.getItem('kaline_gemini_key');
+      const geminiKey = import.meta.env.VITE_KALINE_API_URL;
+      if (!geminiKey) throw new Error("API da Kaline ainda não configurada. Defina VITE_KALINE_API_URL.");
       if (geminiKey && !lower.includes('código')) {
 try {
           const ai = new GoogleGenAI({ apiKey: geminiKey });

@@ -3,6 +3,7 @@ import KalineDashboard from './KalineDashboard';
 import GuardianApp from './GuardianApp';
 import GuardianLogin from './GuardianLogin';
 import KuanPublicApp from './KuanPublicApp';
+import ProtectedGuardianRoute from './components/ProtectedGuardianRoute';
 
 // Mock Placeholders para a nova arquitetura
 const Landing = () => (
@@ -35,7 +36,11 @@ export default function App() {
 
         {/* Rotas Privadas do SaaS (Guardião) */}
         <Route path="/app/login" element={<GuardianLogin />} />
-        <Route path="/app/*" element={<GuardianApp />} />
+        <Route path="/app/*" element={
+          <ProtectedGuardianRoute>
+            <GuardianApp />
+          </ProtectedGuardianRoute>
+        } />
 
         {/* Rotas Públicas dos Negócios (Clientes) */}
         <Route path="/g/:slug/*" element={<KuanPublicApp />} />

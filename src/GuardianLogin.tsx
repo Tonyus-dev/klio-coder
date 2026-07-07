@@ -24,13 +24,6 @@ export default function GuardianLogin() {
       });
 
       if (error) {
-        // Fallback de MOCK para que você possa testar a interface sem ter configurado o Supabase ainda
-        if (email === 'admin@kuan.com' && password === 'admin') {
-          console.log('Login via MOCK bem-sucedido!');
-          navigate('/app/dashboard');
-          return;
-        }
-        
         throw error;
       }
 
@@ -38,7 +31,7 @@ export default function GuardianLogin() {
       navigate('/app/dashboard');
       
     } catch (err: any) {
-      setError(err.message || 'Erro ao fazer login. Tente admin@kuan.com / admin para testar.');
+      setError(err.message || 'Erro ao fazer login.');
     } finally {
       setLoading(false);
     }
