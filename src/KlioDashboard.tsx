@@ -56,14 +56,17 @@ type TabType = 'today' | 'stats' | 'monitor' | 'tailscale' | 'klio' | 'caverna' 
 export default function KlioDashboard() {
   const [activeTab, setActiveTab] = useState<TabType>('klio');
   const [isOnline, setIsOnline] = useState<boolean>(navigator.onLine);
-  const [klioVersion, setKlioVersion] = useState<'V27' | 'V27b'>(() => {
-    return (localStorage.getItem('klio_version') as 'V27' | 'V27b') || 'V27';
+  const [runtimeMode, setRuntimeMode] = useState<'online' | 'local'>(() => {
+    const legacy = localStorage.getItem('klio_version');
+    if (legacy === 'V27') return 'online';
+    if (legacy === 'V27b') return 'local';
+    return (localStorage.getItem('klio_runtime_mode') as 'online' | 'local') || 'online';
   });
 
   useEffect(() => {
-    localStorage.setItem('klio_version', klioVersion);
-    window.dispatchEvent(new CustomEvent('klioVersionChanged', { detail: klioVersion }));
-  }, [klioVersion]);
+    localStorage.setItem('klio_runtime_mode', runtimeMode);
+    window.dispatchEvent(new CustomEvent('klioRuntimeModeChanged', { detail: runtimeMode }));
+  }, [runtimeMode]);
   const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(false);
 
   // Semaphore (Semáforo) Global States
@@ -260,11 +263,11 @@ export default function KlioDashboard() {
             <h1 className="text-sm font-black tracking-widest uppercase text-[#F7EFE7] flex items-center gap-1.5 font-serif">
               KLIO 
               <button 
-                onClick={() => setKlioVersion(v => v === 'V27' ? 'V27b' : 'V27')}
+                onClick={() => setRuntimeMode(v => v === 'online' ? 'local' : 'online')}
                 className="text-[8px] sm:text-[9px] font-extrabold text-[#FF4C1F] bg-[#FF4C1F]/10 hover:bg-[#FF4C1F]/20 px-1 sm:px-1.5 py-0.5 rounded border border-[#FF4C1F]/20 transition-colors"
-                title={`Alternar para ${klioVersion === 'V27' ? 'V27b (Desktop)' : 'V27 (Mobile)'}`}
+                title={`Alternar para ${runtimeMode === 'online' ? 'Local' : 'Online'}`}
               >
-                {klioVersion.toLowerCase()}
+                {runtimeMode}
               </button>
             </h1>
             <p className="text-[8px] text-[#A89F96] font-bold uppercase tracking-widest hidden sm:block">Fogo Central e Altar de Sincronização</p>

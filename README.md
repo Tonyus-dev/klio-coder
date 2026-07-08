@@ -1,8 +1,8 @@
-# K∧LINE v27
+# Klio Coder
 
 Presença que acolhe.
 
-K∧LINE v27 é a estação central do ecossistema Kaline: presença, memória, facetas, estação local, forja de IA e operação comercial Kuan-Yin.
+Klio Coder é a estação técnica central do ecossistema pessoal: presença, memória, facetas, estação local, forja de IA e operação de código.
 
 ## Facetas
 

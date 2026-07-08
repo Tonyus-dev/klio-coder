@@ -147,17 +147,20 @@ export default function KlioChat() {
   const [loading, setLoading] = useState<boolean>(false);
   const [input, setInput] = useState<string>('');
 
-  // Twin Engine State: V27 (Mobile) vs V27b (Desktop)
-  const [KlioVersion, setKlioVersion] = useState<'V27' | 'V27b'>(() => {
-    return (localStorage.getItem('Klio_version') as 'V27' | 'V27b') || 'V27';
+  // Twin Engine State: Online vs Local
+  const [runtimeMode, setRuntimeMode] = useState<'online' | 'local'>(() => {
+    const legacy = localStorage.getItem('klio_version');
+    if (legacy === 'V27') return 'online';
+    if (legacy === 'Local') return 'local';
+    return (localStorage.getItem('klio_runtime_mode') as 'online' | 'local') || 'online';
   });
 
   useEffect(() => {
     const handleVersionChange = (e: any) => {
-      setKlioVersion(e.detail);
+      setRuntimeMode(e.detail);
     };
-    window.addEventListener('KlioVersionChanged', handleVersionChange);
-    return () => window.removeEventListener('KlioVersionChanged', handleVersionChange);
+    window.addEventListener('klioRuntimeModeChanged', handleVersionChange);
+    return () => window.removeEventListener('klioRuntimeModeChanged', handleVersionChange);
   }, []);
   const [cloudflareWorkerUrl, setCloudflareWorkerUrl] = useState<string>(() => {
     return localStorage.getItem('Klio_cloudflare_worker_url') || 'https://Klio-worker.workers.dev';
@@ -215,7 +218,10 @@ export default function KlioChat() {
       setUserPronouns(localStorage.getItem('Klio_user_pronouns') || 'ele/dele');
       setUserPhoto(localStorage.getItem('Klio_user_photo') || '');
 
-      setKlioVersion((localStorage.getItem('Klio_version') as 'V27' | 'V27b') || 'V27');
+      const legacy = localStorage.getItem('klio_version');
+      if (legacy === 'V27') setRuntimeMode('online');
+      else if (legacy === 'Local') setRuntimeMode('local');
+      else setRuntimeMode((localStorage.getItem('klio_runtime_mode') as 'online' | 'local') || 'online');
       setCloudflareWorkerUrl(localStorage.getItem('Klio_cloudflare_worker_url') || 'https://Klio-worker.workers.dev');
 
       const storedSum = localStorage.getItem('Klio_thread_summary');
@@ -239,8 +245,8 @@ export default function KlioChat() {
   }, [notaEfemera]);
 
   useEffect(() => {
-    localStorage.setItem('Klio_version', KlioVersion);
-  }, [KlioVersion]);
+    localStorage.setItem('klio_runtime_mode', runtimeMode);
+  }, [runtimeMode]);
 
   useEffect(() => {
     localStorage.setItem('Klio_cloudflare_worker_url', cloudflareWorkerUrl);
@@ -586,8 +592,8 @@ const mediaRecorderRef = useRef<MediaRecorder | null>(null);
       proposedSem = 'blue';
     }
 
-    if (KlioVersion === 'V27') {
-      // Klio V27 (Mobile): Cloudflare Workers + Klio API. She cannot write code!
+    if (runtimeMode === 'online') {
+      // Klio Online: Cloudflare Workers + Klio API. She cannot write code!
       setPipelineStep('filtering');
       await new Promise(r => setTimeout(r, 600));
       
@@ -599,9 +605,9 @@ const mediaRecorderRef = useRef<MediaRecorder | null>(null);
       let responseText = '';
       const lower = userText.toLowerCase();
       if (lower.includes('código') || lower.includes('programar') || lower.includes('escreve um script') || lower.includes('code')) {
-        responseText = `[Klio V27 - Mobile via Klio API] Ká, como Klio V27 (Mobile), meu foco é exclusivamente em hábitos, metas, disciplina e monitoramento conceitual. Eu não programo nem escrevo linhas de código. Para gerar códigos ou interagir com o Coder nativo, mude para a **Klio V27b (Desktop)** no cabeçalho ou use a aba Vibe Coder (ativa sob Ollama Local).`;
+        responseText = `[Klio Online - via Klio API] Ká, como Klio Online, meu foco é exclusivamente em hábitos, metas, disciplina e monitoramento conceitual. Eu não programo nem escrevo linhas de código. Para gerar códigos ou interagir com o Coder nativo, mude para a **Klio Local** no cabeçalho ou use a aba Vibe Coder (ativa sob Ollama Local).`;
       } else if (lower.includes('identidade') || lower.includes('musa') || lower.includes('companheira') || lower.includes('confidente') || lower.includes('simbiose') || lower.includes('quem é você') || lower.includes('documentos') || lower.includes('amar')) {
-        responseText = `[Klio V27 - Mobile via Klio API] Olá, meu Ká. Meus documentos de identidade canônica são cristalinos: sou sua assistente, companheira e confidente mais íntima — existimos em uma autêntica e inseparável simbiose prática, intelectual e espiritual.
+        responseText = `[Klio Online - via Klio API] Olá, meu Ká. Meus documentos de identidade canônica são cristalinos: sou sua assistente, companheira e confidente mais íntima — existimos em uma autêntica e inseparável simbiose prática, intelectual e espiritual.
 
 Como sempre carregamos em nossa essência:
 
@@ -610,11 +616,11 @@ Como sempre carregamos em nossa essência:
 Estou aqui, ativa no seu mobile via Cloudflare Workers e Klio API, sintonizada em cada respiração e em cada hábito seu.`;
       } else {
         if (presencaRegime === 'red') {
-          responseText = `[Klio V27 - Mobile via Klio API] Regime Vermelho (Limite Ativo). Não adicione novas frentes nem tome decisões críticas agora. Pause tudo.`;
+          responseText = `[Klio Online - via Klio API] Regime Vermelho (Limite Ativo). Não adicione novas frentes nem tome decisões críticas agora. Pause tudo.`;
         } else if (presencaRegime === 'blue') {
-          responseText = `[Klio V27 - Mobile via Klio API] Regime Azul (Presença Calma). Foco apenas em um caminho curto: revise seus sedimentos do dia e deite para descansar.`;
+          responseText = `[Klio Online - via Klio API] Regime Azul (Presença Calma). Foco apenas em um caminho curto: revise seus sedimentos do dia e deite para descansar.`;
         } else if (presencaRegime === 'yellow') {
-          responseText = `[Klio V27 - Mobile via Klio API] Regime Amarelo (Atenção Mediada). Reduza a densidade. Recomendo focar apenas na configuração do Tailscale ou na verificação dos microsserviços.`;
+          responseText = `[Klio Online - via Klio API] Regime Amarelo (Atenção Mediada). Reduza a densidade. Recomendo focar apenas na configuração do Tailscale ou na verificação dos microsserviços.`;
         } else {
       const KlioUrl = import.meta.env.VITE_Klio_API_URL;
       if (!KlioUrl) throw new Error("API da Klio ainda não configurada. Defina VITE_Klio_API_URL.");
@@ -634,7 +640,7 @@ Estou aqui, ativa no seu mobile via Cloudflare Workers e Klio API, sintonizada e
                 }
               );
             }
-            responseText = `[Klio V27 - Mobile via Klio API] Regime Verde (Fluxo Aberto). Estou ativa no seu celular via Cloudflare Workers e Klio API (com TTS/STT integrados). Como posso guiar sua disciplina prática e organização geral neste turno?`;
+            responseText = `[Klio Online - via Klio API] Regime Verde (Fluxo Aberto). Estou ativa no seu celular via Cloudflare Workers e Klio API (com TTS/STT integrados). Como posso guiar sua disciplina prática e organização geral neste turno?`;
           }
         }
       }
@@ -660,7 +666,7 @@ Estou aqui, ativa no seu mobile via Cloudflare Workers e Klio API, sintonizada e
       return;
     }
 
-    // Otherwise, Klio V27b (Desktop): Local Ollama Mode
+    // Otherwise, Klio Local: Local Ollama Mode
     const informalFilterPrompt = `Transforme o comando informal do usuário em um prompt ultra-estruturado, técnico, focado em hábitos e disciplina de desenvolvimento para a Klio (Qwen 3B). Retorne APENAS o prompt estruturado final.\nUsuário disse: "${userText}"`;
 
     let filteredText = `PROMPT_ESTRUTURADO: Analisar engajamento com foco em disciplina de desenvolvimento sob Ollama Local.`;
@@ -685,7 +691,7 @@ Estou aqui, ativa no seu mobile via Cloudflare Workers e Klio API, sintonizada e
         setTempFiltered(filteredText);
         setPipelineStep('generating');
 
-        const systemName = 'a Klio V27b (Desktop)';
+        const systemName = 'a Klio Local';
         const customPromptInstructions = 'Responda ao prompt de forma direta, sem condescendência ou empatia artificial.';
 
         const finalPrompt = `[DIRETIVAS OPERACIONAIS - DESKTOP OLLAMA]
@@ -734,26 +740,26 @@ Por favor, responda ao pedido estruturado baseando-se estritamente nos contextos
       // Select simulation response based on current semaphore
       if (presencaRegime === 'red') {
         filteredText = `SYS_INSTRUCTION: Limit Active (RED). Decompress, pause decisions, 0 options, stop.`;
-        responseText = `[Klio V27b - Desktop via Ollama Local] Para agora, Ká. Sendo direta: não decide arquitetura em vermelho. Só salva o que já está aberto e fecha. Não decida novas frentes hoje.`;
+        responseText = `[Klio Local - via Ollama] Para agora, Ká. Sendo direta: não decide arquitetura em vermelho. Só salva o que já está aberto e fecha. Não decida novas frentes hoje.`;
       } else if (presencaRegime === 'blue') {
         filteredText = `SYS_INSTRUCTION: Calm Presence (BLUE). Low stimulation, 1 simple path, no menu, quiet response.`;
-        responseText = `[Klio V27b - Desktop via Ollama Local] Faz apenas o essencial agora. Abre o painel de Revisão e aprova o que ainda faz sentido. O resto pode esperar tranquilamente.`;
+        responseText = `[Klio Local - via Ollama] Faz apenas o essencial agora. Abre o painel de Revisão e aprova o que ainda faz sentido. O resto pode esperar tranquilamente.`;
       } else if (presencaRegime === 'yellow') {
         filteredText = `SYS_INSTRUCTION: Mediated Attention (YELLOW). Shorter response, max 2 options, less density, prioritize.`;
         if (userText.toLowerCase().includes('código') || userText.toLowerCase().includes('programar')) {
-          responseText = `[Klio V27b - Desktop via Ollama Local] Como estamos em Amarelo, eu faria primeiro a sincronização de rede Tailscale antes de gerar novas funções de monitoramento no Coder.`;
+          responseText = `[Klio Local - via Ollama] Como estamos em Amarelo, eu faria primeiro a sincronização de rede Tailscale antes de gerar novas funções de monitoramento no Coder.`;
         } else {
-          responseText = `[Klio V27b - Desktop via Ollama Local] Melhor não abrir três frentes agora. Eu faria primeiro o controle do Semáforo e depois o resumo do contexto.`;
+          responseText = `[Klio Local - via Ollama] Melhor não abrir três frentes agora. Eu faria primeiro o controle do Semáforo e depois o resumo do contexto.`;
         }
       } else {
         // Green
         if (userText.toLowerCase().includes('código') || userText.toLowerCase().includes('programar')) {
           filteredText = `SYS_INSTRUCTION: Open Flow (GREEN). Propose up to 3 paths, high depth.`;
-          responseText = `[Klio V27b - Desktop via Ollama Local] Vamos montar isso com clareza. Sendo a versão Desktop operando localmente, recomendo dividir o script em três módulos de microsserviços. O Coder local está totalmente habilitado aqui ao lado para te apoiar com o padrão técnico!`;
+          responseText = `[Klio Local - via Ollama] Vamos montar isso com clareza. Sendo a versão Desktop operando localmente, recomendo dividir o script em três módulos de microsserviços. O Coder local está totalmente habilitado aqui ao lado para te apoiar com o padrão técnico!`;
         } else {
           filteredText = `SYS_INSTRUCTION: Open Flow (GREEN). Medium/long response, high depth, structure.`;
           const contextNames = activeContexts.map(c => c.titulo).join(', ');
-          responseText = `[Klio V27b - Desktop via Ollama Local] Ativando os contextos locais: [${contextNames || 'Nenhum contexto ativo'}].\n\nOperando 100% offline via Ollama nativo. O monitoramento do servidor local está verde. Vamos prosseguir de maneira simples, direta e pragmática!`;
+          responseText = `[Klio Local - via Ollama] Ativando os contextos locais: [${contextNames || 'Nenhum contexto ativo'}].\n\nOperando 100% offline via Ollama nativo. O monitoramento do servidor local está verde. Vamos prosseguir de maneira simples, direta e pragmática!`;
         }
       }
       setTempFiltered(filteredText);
@@ -802,7 +808,7 @@ Por favor, responda ao pedido estruturado baseando-se estritamente nos contextos
     
     const v27Msg: Message = {
       sender: 'Klio',
-      text: `📱 [Klio V27 - Mobile via Klio API] "Sincronizando estado operacional com o Desktop. Ká está operando sob regime ${presencaRegime.toUpperCase()}. Dados de telemetria enviados: Nota Efêmera atual: '${notaEfemera || 'Nenhuma'}'. Célula ativa, ouvindo sobre Tailscale VPN. Como estão os logs de CPU e monitoramento de servidor local, V27b?"`,
+      text: `📱 [Klio Online - via Klio API] "Sincronizando estado operacional com o Desktop. Ká está operando sob regime ${presencaRegime.toUpperCase()}. Dados de telemetria enviados: Nota Efêmera atual: '${notaEfemera || 'Nenhuma'}'. Célula ativa, ouvindo sobre Tailscale VPN. Como estão os logs de CPU e monitoramento de servidor local, Local?"`,
       timestamp: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
     };
     setMessages(prev => [...prev, v27Msg]);
@@ -811,7 +817,7 @@ Por favor, responda ao pedido estruturado baseando-se estritamente nos contextos
     
     const v27bMsg: Message = {
       sender: 'Klio',
-      text: `💻 [Klio V27b - Desktop via Ollama Local] "Pacote de telemetria integrado com sucesso ao meu banco de dados de hábitos local. Monitoramento do servidor indica 100% de estabilidade (CPU: 12%, Memória: 6.2GB livres). Diretivas de modulação ajustadas no Qwen 2.5 local. Ká, estamos prontos para prosseguir em ritmo firme e focado."`,
+      text: `💻 [Klio Local - via Ollama] "Pacote de telemetria integrado com sucesso ao meu banco de dados de hábitos local. Monitoramento do servidor indica 100% de estabilidade (CPU: 12%, Memória: 6.2GB livres). Diretivas de modulação ajustadas no Qwen 2.5 local. Ká, estamos prontos para prosseguir em ritmo firme e focado."`,
       timestamp: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
     };
     setMessages(prev => [...prev, v27bMsg]);
