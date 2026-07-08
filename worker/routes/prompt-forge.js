@@ -1,6 +1,3 @@
-// Cloudflare Pages Function — /api/prompt-forge
-// Handles: generate, refine, remix, score, variations
-
 const STRUCTURED_OUTPUT_RULES = `
 [OBRIGATÓRIO - FORMATO DE SAÍDA ESTRUTURADA]
 Sempre tente produzir a seguinte estrutura na sua resposta final, sem floreios:
@@ -95,88 +92,71 @@ Seja rigoroso mas justo. Retorne APENAS o JSON, sem texto adicional.`;
 
 async function callAI(messages, systemPrompt, env) {
   const openRouterKey = env.OPENROUTER_API_KEY;
-  const geminiKey = env.GEMINI_API_KEY;
   const model = 'google/gemini-2.5-flash';
 
-  if (!openRouterKey && !geminiKey) {
-    throw new Error('Nenhuma chave de API configurada no servidor.');
+  if (!openRouterKey) {
+    throw new Error('OPENROUTER_API_KEY não configurada.');
   }
 
-  if (openRouterKey) {
-    const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${openRouterKey}`,
-        'HTTP-Referer': 'https://promptforge.app',
-        'X-Title': 'PromptForge'
-      },
-      body: JSON.stringify({
-        model,
-        messages: [
-          { role: 'system', content: systemPrompt },
-          ...messages
-        ]
-      })
-    });
-    const data = await res.json();
-    if (!res.ok) throw new Error(data.error?.message || 'OpenRouter error');
-    return { content: data.choices[0].message.content, model_used: model };
-  }
-
-  // Fallback Gemini
-  const geminiPayload = {
-    contents: messages.map(m => ({
-      role: m.role === 'assistant' ? 'model' : 'user',
-      parts: [{ text: m.content }]
-    })),
-    systemInstruction: { parts: [{ text: systemPrompt }] }
-  };
-  const res = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${geminiKey}`,
-    {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(geminiPayload)
-    }
-  );
+  const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${openRouterKey}`,
+      'HTTP-Referer': 'https://promptforge.app',
+      'X-Title': 'PromptForge'
+    },
+    body: JSON.stringify({
+      model,
+      messages: [
+        { role: 'system', content: systemPrompt },
+        ...messages
+      ]
+    })
+  });
+  
   const data = await res.json();
-  const text = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
-  return { content: text, model_used: 'gemini-2.5-flash' };
+  if (!res.ok) throw new Error(data.error?.message || 'OpenRouter error');
+  return { content: data.choices[0].message.content, model_used: model };
 }
 
-export async function onRequestPost(context) {
-  const corsHeaders = {
-    'Access-Control-Allow-Origin': '*',
-    'Content-Type': 'application/json'
-  };
+export default async function handlePromptForge(request, env, corsHeaders) {
+  if (request.method !== 'POST') {
+    return new Response(JSON.stringify({ error: 'Method Not Allowed' }), {
+      status: 405, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+    });
+  }
 
   try {
-    const body = await context.request.json();
+    const body = await request.json();
     const { idea, mode, action = 'generate', existingPrompt, refinementInstruction, count = 1 } = body;
+
+    if (!env.OPENROUTER_API_KEY) {
+      return new Response(JSON.stringify({ error: 'OPENROUTER_API_KEY não configurada.' }), {
+        status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      });
+    }
 
     if (!idea && !existingPrompt) {
       return new Response(JSON.stringify({ error: 'Ideia ou prompt existente é obrigatório.' }), {
-        status: 400, headers: corsHeaders
+        status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
       });
     }
 
     const validModes = ['code', 'vibecode', 'image', 'video'];
     if (mode && !validModes.includes(mode)) {
       return new Response(JSON.stringify({ error: 'Modo inválido.' }), {
-        status: 400, headers: corsHeaders
+        status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
       });
     }
 
     let result;
 
-    // === ACTION: generate ===
     if (action === 'generate') {
       const systemPrompt = SYSTEM_PROMPTS[mode] || SYSTEM_PROMPTS.code;
       const userMessage = `Crie um prompt otimizado para esta ideia:\n\n"${idea}"`;
 
       if (count > 1) {
-        // Variações
         const variationsSystemPrompt = systemPrompt + `\n\nIMPORTANTE: Gere exatamente ${count} variações diferentes do prompt, numeradas como:
 --- VARIAÇÃO 1 ---
 [prompt]
@@ -188,10 +168,9 @@ Cada variação deve ter uma abordagem/tom diferente.`;
         const { content, model_used } = await callAI(
           [{ role: 'user', content: userMessage }],
           variationsSystemPrompt,
-          context.env
+          env
         );
-        // Parse variations
-        const variations = content.split(/---\s*VARIA[ÇC][ÃA]O\s*\d+\s*---/i)
+        const variations = content.split(/---\\s*VARIA[ÇC][ÃA]O\\s*\\d+\\s*---/i)
           .map(v => v.trim())
           .filter(v => v.length > 0);
         result = { variations, model_used };
@@ -199,14 +178,11 @@ Cada variação deve ter uma abordagem/tom diferente.`;
         const { content, model_used } = await callAI(
           [{ role: 'user', content: userMessage }],
           systemPrompt,
-          context.env
+          env
         );
         result = { prompt: content, model_used };
       }
-    }
-
-    // === ACTION: refine ===
-    else if (action === 'refine') {
+    } else if (action === 'refine') {
       const systemPrompt = SYSTEM_PROMPTS[mode] || SYSTEM_PROMPTS.code;
       const refinedSystem = systemPrompt + `\n\nVocê vai MELHORAR um prompt existente com base na instrução do usuário.
 Retorne APENAS o prompt melhorado, sem explicações.`;
@@ -214,13 +190,10 @@ Retorne APENAS o prompt melhorado, sem explicações.`;
       const { content, model_used } = await callAI(
         [{ role: 'user', content: userMessage }],
         refinedSystem,
-        context.env
+        env
       );
       result = { prompt: content, model_used };
-    }
-
-    // === ACTION: remix ===
-    else if (action === 'remix') {
+    } else if (action === 'remix') {
       const targetSystemPrompt = SYSTEM_PROMPTS[mode] || SYSTEM_PROMPTS.code;
       const remixSystem = targetSystemPrompt + `\n\nVocê receberá um prompt existente (possivelmente de outro contexto) e deve REMIXÁ-LO/ADAPTÁ-LO para o modo atual.
 Mantenha a essência da ideia mas reescreva completamente no estilo do modo atual.
@@ -229,49 +202,34 @@ Retorne APENAS o novo prompt, sem explicações.`;
       const { content, model_used } = await callAI(
         [{ role: 'user', content: userMessage }],
         remixSystem,
-        context.env
+        env
       );
       result = { prompt: content, model_used };
-    }
-
-    // === ACTION: score ===
-    else if (action === 'score') {
+    } else if (action === 'score') {
       const { content, model_used } = await callAI(
         [{ role: 'user', content: `Avalie este prompt:\n\n${existingPrompt}` }],
         SCORE_PROMPT,
-        context.env
+        env
       );
       try {
-        const jsonMatch = content.match(/\{[\s\S]*\}/);
+        const jsonMatch = content.match(/\\{[\\s\\S]*\\}/);
         const score = JSON.parse(jsonMatch ? jsonMatch[0] : content);
         result = { score, model_used };
       } catch {
         result = { score: { overall: 0, error: 'Falha ao parsear score' }, model_used };
       }
-    }
-
-    else {
+    } else {
       return new Response(JSON.stringify({ error: 'Ação inválida.' }), {
-        status: 400, headers: corsHeaders
+        status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
       });
     }
 
-    return new Response(JSON.stringify(result), { headers: corsHeaders });
+    return new Response(JSON.stringify(result), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
 
   } catch (err) {
     return new Response(
       JSON.stringify({ error: 'Falha interna.', details: err.message }),
-      { status: 500, headers: corsHeaders }
+      { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   }
-}
-
-export async function onRequestOptions() {
-  return new Response(null, {
-    headers: {
-      'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Methods': 'POST, OPTIONS',
-      'Access-Control-Allow-Headers': 'Content-Type'
-    }
-  });
 }

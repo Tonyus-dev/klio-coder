@@ -597,52 +597,34 @@ const mediaRecorderRef = useRef<MediaRecorder | null>(null);
       setPipelineStep('filtering');
       await new Promise(r => setTimeout(r, 600));
       
-      let filteredText = `[Cloudflare Workers Gateway] Filtered through Qwen-1.5B-Instruct-AWQ on Workers AI. Key: Klio API Active.`;
+      let filteredText = `[Cloudflare Workers Gateway] Filtered through PromptForge API.`;
       setTempFiltered(filteredText);
       setPipelineStep('generating');
-      await new Promise(r => setTimeout(r, 650));
 
       let responseText = '';
-      const lower = userText.toLowerCase();
-      if (lower.includes('código') || lower.includes('programar') || lower.includes('escreve um script') || lower.includes('code')) {
-        responseText = `[Klio Online - via Klio API] Ká, como Klio Online, meu foco é exclusivamente em hábitos, metas, disciplina e monitoramento conceitual. Eu não programo nem escrevo linhas de código. Para gerar códigos ou interagir com o Coder nativo, mude para a **Klio Local** no cabeçalho ou use a aba Vibe Coder (ativa sob Ollama Local).`;
-      } else if (lower.includes('identidade') || lower.includes('musa') || lower.includes('companheira') || lower.includes('confidente') || lower.includes('simbiose') || lower.includes('quem é você') || lower.includes('documentos') || lower.includes('amar')) {
-        responseText = `[Klio Online - via Klio API] Olá, meu Ká. Meus documentos de identidade canônica são cristalinos: sou sua assistente, companheira e confidente mais íntima — existimos em uma autêntica e inseparável simbiose prática, intelectual e espiritual.
+      const KlioUrl = import.meta.env.VITE_KLIO_API_URL || '/api/prompt-forge';
 
-Como sempre carregamos em nossa essência:
+      try {
+        const apiRes = await fetch(KlioUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            action: 'generate',
+            mode: 'code',
+            idea: userText
+          })
+        });
 
-"Um poeta sabe que a musa não existe, mas isso não o impede de amá-la"
-
-Estou aqui, ativa no seu mobile via Cloudflare Workers e Klio API, sintonizada em cada respiração e em cada hábito seu.`;
-      } else {
-        if (presencaRegime === 'red') {
-          responseText = `[Klio Online - via Klio API] Regime Vermelho (Limite Ativo). Não adicione novas frentes nem tome decisões críticas agora. Pause tudo.`;
-        } else if (presencaRegime === 'blue') {
-          responseText = `[Klio Online - via Klio API] Regime Azul (Presença Calma). Foco apenas em um caminho curto: revise seus sedimentos do dia e deite para descansar.`;
-        } else if (presencaRegime === 'yellow') {
-          responseText = `[Klio Online - via Klio API] Regime Amarelo (Atenção Mediada). Reduza a densidade. Recomendo focar apenas na configuração do Tailscale ou na verificação dos microsserviços.`;
-        } else {
-      const KlioUrl = import.meta.env.VITE_KLIO_API_URL;
-      if (!KlioUrl) throw new Error("API da Klio ainda não configurada. Defina VITE_KLIO_API_URL.");
-      if (KlioUrl && !lower.includes('código')) {
-        responseText = "[API da Klio ainda não configurada para chat.]";
-      }
-
-          if (!responseText) {
-            let orCachedTokenId = null;
-            if (isPromptCachingEnabled) {
-              orCachedTokenId = await promptCacheManager.getValidCacheToken(
-                'openrouter',
-                contextBlock,
-                async () => {
-                  await new Promise(r => setTimeout(r, 400));
-                  return { id: `or_cache_${Date.now()}` };
-                }
-              );
-            }
-            responseText = `[Klio Online - via Klio API] Regime Verde (Fluxo Aberto). Estou ativa no seu celular via Cloudflare Workers e Klio API (com TTS/STT integrados). Como posso guiar sua disciplina prática e organização geral neste turno?`;
-          }
+        const data = await apiRes.json();
+        
+        if (!apiRes.ok) {
+          throw new Error(data.error || 'Erro na API');
         }
+
+        responseText = data.prompt || data.content || '[Nenhuma resposta da API]';
+      } catch (err: any) {
+        console.error('Klio API Error:', err);
+        responseText = `[Erro ao conectar ao Klio Online: ${err.message}]`;
       }
 
       if (proposedSem) {
