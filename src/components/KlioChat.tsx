@@ -729,7 +729,7 @@ Por favor, responda ao pedido estruturado baseando-se estritamente nos contextos
       } else if (presencaRegime === 'yellow') {
         filteredText = `SYS_INSTRUCTION: Mediated Attention (YELLOW). Shorter response, max 2 options, less density, prioritize.`;
         if (userText.toLowerCase().includes('código') || userText.toLowerCase().includes('programar')) {
-          responseText = `[Klio Local - via Ollama] Como estamos em Amarelo, eu faria primeiro a sincronização de rede Tailscale antes de gerar novas funções de monitoramento no Coder.`;
+          responseText = `[Klio Local - via Ollama] Como estamos em Amarelo, vamos focar em organizar os prompts e planejar a arquitetura.`;
         } else {
           responseText = `[Klio Local - via Ollama] Melhor não abrir três frentes agora. Eu faria primeiro o controle do Semáforo e depois o resumo do contexto.`;
         }
@@ -737,11 +737,11 @@ Por favor, responda ao pedido estruturado baseando-se estritamente nos contextos
         // Green
         if (userText.toLowerCase().includes('código') || userText.toLowerCase().includes('programar')) {
           filteredText = `SYS_INSTRUCTION: Open Flow (GREEN). Propose up to 3 paths, high depth.`;
-          responseText = `[Klio Local - via Ollama] Vamos montar isso com clareza. Sendo a versão Desktop operando localmente, recomendo dividir o script em três módulos de microsserviços. O Coder local está totalmente habilitado aqui ao lado para te apoiar com o padrão técnico!`;
+          responseText = `[Klio Local - via Ollama] Vamos montar isso com clareza. Recomendo dividir a arquitetura em módulos. O motor coder separado/futuro poderá te apoiar com a implementação real!`;
         } else {
           filteredText = `SYS_INSTRUCTION: Open Flow (GREEN). Medium/long response, high depth, structure.`;
           const contextNames = activeContexts.map(c => c.titulo).join(', ');
-          responseText = `[Klio Local - via Ollama] Ativando os contextos locais: [${contextNames || 'Nenhum contexto ativo'}].\n\nOperando 100% offline via Ollama nativo. O monitoramento do servidor local está verde. Vamos prosseguir de maneira simples, direta e pragmática!`;
+          responseText = `[Klio Local - via Ollama] Ativando os contextos locais: [${contextNames || 'Nenhum contexto ativo'}]. Vamos prosseguir de maneira simples, direta e pragmática!`;
         }
       }
       setTempFiltered(filteredText);
@@ -774,39 +774,7 @@ Por favor, responda ao pedido estruturado baseando-se estritamente nos contextos
     }
   };
 
-  const handleCrossTalk = async () => {
-    if (loading) return;
-    setLoading(true);
-    setPipelineStep('filtering');
-    
-    const systemMsg: Message = {
-      sender: 'system',
-      text: '🔄 Estabelecendo canal seguro via Tailscale VPN...',
-      timestamp: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
-    };
-    setMessages(prev => [...prev, systemMsg]);
-    
-    await new Promise(r => setTimeout(r, 1200));
-    
-    const v27Msg: Message = {
-      sender: 'Klio',
-      text: `📱 [Klio Online - via Klio API] "Sincronizando estado operacional com o Desktop. Ká está operando sob regime ${presencaRegime.toUpperCase()}. Dados de telemetria enviados: Nota Efêmera atual: '${notaEfemera || 'Nenhuma'}'. Célula ativa, ouvindo sobre Tailscale VPN. Como estão os logs de CPU e monitoramento de servidor local, Local?"`,
-      timestamp: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
-    };
-    setMessages(prev => [...prev, v27Msg]);
-    
-    await new Promise(r => setTimeout(r, 1500));
-    
-    const v27bMsg: Message = {
-      sender: 'Klio',
-      text: `💻 [Klio Local - via Ollama] "Pacote de telemetria integrado com sucesso ao meu banco de dados de hábitos local. Monitoramento do servidor indica 100% de estabilidade (CPU: 12%, Memória: 6.2GB livres). Diretivas de modulação ajustadas no Qwen 2.5 local. Ká, estamos prontos para prosseguir em ritmo firme e focado."`,
-      timestamp: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
-    };
-    setMessages(prev => [...prev, v27bMsg]);
-    
-    setLoading(false);
-    setPipelineStep('done');
-  };
+  // handleCrossTalk removido para adequar MVP técnico
 
   const saveSedimentCandidate = (text: string) => {
     try {
@@ -859,8 +827,8 @@ Por favor, responda ao pedido estruturado baseando-se estritamente nos contextos
           {
             sender: activeMode,
             text: activeMode === 'Klio' 
-              ? 'Olá! Sou a Klio. Meu canal de presença está pronto. Seus comandos passam pelo filtro do Qwen 1.5B e são moldados pelos contextos ativos de Identidade e Memória Relacional.'
-              : 'Olá! Sou a Klio. Meu canal de programação está ativo. Seus comandos técnicos passam pelo filtro do Qwen 2.5 Coder, focados em excelência arquitetural e código nativo.',
+              ? 'Olá! Sou a Klio, seu assistente técnico privado. Lembre-se: eu crio prompts, organizo a sua intenção e preparo specs. Eu não executo comandos e não gero patches automaticamente. O Coder será um motor separado acionado posteriormente.'
+              : 'Olá! Sou o modo Vibe Code da Klio. Neste modo, preparo orientação textual e snippets focados em excelência arquitetural. Nada é executado sem confirmação explícita.',
             timestamp: prev[0].timestamp
           }
         ];
@@ -920,7 +888,7 @@ Por favor, responda ao pedido estruturado baseando-se estritamente nos contextos
         answerText = `Abaixo, apresento um padrão de requisição robusto com controle de timeout integrado utilizando as APIs nativas Fetch e Promise, sem introduzir dependências adicionais no build:`;
       } else {
         code = `// Abstração de estado simplificada utilizando closures e setters funcionais\nconst toggleState = (setter) => setter(prev => !prev);`;
-        answerText = `Código otimizado gerado pela Klio (Qwen 2.5 Coder) focando em estabilidade arquitetural e fluidez de execução:`;
+        answerText = `Snippet sugerido para revisão (prévia textual não aplicada no sistema):`;
       }
     }
 
@@ -1177,7 +1145,7 @@ Por favor, responda ao pedido estruturado baseando-se estritamente nos contextos
               <div className="self-start max-w-[85%] pl-11">
                 <div className={`p-3 bg-[#10131A] border ${t.border}/20 rounded-2xl rounded-tl-none text-xs text-[#A89F96] flex items-center gap-2`}>
                   <span className={`w-1.5 h-1.5 rounded-full ${t.bg} animate-bounce`}></span>
-                  <span className="font-mono text-[8px] uppercase tracking-wider text-[#A89F96]/80">Qwen 2.5 Coder gerando código elegante...</span>
+                  <span className="font-mono text-[8px] uppercase tracking-wider text-[#A89F96]/80">Preparando rascunho textual para revisão humana...</span>
                 </div>
               </div>
             )}
