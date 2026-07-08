@@ -1,38 +1,23 @@
-# Klio Coder
+# Klio Coder (MVP Privado Técnico)
 
-Klio Coder é o app técnico privado de Antônio.
+## Estado Atual do Repositório
+Este repositório é o app separado da Klio. A Klio é o assistente técnico privado para o desenvolvedor (Antônio), desenhada para preparar intenções, forjar prompts complexos e organizar especificações de código.
 
-* Online = Cloudflare Workers / OpenRouter.
-* Local = Ollama/Hefaístia.
-* Klio não faz parte da Kaline V27 pública.
-* A Kaline V27 pública contém Kaline, Kháris e Kuan.
+**Atenção:** Klio não é a versão pública V27, nem o Kuan, nem o Guardião.
 
-## Rodar localmente
+### O que a Klio faz (Escopo Permitido):
+- Conversa, organiza intenção e cria prompts (`Klio Chat`).
+- Forja prompts arquiteturais (`PromptForge` - próximo passo).
+- Mantém decisões arquiteturais (`Decisão` - planejado).
+- Mantém um histórico de padrões e preferências técnicas (`Memória Técnica` - planejado).
+- Prepara planos para o motor coder (`App Builder` - planejado).
 
-```bash
-npm install
-npm run dev
-```
+### O que a Klio **NÃO** faz (Fora do Escopo):
+- Não executa comandos automaticamente no terminal.
+- Não possui um backend ativo rodando localmente (Supabase, Cloudflare Worker, etc. não integrados).
+- Não gera patches automaticamente sem ser requisitada via motor coder separado.
+- Não há IA online de terceiros configurada diretamente (nem OpenRouter nativo ativo para auto-execução).
+- Sem telemetria fake, sem login, sem "Héstia Station" ou painéis comerciais.
 
-## Variáveis
-
-Copie `.env.example` para `.env.local` e configure seu `.dev.vars` para o Worker.
-
-## Deploy no Cloudflare Workers
-
-O projeto usa um Cloudflare Worker puro rodando em `worker/index.js`.
-
-Configuração e Deploy:
-```bash
-npm run build
-npx wrangler deploy
-```
-
-Secret necessário (via dashboard do Cloudflare ou `wrangler secret put`):
-- `OPENROUTER_API_KEY`
-
-Endpoints do Worker:
-- `/api/health`
-- `/api/prompt-forge`
-- `/api/chat`
-- `/api/prompt-share`
+## Próximos Passos
+- Implementar o **PromptForge Core**.

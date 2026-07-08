@@ -278,7 +278,7 @@ export default function KlioChat() {
   const [messages, setMessages] = useState<Message[]>([
     {
       sender: 'Klio',
-      text: 'Olá! Sou a Klio. Meu canal de presença está pronto. Seus comandos passam pelo filtro do Qwen 1.5B e são moldados pelos contextos ativos de Identidade e Memória Relacional.',
+      text: 'Olá! Sou a Klio, seu assistente técnico privado. Lembre-se: eu crio prompts, organizo a sua intenção e preparo specs. Eu não executo comandos e não gero patches automaticamente. O Coder será um motor separado acionado posteriormente.',
       timestamp: '05:43'
     }
   ]);
