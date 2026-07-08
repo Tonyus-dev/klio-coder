@@ -267,7 +267,7 @@ export default function KlioDashboard() {
                 className="text-[8px] sm:text-[9px] font-extrabold text-[#FF4C1F] bg-[#FF4C1F]/10 hover:bg-[#FF4C1F]/20 px-1 sm:px-1.5 py-0.5 rounded border border-[#FF4C1F]/20 transition-colors"
                 title={`Alternar para ${runtimeMode === 'online' ? 'Local' : 'Online'}`}
               >
-                {runtimeMode}
+                {runtimeMode === 'online' ? 'Online' : 'Local'}
               </button>
             </h1>
             <p className="text-[8px] text-[#A89F96] font-bold uppercase tracking-widest hidden sm:block">Fogo Central e Altar de Sincronização</p>

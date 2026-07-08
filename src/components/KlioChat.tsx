@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { promptCacheManager } from '../lib/PromptCacheManager';
 import { cacheStatsTracker } from '../lib/CacheStatsTracker';
-import { KLIO_CANON_BLOCK } from '../lib/canon/Klio-canon';
+import { KLIO_FULL_CANON } from '../lib/canon/Klio-canon';
 import KittScanner, { KittState } from './KittScanner';
 import { 
   Sparkles, 
@@ -395,7 +395,7 @@ const mediaRecorderRef = useRef<MediaRecorder | null>(null);
              base64data = base64data.split(',')[1] || '';
              
              try {
-                const KlioUrl = import.meta.env.VITE_Klio_API_URL;
+                const KlioUrl = import.meta.env.VITE_KLIO_API_URL;
                 if (!KlioUrl) {
                    setInput(prev => prev + " [Erro: API da Klio ainda não configurada para STT]");
                    return;
@@ -622,8 +622,8 @@ Estou aqui, ativa no seu mobile via Cloudflare Workers e Klio API, sintonizada e
         } else if (presencaRegime === 'yellow') {
           responseText = `[Klio Online - via Klio API] Regime Amarelo (Atenção Mediada). Reduza a densidade. Recomendo focar apenas na configuração do Tailscale ou na verificação dos microsserviços.`;
         } else {
-      const KlioUrl = import.meta.env.VITE_Klio_API_URL;
-      if (!KlioUrl) throw new Error("API da Klio ainda não configurada. Defina VITE_Klio_API_URL.");
+      const KlioUrl = import.meta.env.VITE_KLIO_API_URL;
+      if (!KlioUrl) throw new Error("API da Klio ainda não configurada. Defina VITE_KLIO_API_URL.");
       if (KlioUrl && !lower.includes('código')) {
         responseText = "[API da Klio ainda não configurada para chat.]";
       }
@@ -632,7 +632,7 @@ Estou aqui, ativa no seu mobile via Cloudflare Workers e Klio API, sintonizada e
             let orCachedTokenId = null;
             if (isPromptCachingEnabled) {
               orCachedTokenId = await promptCacheManager.getValidCacheToken(
-                'Klioapi',
+                'openrouter',
                 contextBlock,
                 async () => {
                   await new Promise(r => setTimeout(r, 400));
@@ -697,7 +697,7 @@ Estou aqui, ativa no seu mobile via Cloudflare Workers e Klio API, sintonizada e
         const finalPrompt = `[DIRETIVAS OPERACIONAIS - DESKTOP OLLAMA]
 Você é ${systemName}. ${customPromptInstructions}
 
-${KLIO_CANON_BLOCK}
+${KLIO_FULL_CANON}
 
 [SEMÁFORO DE PRESENÇA ATIVO]
 Regime atual: ${presencaRegime.toUpperCase()}

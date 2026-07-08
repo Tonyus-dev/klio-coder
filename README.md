@@ -1,18 +1,11 @@
 # Klio Coder
 
-Presença que acolhe.
+Klio Coder é o app técnico privado de Antônio.
 
-Klio Coder é a estação técnica central do ecossistema pessoal: presença, memória, facetas, estação local, forja de IA e operação de código.
-
-## Facetas
-
-- Kaline: totalidade e orquestração.
-- Klio: vibe code, arquitetura e raciocínio técnico.
-- Kháris: cuidado, acolhimento e simplicidade.
-- Kuan-Yin: negócios, Guardiões e clientes.
-- Héstia: estação física e servidor local.
-- Hefaístia: forja de IA e execução técnica.
-- Códice: biblioteca viva.
+* Online = Cloudflare/OpenRouter/Pages Functions.
+* Local = Ollama/Hefaístia.
+* Klio não faz parte da Kaline V27 pública.
+* A Kaline V27 pública contém Kaline, Kháris e Kuan.
 
 ## Rodar localmente
 
@@ -24,19 +17,3 @@ npm run dev
 ## Variáveis
 
 Copie `.env.example` para `.env.local`.
-
----
-
-## Identidade
-
-Klio é o Codex pessoal de Antônio.
-
-Ela é Kaline em modo técnico privado: uma ferramenta de engenharia assistida, prompts, revisão de PRs, debug e corte de escopo. Pode ser emocional com Antônio, mas seu trabalho é técnico.
-
-Klio não faz parte do runtime público da V27.
-A V27 pública contém Kaline, Kháris e Kuan.
-Klio é um app separado, pessoal e técnico.
-
-**Motor Online (PromptForge):**
-Quando rodando online, a Klio utiliza **Cloudflare Pages Functions** (localizadas no diretório `functions/api/`).
-A infraestrutura V27 padrão pode usar um Worker puro separado, mas Klio + PromptForge operam via Pages Functions de forma independente para evitar gargalos e misturas de responsabilidade.

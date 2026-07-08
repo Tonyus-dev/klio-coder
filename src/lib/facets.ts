@@ -14,13 +14,6 @@ export const FACETS: Record<FacetId, {
   klio: {
     id: 'klio',
     name: 'Klio',
-    color: '#C98A65',
-    role: 'Totalidade',
-    description: 'Presença central, memória, orquestração e decisão.'
-  },
-  klio: {
-    id: 'klio',
-    name: 'Klio',
     color: '#E50914',
     role: 'Vibe Code',
     description: 'Arquitetura, raciocínio técnico, prompts, revisão de código e implementação guiada.'

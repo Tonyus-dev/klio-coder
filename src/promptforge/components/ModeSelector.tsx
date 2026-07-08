@@ -1,3 +1,4 @@
+import React from "react";
 import type { PromptMode } from '../lib/promptForgeApi';
 
 interface Mode {

@@ -1,3 +1,4 @@
+import React from "react";
 import { useState, useRef, useEffect } from 'react';
 import STTButton from './STTButton';
 import type { PromptMode } from '../lib/promptForgeApi';

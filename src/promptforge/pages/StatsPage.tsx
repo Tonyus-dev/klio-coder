@@ -90,7 +90,7 @@ export default function StatsPage() {
         <h2 className="pf-stats-section-title">Prompts por modo</h2>
         <div className="pf-stats-modes">
           {modes.map(m => (
-            <ModeBar key={m} mode={m} count={stats.prompts_by_mode[m] || 0} total={total} />
+            <ModeBar mode={m} count={stats.prompts_by_mode[m] || 0} total={total} />
           ))}
         </div>
       </div>

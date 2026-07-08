@@ -1,7 +1,7 @@
 {
   "name": "Klio Coder",
   "short_name": "Klio",
-  "description": "Presença que acolhe — estação, memória e facetas da Klio.",
+  "description": "Codex técnico privado de Antônio.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#06070A",

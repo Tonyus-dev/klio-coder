@@ -102,7 +102,7 @@ export default function PromptScore({ score, isLoading, onClose }: PromptScorePr
           {/* Dimension bars */}
           <div className="pf-score-dims">
             {(Object.keys(SCORE_LABELS) as Array<keyof typeof SCORE_LABELS>).map(key => (
-              <MiniBar key={key} value={score[key]} label={SCORE_LABELS[key]} />
+              <MiniBar value={score[key]} label={SCORE_LABELS[key]} />
             ))}
           </div>
 

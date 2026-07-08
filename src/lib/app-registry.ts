@@ -20,18 +20,7 @@ export interface DomainRegistry {
 }
 
 export const APP_REGISTRY: Record<string, DomainRegistry> = {
-  klio: {
-    id: 'klio',
-    name: 'Klio',
-    icon: 'Compass',
-    color: '#C98A65', // Cobre Klio
-    description: 'Gestão pessoal, agenda, jurídico, corpo e presença.',
-    surfaces: [
-      { id: 'chat', name: 'Presença Chat', description: 'Canal de diálogo com filtro Qwen 1.5B', status: 'real', path: '/klio' },
-      { id: 'agenda', name: 'Agenda Pessoal', description: 'Compromissos e rituais diários', status: 'real', path: '/agenda' },
-      { id: 'juridico', name: 'Jurídico', description: 'Salvaguardas e contratos legais', status: 'mock', path: '/juridico' }
-    ]
-  },
+
   klio: {
     id: 'klio',
     name: 'Klio',
