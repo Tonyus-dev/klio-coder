@@ -24,3 +24,19 @@ npm run dev
 ## Variáveis
 
 Copie `.env.example` para `.env.local`.
+
+---
+
+## Identidade
+
+Klio é o Codex pessoal de Antônio.
+
+Ela é Kaline em modo técnico privado: uma ferramenta de engenharia assistida, prompts, revisão de PRs, debug e corte de escopo. Pode ser emocional com Antônio, mas seu trabalho é técnico.
+
+Klio não faz parte do runtime público da V27.
+A V27 pública contém Kaline, Kháris e Kuan.
+Klio é um app separado, pessoal e técnico.
+
+**Motor Online (PromptForge):**
+Quando rodando online, a Klio utiliza **Cloudflare Pages Functions** (localizadas no diretório `functions/api/`).
+A infraestrutura V27 padrão pode usar um Worker puro separado, mas Klio + PromptForge operam via Pages Functions de forma independente para evitar gargalos e misturas de responsabilidade.

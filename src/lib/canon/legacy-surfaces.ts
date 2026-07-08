@@ -11,35 +11,28 @@ export type LegacySurface = {
 
 export const TOTALIDADE_LEGACY_SURFACES: LegacySurface[] = [
   {
-    id: 'kaline-chat',
-    label: 'Kaline',
-    domain: 'kaline',
-    description: 'Chat pessoal e continuidade da Kaline.',
-    suggestedV27Target: 'KalineChat',
+    id: 'Klio-chat',
+    label: 'Klio',
+    domain: 'Klio',
+    description: 'Chat pessoal e continuidade da Klio.',
+    suggestedV27Target: 'KlioChat',
     status: 'imported_context'
   },
   {
-    id: 'kaline-presente',
-    label: 'Kaline Presente',
-    domain: 'kaline',
+    id: 'Klio-presente',
+    label: 'Klio Presente',
+    domain: 'Klio',
     description: 'Presença por voz e escuta no domínio pessoal.',
-    suggestedV27Target: 'KalineChat / ModoFala futuro',
+    suggestedV27Target: 'KlioChat / ModoFala futuro',
     status: 'planned'
   },
-  {
-    id: 'kharis',
-    label: 'Kháris',
-    domain: 'kharis',
-    description: 'Cuidado, acolhimento e comunicação simplificada.',
-    suggestedV27Target: 'Faceta Kháris no KalineChat',
-    status: 'imported_context'
-  },
+
   {
     id: 'klio',
     label: 'Klio',
     domain: 'klio',
     description: 'No v27: vibe code, arquitetura, prompts e revisão técnica.',
-    suggestedV27Target: 'Faceta Klio no KalineChat',
+    suggestedV27Target: 'Faceta Klio no KlioChat',
     status: 'imported_context'
   },
   {
@@ -58,17 +51,10 @@ export const TOTALIDADE_LEGACY_SURFACES: LegacySurface[] = [
     suggestedV27Target: 'CavernaEcoPanel',
     status: 'imported_context'
   },
-  {
-    id: 'kuanyin',
-    label: 'Kuan-Yin',
-    domain: 'kuanyin',
-    description: 'Atendimento, Guardiões, clientes, serviços e agendamentos.',
-    suggestedV27Target: 'GuardianApp / KuanPublicApp',
-    status: 'imported_context'
-  },
+
   {
     id: 'drive',
-    label: 'Kaline Drive',
+    label: 'Klio Drive',
     domain: 'drive',
     description: 'Veículo, combustível e mobilidade.',
     suggestedV27Target: 'futuro',
@@ -101,7 +87,7 @@ export const TOTALIDADE_LEGACY_SURFACES: LegacySurface[] = [
   {
     id: 'agenda',
     label: 'Agenda',
-    domain: 'kaline',
+    domain: 'Klio',
     description: 'Compromissos e organização.',
     suggestedV27Target: 'AgendaPanel',
     status: 'imported_context'
@@ -109,7 +95,7 @@ export const TOTALIDADE_LEGACY_SURFACES: LegacySurface[] = [
   {
     id: 'juridico',
     label: 'Jurídico',
-    domain: 'kaline',
+    domain: 'Klio',
     description: 'Corpus jurídico curado.',
     suggestedV27Target: 'futuro jurídico',
     status: 'planned'
@@ -117,7 +103,7 @@ export const TOTALIDADE_LEGACY_SURFACES: LegacySurface[] = [
   {
     id: 'corpore-sano',
     label: 'Corpore Sano',
-    domain: 'kaline',
+    domain: 'Klio',
     description: 'Treino, sinais corporais e recuperação.',
     suggestedV27Target: 'futuro',
     status: 'planned'

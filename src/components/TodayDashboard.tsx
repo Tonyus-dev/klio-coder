@@ -40,7 +40,7 @@ export default function TodayDashboard({
   });
   
   const [reflectionInput, setReflectionInput] = useState<string>(dailyLog.reflection || '');
-  const [modalNota, setModalNota] = useState(() => localStorage.getItem('kaline_nota_efemera') || '');
+  const [modalNota, setModalNota] = useState(() => localStorage.getItem('Klio_nota_efemera') || '');
   const todayStr = getRelativeDateString(0);
   
   const toggleSection = (section: string) => {
@@ -291,7 +291,7 @@ export default function TodayDashboard({
               <button
                 key={chip.key}
                 onClick={() => {
-                  localStorage.setItem('kaline_presenca_regime', chip.key);
+                  localStorage.setItem('Klio_presenca_regime', chip.key);
                   setPresencaRegime(chip.key as any);
                 }}
                 className={`p-3 rounded-2xl border text-left transition-all flex flex-col justify-between h-24 ${
@@ -321,7 +321,7 @@ export default function TodayDashboard({
               onChange={(e) => {
                 const txt = e.target.value.slice(0, 280);
                 setModalNota(txt);
-                localStorage.setItem('kaline_nota_efemera', txt);
+                localStorage.setItem('Klio_nota_efemera', txt);
               }}
               placeholder="Ex: 'responde mais seco', 'estou cansado, vai direto', 'preciso de decisão técnica'"
               className="w-full text-xs p-3 border border-[#252936] rounded-xl focus:outline-none focus:ring-[#FF4C1F]/30 focus:border-[#FF4C1F] text-[#F7EFE7] bg-[#10131A] h-18 resize-none"
@@ -335,7 +335,7 @@ export default function TodayDashboard({
                 <button
                   onClick={() => {
                     setModalNota('');
-                    localStorage.setItem('kaline_nota_efemera', '');
+                    localStorage.setItem('Klio_nota_efemera', '');
                   }}
                   className="px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-[#A89F96] hover:text-[#FF4C1F] bg-[#10131A] rounded-xl border border-[#252936] transition-all"
                 >

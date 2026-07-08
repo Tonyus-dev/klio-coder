@@ -8,10 +8,10 @@ export default function GuardiaoPanel() {
   const [sttModel, setSttModel] = useState('google/gemini-2.5-flash-lite');
   const [sttFallback, setSttFallback] = useState('openai/whisper-large-v3');
 
-  const [activeDialogueFacet, setActiveDialogueFacet] = useState(() => localStorage.getItem('kaline_active_dialogue_facet') || 'kora');
+  const [activeDialogueFacet, setActiveDialogueFacet] = useState(() => localStorage.getItem('klio_active_dialogue_facet') || 'kora');
 
-  const [promptCaching, setPromptCaching] = useState(() => localStorage.getItem('kaline_prompt_caching') !== 'false');
-  const [semanticCaching, setSemanticCaching] = useState(() => localStorage.getItem('kaline_semantic_caching') === 'true');
+  const [promptCaching, setPromptCaching] = useState(() => localStorage.getItem('klio_prompt_caching') !== 'false');
+  const [semanticCaching, setSemanticCaching] = useState(() => localStorage.getItem('klio_semantic_caching') === 'true');
 
   const [inviteEmail, setInviteEmail] = useState('');
   const [inviteRole, setInviteRole] = useState<'protegido' | 'guardiao'>('protegido');
@@ -24,13 +24,11 @@ export default function GuardiaoPanel() {
   };
 
   const modules = [
-    { id: 'chat', name: 'Chat (Kaline)', desc: 'Ler e enviar mensagens na conversa com Kaline.' },
-    { id: 'kharis', name: 'Kháris', desc: 'Acessar a faceta Kháris, de cuidado neurodivergente, no chat.' },
+    { id: 'chat', name: 'Chat (Klio)', desc: 'Ler e enviar mensagens na conversa com Klio.' },
     { id: 'agenda', name: 'Agenda', desc: 'Ver e criar eventos e lembretes do calendário.' },
     { id: 'treinos', name: 'Treinos', desc: 'Acompanhar e registrar treinos, séries, PRs e sinais do corpo.' },
     { id: 'livros', name: 'Livros & Resumos', desc: 'Acessar a biblioteca, resumos e infográficos.' },
-    { id: 'eco', name: 'Câmara de Eco', desc: 'Subir áudios, conversas e atas para eco e transcrição.' },
-    { id: 'kuanyin', name: 'Kuan-Yin (Comercial)', desc: 'Conversar em modo comercial, configurar negócio e cadastrar clientes.' }
+    { id: 'eco', name: 'Câmara de Eco', desc: 'Subir áudios, conversas e atas para eco e transcrição.' }
   ];
 
   return (
@@ -82,10 +80,10 @@ export default function GuardiaoPanel() {
         </div>
       </div>
 
-      {/* Modelos da Kaline */}
+      {/* Modelos da Klio */}
       <div className="bg-[#0B0D12] border border-[#252936] rounded-2xl p-5 space-y-4">
         <div>
-          <h3 className="text-xs font-black tracking-widest uppercase text-[#F7EFE7]">Modelos da Kaline</h3>
+          <h3 className="text-xs font-black tracking-widest uppercase text-[#F7EFE7]">Modelos da Klio</h3>
           <p className="text-[10px] text-[#A89F96] mt-0.5">Configuração operacional da IA controlada pelo Guardião.</p>
         </div>
         
@@ -148,17 +146,16 @@ export default function GuardiaoPanel() {
               value={activeDialogueFacet} 
               onChange={(e) => {
                 setActiveDialogueFacet(e.target.value);
-                localStorage.setItem('kaline_active_dialogue_facet', e.target.value);
-                window.dispatchEvent(new CustomEvent('kalineActiveFacetChanged', { detail: e.target.value }));
+                localStorage.setItem('klio_active_dialogue_facet', e.target.value);
+                window.dispatchEvent(new CustomEvent('klioActiveFacetChanged', { detail: e.target.value }));
               }}
               className="w-full text-xs px-3 py-2.5 bg-[#10131A] border border-[#252936] rounded-lg focus:outline-none focus:border-[#FF4C1F] text-[#F7EFE7]"
             >
-              <option value="kora">Kora / Kaline (Naturalidade e Presença)</option>
-              <option value="kharis">Kháris (Cuidado, Simplicidade e Gentileza)</option>
+              <option value="kora">Kora / Klio (Naturalidade e Presença)</option>
               <option value="klio">Klio (Vibe Code, Arquitetura e Implementação)</option>
             </select>
             <p className="text-[8px] text-[#A89F96]">
-              O administrador escolhe com qual faceta da Kaline os outros usuários podem conversar.
+              O administrador escolhe com qual faceta da Klio os outros usuários podem conversar.
             </p>
           </div>
 
@@ -172,7 +169,7 @@ export default function GuardiaoPanel() {
                 onClick={() => {
                   const val = !promptCaching;
                   setPromptCaching(val);
-                  localStorage.setItem('kaline_prompt_caching', val ? 'true' : 'false');
+                  localStorage.setItem('klio_prompt_caching', val ? 'true' : 'false');
                 }}
                 className={`w-10 h-5 rounded-full relative transition-colors ${promptCaching ? 'bg-[#FF4C1F]' : 'bg-[#252936]'}`}
               >
@@ -189,7 +186,7 @@ export default function GuardiaoPanel() {
                 onClick={() => {
                   const val = !semanticCaching;
                   setSemanticCaching(val);
-                  localStorage.setItem('kaline_semantic_caching', val ? 'true' : 'false');
+                  localStorage.setItem('klio_semantic_caching', val ? 'true' : 'false');
                 }}
                 className={`w-10 h-5 rounded-full relative transition-colors ${semanticCaching ? 'bg-[#FF4C1F]' : 'bg-[#252936]'}`}
               >

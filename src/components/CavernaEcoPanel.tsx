@@ -159,8 +159,8 @@ const mediaRecorderRef = React.useRef<MediaRecorder | null>(null);
           base64data = base64data.split(',')[1] || '';
 
           if (activeSession) {
-            const kalineUrl = import.meta.env.VITE_KALINE_API_URL;
-            let transcription = "API da Kaline ainda não configurada para áudio.";
+            const klioUrl = import.meta.env.VITE_KLIO_API_URL;
+            let transcription = "API da Klio ainda não configurada para áudio.";
 
 
             const finalBlocks = activeSession.blocks.map(b => 
@@ -190,8 +190,8 @@ const analyzeSession = async () => {
     if (activeSession) {
       setActiveSession({ ...activeSession, status: 'analisando' });
       
-      const kalineUrl = import.meta.env.VITE_KALINE_API_URL;
-      activeSession.blocks.push({ id: 'analysis', order: 99, startTime: '0', endTime: '0', status: 'transcribed', transcription: "API da Kaline ainda não configurada." });
+      const klioUrl = import.meta.env.VITE_KLIO_API_URL;
+      activeSession.blocks.push({ id: 'analysis', order: 99, startTime: '0', endTime: '0', status: 'transcribed', transcription: "API da Klio ainda não configurada." });
 
       setTimeout(() => {
         setActiveSession({ ...activeSession, status: 'analisada', isAnalyzed: true });
@@ -204,7 +204,7 @@ const analyzeSession = async () => {
     <div className="space-y-8 animate-fade-in max-w-4xl mx-auto">
       <div className="space-y-2">
         <h1 className="text-3xl font-serif font-black tracking-tight text-[#F7EFE7]">Caverna do Eco</h1>
-        <p className="text-[#A89F96] text-sm">Câmara interna de escuta da Kaline</p>
+        <p className="text-[#A89F96] text-sm">Câmara interna de escuta da Klio</p>
       </div>
 
       <div className="bg-[#0B0D12] border border-[#252936] rounded-3xl p-8 space-y-6 shadow-2xl relative overflow-hidden">
@@ -212,7 +212,7 @@ const analyzeSession = async () => {
         
         <div className="space-y-1">
           <p className="text-lg font-medium text-[#F7EFE7]">Fale sem organizar.</p>
-          <p className="text-sm text-[#A89F96]">A Kaline organiza depois.</p>
+          <p className="text-sm text-[#A89F96]">A Klio organiza depois.</p>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -377,7 +377,7 @@ const analyzeSession = async () => {
         <h2 className="text-2xl font-serif font-black text-[#F7EFE7]">Câmara rápida em texto</h2>
         <p className="text-xs text-[#A89F96]">
           Cole uma conversa, reunião, anotação ou despejo bruto.<br/>
-          A Kaline vai devolver estrutura sem transformar isso em memória automaticamente.
+          A Klio vai devolver estrutura sem transformar isso em memória automaticamente.
         </p>
       </div>
 
@@ -486,7 +486,7 @@ const analyzeSession = async () => {
             <div className="absolute top-0 left-0 w-1 h-full bg-[#FF4C1F]"></div>
             <h3 className="text-xs font-black uppercase tracking-widest text-[#FF4C1F] mb-3">Resumo operacional</h3>
             <p className="text-sm text-[#F7EFE7] leading-relaxed">
-              Sessão de alinhamento focada na reestruturação da Caverna do Eco e do ecossistema Kaline Totalidade. 
+              Sessão de alinhamento focada na reestruturação da Caverna do Eco e do ecossistema Klio Totalidade. 
               Ficou definido que a interface deve atuar como uma escuta profunda, sem automatizar a criação de memórias.
               A regra dos blocos de 3 minutos será preservada visualmente.
             </p>

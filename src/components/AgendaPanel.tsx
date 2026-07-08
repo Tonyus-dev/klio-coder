@@ -21,7 +21,7 @@ const DAILY_RITUALS: Ritual[] = [
 
 export default function AgendaPanel() {
   const [rituals, setRituals] = useState<Ritual[]>(() => {
-    const saved = localStorage.getItem('kaline_agenda_rituals');
+    const saved = localStorage.getItem('klio_agenda_rituals');
     if (saved) {
       try {
         return JSON.parse(saved);
@@ -33,7 +33,7 @@ export default function AgendaPanel() {
   });
 
   useEffect(() => {
-    localStorage.setItem('kaline_agenda_rituals', JSON.stringify(rituals));
+    localStorage.setItem('klio_agenda_rituals', JSON.stringify(rituals));
   }, [rituals]);
   const [view, setView] = useState<'day' | 'week'>('day');
 
@@ -96,7 +96,7 @@ export default function AgendaPanel() {
           <div className="flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-[#C98A65] shadow-[0_0_8px_#C98A65]"></span>
             <span className="text-[9px] font-black uppercase tracking-widest text-[#A89F96]">
-              Kaline Agenda • V27
+              Klio Agenda • V27
             </span>
           </div>
           <h1 className="text-4xl font-semibold tracking-tight text-[#F7EFE7] font-serif leading-none">

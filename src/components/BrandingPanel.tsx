@@ -14,7 +14,7 @@ export default function BrandingPanel({ onClose }: { onClose: () => void }) {
           </div>
           <div>
             <h2 className="text-[#F7EFE7] font-bold tracking-wide text-sm flex items-center gap-2">
-              BRANDING K∧LINE
+              BRANDING KLIO
             </h2>
             <p className="text-[#A89F96] text-[10px] uppercase tracking-widest mt-0.5">
               Identidade Visual
@@ -34,7 +34,7 @@ export default function BrandingPanel({ onClose }: { onClose: () => void }) {
       <div className="grow relative">
         <iframe 
           src="/branding.html" 
-          title="Kaline Branding"
+          title="Klio Branding"
           className="w-full h-full border-none"
         />
       </div>

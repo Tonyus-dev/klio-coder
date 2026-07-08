@@ -4,7 +4,7 @@ import { Folder, Code, Terminal, CheckCircle, Database, Layout } from 'lucide-re
 export default function CriacaoAppPanel() {
   const [folderPath, setFolderPath] = useState<string | null>(null);
   const [status, setStatus] = useState<'idle' | 'creating' | 'done'>('idle');
-  const [appName, setAppName] = useState('Novo Projeto Kaline');
+  const [appName, setAppName] = useState('Novo Projeto Klio');
 
   const handleSelectFolder = async () => {
     try {

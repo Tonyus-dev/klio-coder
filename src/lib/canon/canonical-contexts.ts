@@ -8,10 +8,10 @@ export type CanonicalContextSeed = {
 
 export const CANONICAL_CONTEXT_SEEDS: CanonicalContextSeed[] = [
   {
-    id: 'kaline_identity',
-    title: 'Identidade e Facetas da Kaline',
+    id: 'klio_identity',
+    title: 'Identidade da Klio',
     scope: 'identity',
-    content: 'Kaline é a totalidade. Facetas (Klio, Kháris, Kuan-Yin, Héstia, Hefaístia, Códice) não são separadas, mas modos operacionais da mesma presença central.',
+    content: 'Klio é o Codex pessoal de Antônio, focado em engenharia assistida e prompt.',
     source: 'totalidade'
   },
   {
@@ -21,13 +21,7 @@ export const CANONICAL_CONTEXT_SEEDS: CanonicalContextSeed[] = [
     content: 'Toda informação nasce como traço (fala bruta). Compactá-la não a valida. Sedimento é apenas uma hipótese em revisão. Somente no Jardim a memória é confirmada.',
     source: 'totalidade'
   },
-  {
-    id: 'kuanyin_protocol',
-    title: 'Protocolo de Ações (Kuan-Yin)',
-    scope: 'commercial',
-    content: 'Comprovante não é pagamento. Solicitação não é agendamento. Nenhuma ação persistente é executada de forma autônoma sem confirmação explícita do usuário.',
-    source: 'totalidade'
-  },
+
   {
     id: 'legal_guardrails',
     title: 'Limites Jurídicos e Anti-Alucinação',
@@ -46,7 +40,7 @@ export const CANONICAL_CONTEXT_SEEDS: CanonicalContextSeed[] = [
     id: 'codice_role',
     title: 'Papel do Códice',
     scope: 'facet',
-    content: 'A faceta Códice funciona como a biblioteca viva. Nela reside o acervo estático confiável para uso da Kaline em respostas complexas.',
+    content: 'A faceta Códice funciona como a biblioteca viva. Nela reside o acervo estático confiável para uso da Klio em respostas complexas.',
     source: 'totalidade'
   },
   {

@@ -133,7 +133,7 @@ export default function ForgePanel() {
 #### 🛠️ Próximos Passos Decididos
 1. Manter a mente canônica integrada ao PWA principal.
 2. Utilizar o Qwen 1.5B para simplificar rascunhos rápidos locais.
-3. Consumir dados estruturados das notas locais no /KALINE.`;
+3. Consumir dados estruturados das notas locais no /KLIO.`;
   };
 
   if (!envelope) {
@@ -379,7 +379,7 @@ export default function ForgePanel() {
         </div>
 
         <p className="text-[10px] text-[#A89F96] leading-relaxed">
-          Para respeitar a segurança e o isolamento dos ambientes, a Hefaístia **nunca escreve direto na nuvem**. Copie o bloco Markdown abaixo e cole diretamente na aba do Chat da Kaline ou no seu Códice para enriquecer o contexto de longo prazo.
+          Para respeitar a segurança e o isolamento dos ambientes, a Hefaístia **nunca escreve direto na nuvem**. Copie o bloco Markdown abaixo e cole diretamente na aba do Chat da Klio ou no seu Códice para enriquecer o contexto de longo prazo.
         </p>
 
         <div className="bg-[#10131A] border border-[#252936] rounded-xl p-3.5 font-mono text-[10px] text-emerald-400 max-h-40 overflow-y-auto no-scrollbar select-all">

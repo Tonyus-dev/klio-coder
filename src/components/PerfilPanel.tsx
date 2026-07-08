@@ -48,7 +48,7 @@ export default function PerfilPanel() {
       {/* Header */}
       <div>
         <h2 className="text-2xl font-black text-[#FF4C1F] font-serif tracking-[0.2em] uppercase">Perfil</h2>
-        <p className="text-sm text-[#A89F96] mt-2">Como Kaline e Klio te chamam, e a foto que aparece nas suas mensagens.</p>
+        <p className="text-sm text-[#A89F96] mt-2">Como Klio te chama, e a foto que aparece nas suas mensagens.</p>
       </div>
 
       {/* Photo Upload */}
@@ -110,7 +110,7 @@ export default function PerfilPanel() {
             </button>
           </div>
           <p className="text-[11px] text-[#A89F96]">
-            Define como Kaline e Klio te saúdam no cockpit.
+            Define como Klio te saúbda no cockpit.
           </p>
         </div>
       </div>

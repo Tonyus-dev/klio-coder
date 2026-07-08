@@ -31,7 +31,7 @@ class CacheStatsTracker {
 
   private loadStats() {
     try {
-      const stored = localStorage.getItem('kaline_cache_stats');
+      const stored = localStorage.getItem('Klio_cache_stats');
       if (stored) {
         this.stats = JSON.parse(stored);
       }
@@ -41,7 +41,7 @@ class CacheStatsTracker {
   }
 
   private saveStats() {
-    localStorage.setItem('kaline_cache_stats', JSON.stringify(this.stats));
+    localStorage.setItem('Klio_cache_stats', JSON.stringify(this.stats));
     this.notifyListeners();
   }
 

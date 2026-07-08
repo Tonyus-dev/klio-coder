@@ -31,7 +31,7 @@ class PromptCacheManager {
     promptContext: string,
     createCacheFn: () => Promise<{ id: string, ttl?: number }>
   ): Promise<string | null> {
-    const isEnabled = localStorage.getItem('kaline_prompt_caching') !== 'false';
+    const isEnabled = localStorage.getItem('Klio_prompt_caching') !== 'false';
     if (!isEnabled) return null;
 
     const hash = await this.hashString(promptContext);

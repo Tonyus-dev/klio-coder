@@ -32,7 +32,7 @@ import HabitStatsView from './components/HabitStatsView';
 import DesktopMonitorView from './components/DesktopMonitorView';
 import TailscaleShareView from './components/TailscaleShareView';
 //  from './components/TailscaleShareView';
-import KalineChat from './components/KalineChat';
+import KlioChat from './components/KlioChat';
 import PRPlanView from './components/PRPlanView';
 import InstallPrompt from './components/InstallPrompt';
 
@@ -51,19 +51,19 @@ import LeiaMePanel from './components/LeiaMePanel';
 import { INITIAL_HABITS, getRelativeDateString } from './initialData';
 import { Habit, DailyLog } from './types';
 
-type TabType = 'today' | 'stats' | 'monitor' | 'tailscale' | 'kaline' | 'caverna' | 'github' | 'pritaneu' | 'station' | 'forge' | 'revisao' | 'jardim' | 'sedimentos' | 'guardiao' | 'criacao' | 'agenda' | 'perfil' | 'codice' | 'leiame';
+type TabType = 'today' | 'stats' | 'monitor' | 'tailscale' | 'klio' | 'caverna' | 'github' | 'pritaneu' | 'station' | 'forge' | 'revisao' | 'jardim' | 'sedimentos' | 'guardiao' | 'criacao' | 'agenda' | 'perfil' | 'codice' | 'leiame';
 
-export default function KalineDashboard() {
-  const [activeTab, setActiveTab] = useState<TabType>('kaline');
+export default function KlioDashboard() {
+  const [activeTab, setActiveTab] = useState<TabType>('klio');
   const [isOnline, setIsOnline] = useState<boolean>(navigator.onLine);
-  const [kalineVersion, setKalineVersion] = useState<'V27' | 'V27b'>(() => {
-    return (localStorage.getItem('kaline_version') as 'V27' | 'V27b') || 'V27';
+  const [klioVersion, setKlioVersion] = useState<'V27' | 'V27b'>(() => {
+    return (localStorage.getItem('klio_version') as 'V27' | 'V27b') || 'V27';
   });
 
   useEffect(() => {
-    localStorage.setItem('kaline_version', kalineVersion);
-    window.dispatchEvent(new CustomEvent('kalineVersionChanged', { detail: kalineVersion }));
-  }, [kalineVersion]);
+    localStorage.setItem('klio_version', klioVersion);
+    window.dispatchEvent(new CustomEvent('klioVersionChanged', { detail: klioVersion }));
+  }, [klioVersion]);
   const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(false);
 
   // Semaphore (Semáforo) Global States
@@ -72,7 +72,7 @@ export default function KalineDashboard() {
   // Sync regime state from localStorage dynamically
   useEffect(() => {
     const syncRegime = () => {
-      const val = (localStorage.getItem('kaline_presenca_regime') as any) || 'green';
+      const val = (localStorage.getItem('klio_presenca_regime') as any) || 'green';
       setPresencaRegime(val);
     };
     syncRegime();
@@ -92,14 +92,14 @@ export default function KalineDashboard() {
 
   // Local-First States
   const [habits, setHabits] = useState<Habit[]>(() => {
-    const stored = localStorage.getItem('kaline_habits');
+    const stored = localStorage.getItem('klio_habits');
     return stored ? JSON.parse(stored) : INITIAL_HABITS;
   });
 
   const todayStr = getRelativeDateString(0);
 
   const [dailyLog, setDailyLog] = useState<DailyLog>(() => {
-    const stored = localStorage.getItem(`kaline_log_${todayStr}`);
+    const stored = localStorage.getItem(`klio_log_${todayStr}`);
     return stored ? JSON.parse(stored) : {
       date: todayStr,
       mood: null,
@@ -109,11 +109,11 @@ export default function KalineDashboard() {
 
   // Persist states to local storage
   useEffect(() => {
-    localStorage.setItem('kaline_habits', JSON.stringify(habits));
+    localStorage.setItem('klio_habits', JSON.stringify(habits));
   }, [habits]);
 
   useEffect(() => {
-    localStorage.setItem(`kaline_log_${todayStr}`, JSON.stringify(dailyLog));
+    localStorage.setItem(`klio_log_${todayStr}`, JSON.stringify(dailyLog));
   }, [dailyLog, todayStr]);
 
   // Log Habit actions
@@ -199,10 +199,10 @@ export default function KalineDashboard() {
       const isRightSwipe = distanceX < -minSwipeDistance;
 
       if (isLeftSwipe) {
-        if (activeTab === 'today') setActiveTab('kaline');
+        if (activeTab === 'today') setActiveTab('klio');
       }
       if (isRightSwipe) {
-        if (activeTab === 'kaline') setActiveTab('today');
+        if (activeTab === 'klio') setActiveTab('today');
       }
     }
   };
@@ -210,7 +210,7 @@ export default function KalineDashboard() {
     { id: 'pritaneu', label: 'Pritaneu Hub', icon: Flame, category: 'Centro' },
     { id: 'today', label: 'Totalidade', icon: CheckSquare, category: 'Centro' },
     { id: 'agenda', label: 'Agenda Pessoal', icon: CalendarDays, category: 'Centro' },
-    { id: 'kaline', label: 'Kaline Chat', icon: MessageSquare, category: 'Centro' },
+    { id: 'klio', label: 'Klio Chat', icon: MessageSquare, category: 'Centro' },
     { id: 'caverna', label: 'Caverna do Eco', icon: Mic, category: 'Centro' },
     { id: 'guardiao', label: 'Guardião (Admin)', icon: Shield, category: 'Centro' },
     { id: 'perfil', label: 'Perfil', icon: User, category: 'Centro' },
@@ -229,7 +229,7 @@ export default function KalineDashboard() {
   ] as const;
 
   return (
-    <div className={`app-bg flex flex-col font-sans select-none antialiased text-[#F7EFE7] ${activeTab === 'kaline' || activeTab === 'caverna' ? 'h-[100dvh] overflow-hidden' : 'min-h-[100dvh]'}`} id="main-app-container"
+    <div className={`app-bg flex flex-col font-sans select-none antialiased text-[#F7EFE7] ${activeTab === 'klio' || activeTab === 'caverna' ? 'h-[100dvh] overflow-hidden' : 'min-h-[100dvh]'}`} id="main-app-container"
       onTouchStart={onTouchStart}
       onTouchMove={onTouchMove}
       onTouchEnd={onTouchEnd}>
@@ -247,8 +247,8 @@ export default function KalineDashboard() {
 
           <div className="w-8 h-8 rounded-xl flex items-center justify-center overflow-hidden">
             <img 
-              src="/brand/kaline-apple.png" 
-              alt="Maçã de Cristal" 
+              src="/brand/klio-apple.png" 
+              alt="Maçã Klio" 
               className="w-full h-full object-cover"
               onError={(e) => {
                 e.currentTarget.style.display = 'none';
@@ -258,13 +258,13 @@ export default function KalineDashboard() {
           </div>
           <div>
             <h1 className="text-sm font-black tracking-widest uppercase text-[#F7EFE7] flex items-center gap-1.5 font-serif">
-              K∧LINE 
+              KLIO 
               <button 
-                onClick={() => setKalineVersion(v => v === 'V27' ? 'V27b' : 'V27')}
+                onClick={() => setKlioVersion(v => v === 'V27' ? 'V27b' : 'V27')}
                 className="text-[8px] sm:text-[9px] font-extrabold text-[#FF4C1F] bg-[#FF4C1F]/10 hover:bg-[#FF4C1F]/20 px-1 sm:px-1.5 py-0.5 rounded border border-[#FF4C1F]/20 transition-colors"
-                title={`Alternar para ${kalineVersion === 'V27' ? 'V27b (Desktop)' : 'V27 (Mobile)'}`}
+                title={`Alternar para ${klioVersion === 'V27' ? 'V27b (Desktop)' : 'V27 (Mobile)'}`}
               >
-                {kalineVersion.toLowerCase()}
+                {klioVersion.toLowerCase()}
               </button>
             </h1>
             <p className="text-[8px] text-[#A89F96] font-bold uppercase tracking-widest hidden sm:block">Fogo Central e Altar de Sincronização</p>
@@ -277,7 +277,7 @@ export default function KalineDashboard() {
       </header>
 
       {/* Main Content Layout with Sidebar for Desktop / Scroll Area for Mobile */}
-      <div className={`grow min-h-0 flex flex-col lg:flex-row max-w-7xl w-full mx-auto px-4 relative ${activeTab === 'kaline' || activeTab === 'caverna' ? 'py-3 gap-3' : 'py-6 gap-6'}`}>
+      <div className={`grow min-h-0 flex flex-col lg:flex-row max-w-7xl w-full mx-auto px-4 relative ${activeTab === 'klio' || activeTab === 'caverna' ? 'py-3 gap-3' : 'py-6 gap-6'}`}>
         
         {/* Mobile Sidebar Overlay Backdrop */}
         {isSidebarOpen && (
@@ -293,7 +293,7 @@ export default function KalineDashboard() {
         }`}>
           <div className="flex justify-between items-center lg:block pb-2 lg:pb-0">
             <div>
-              <h2 className="text-lg font-bold tracking-tight font-serif text-[#F7EFE7]">K∧LINE</h2>
+              <h2 className="text-lg font-bold tracking-tight font-serif text-[#F7EFE7]">KLIO</h2>
               <p className="text-[9px] text-[#A89F96] font-bold uppercase tracking-widest mt-0.5">Estação de Comando</p>
             </div>
             {/* Mobile Close Button */}
@@ -346,7 +346,7 @@ export default function KalineDashboard() {
         </aside>
 
         {/* Center Main Content Area */}
-        <main className={`grow max-w-4xl w-full mx-auto flex flex-col min-w-0 ${activeTab === 'kaline' || activeTab === 'caverna' ? 'min-h-0 overflow-y-auto no-scrollbar pb-0 pt-0' : 'pb-20 lg:pb-10'}`}>
+        <main className={`grow max-w-4xl w-full mx-auto flex flex-col min-w-0 ${activeTab === 'klio' || activeTab === 'caverna' ? 'min-h-0 overflow-y-auto no-scrollbar pb-0 pt-0' : 'pb-20 lg:pb-10'}`}>
           {activeTab === 'today' && (
             <TodayDashboard presencaRegime={presencaRegime} setPresencaRegime={setPresencaRegime} 
               habits={habits} 
@@ -358,7 +358,7 @@ export default function KalineDashboard() {
           {activeTab === 'stats' && <HabitStatsView habits={habits} />}
           {activeTab === 'monitor' && <DesktopMonitorView />}
           {activeTab === 'tailscale' && <TailscaleShareView />}
-          {activeTab === 'kaline' && <KalineChat />}
+          {activeTab === 'klio' && <KlioChat />}
           {activeTab === 'caverna' && <CavernaEcoPanel />}
           {activeTab === 'guardiao' && <GuardiaoPanel />}
           {activeTab === 'perfil' && <PerfilPanel />}

@@ -1,4 +1,4 @@
-const CACHE_NAME = 'kaline-v27';
+const CACHE_NAME = 'klio-v27';
 const ASSETS_TO_CACHE = [
   '/',
   '/index.html',

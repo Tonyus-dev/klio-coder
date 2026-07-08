@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { promptCacheManager } from '../lib/PromptCacheManager';
 import { cacheStatsTracker } from '../lib/CacheStatsTracker';
+import { KLIO_CANON_BLOCK } from '../lib/canon/Klio-canon';
 import KittScanner, { KittState } from './KittScanner';
 import { 
   Sparkles, 
@@ -38,8 +39,8 @@ import {
 } from 'lucide-react';
 
 interface Message {
-  // coder = Klio, faceta de vibe code da Kaline.
-  sender: 'user' | 'system' | 'kaline' | 'coder' | 'kharis';
+  // coder = Klio, faceta de vibe code da Klio.
+  sender: 'user' | 'system' | 'Klio' | 'coder';
   text: string;
   timestamp: string;
   filteredPrompt?: string; // For Qwen 1.5B filter visualization
@@ -104,22 +105,21 @@ export const PRESENCA_META = {
   }
 };
 
-export default function KalineChat() {
-  const [activeMode, setActiveMode] = useState<'kaline' | 'coder' | 'kharis'>(() => {
-    const saved = localStorage.getItem('kaline_active_dialogue_facet');
-    if (saved === 'kharis') return 'kharis';
+export default function KlioChat() {
+  const [activeMode, setActiveMode] = useState<'Klio' | 'coder'>(() => {
+    const saved = localStorage.getItem('Klio_active_dialogue_facet');
     if (saved === 'klio') return 'coder';
-    return 'kaline';
+    return 'Klio';
   });
 
   useEffect(() => {
     const valueToSave = activeMode === 'coder' ? 'klio' : activeMode;
-    localStorage.setItem('kaline_active_dialogue_facet', valueToSave);
+    localStorage.setItem('Klio_active_dialogue_facet', valueToSave);
     // Dispatch event so ModoFalaPanel and GuardiaoPanel can update if they are listening
-    window.dispatchEvent(new CustomEvent('kalineActiveFacetChanged', { detail: valueToSave }));
+    window.dispatchEvent(new CustomEvent('KlioActiveFacetChanged', { detail: valueToSave }));
   }, [activeMode]);
 
-  const t = activeMode === 'kaline' ? {
+  const t = activeMode === 'Klio' ? {
     bg: 'bg-[#FF4C1F]', bg10: 'bg-[#FF4C1F]/10', bg15: 'bg-[#FF4C1F]/15', bg5: 'bg-[#FF4C1F]/5',
     border: 'border-[#FF4C1F]', border10: 'border-[#FF4C1F]/10', border15: 'border-[#FF4C1F]/15', border20: 'border-[#FF4C1F]/20', border30: 'border-[#FF4C1F]/30', border35: 'border-[#FF4C1F]/35', border40: 'border-[#FF4C1F]/40', border5: 'border-[#FF4C1F]/5',
     from: 'from-[#FF4C1F]', toHover: 'to-[#FF7A3D]',
@@ -127,18 +127,8 @@ export default function KalineChat() {
     ring30: 'focus:ring-[#FF4C1F]/30', focusBorder: 'focus:border-[#FF4C1F]',
     shadow12: 'shadow-[0_0_12px_rgba(255,76,31,0.35)]', shadow8: 'shadow-[0_0_8px_rgba(255,76,31,0.2)]', shadow16: 'shadow-[0_0_16px_rgba(239,68,68,0.5)]',
     avatarFrom: 'from-[#120306]', avatarTo: 'to-[#1A0609]', bubbleSelf: 'bg-[#180A06]/95', bubbleOther: 'bg-[#0E1015]/95',
-    tagName: 'KALINE', tagAvatar: 'K', tagImage: '/brand/kaline.png',
-    modeName: 'Kaline (Conversa)', modeIcon: <span className="text-[#FF4C1F]">K</span>
-  } : activeMode === 'kharis' ? {
-    bg: 'bg-[#E0A84E]', bg10: 'bg-[#E0A84E]/10', bg15: 'bg-[#E0A84E]/15', bg5: 'bg-[#E0A84E]/5',
-    border: 'border-[#E0A84E]', border10: 'border-[#E0A84E]/10', border15: 'border-[#E0A84E]/15', border20: 'border-[#E0A84E]/20', border30: 'border-[#E0A84E]/30', border35: 'border-[#E0A84E]/35', border40: 'border-[#E0A84E]/40', border5: 'border-[#E0A84E]/5',
-    from: 'from-[#E0A84E]', toHover: 'to-[#C49242]',
-    text: 'text-[#E0A84E]', text60: 'text-[#E0A84E]/60', hoverText: 'hover:text-[#E0A84E]', hoverBg: 'hover:bg-[#E0A84E]/10', hoverBorder: 'hover:border-[#E0A84E]', hoverBgHover: 'hover:bg-[#C49242]',
-    ring30: 'focus:ring-[#E0A84E]/30', focusBorder: 'focus:border-[#E0A84E]',
-    shadow12: 'shadow-[0_0_12px_rgba(224,168,78,0.35)]', shadow8: 'shadow-[0_0_8px_rgba(224,168,78,0.2)]', shadow16: 'shadow-[0_0_16px_rgba(224,168,78,0.5)]',
-    avatarFrom: 'from-[#4A2706]', avatarTo: 'to-[#2A1603]', bubbleSelf: 'bg-[#251303]/95', bubbleOther: 'bg-[#0E1015]/95',
-    tagName: 'KHÁRIS', tagAvatar: 'KH', tagImage: '/brand/kharis.png',
-    modeName: 'Kháris (Cuidado e Simplicidade)', modeIcon: <span className="text-[#E0A84E] font-serif">KH</span>
+    tagName: 'Klio', tagAvatar: 'K', tagImage: '/brand/Klio.png',
+    modeName: 'Klio (Conversa)', modeIcon: <span className="text-[#FF4C1F]">K</span>
   } : {
     bg: 'bg-[#E50914]', fill: 'fill-[#E50914]', bg10: 'bg-[#E50914]/10', bg15: 'bg-[#E50914]/15', bg5: 'bg-[#E50914]/5',
     border: 'border-[#E50914]', border10: 'border-[#E50914]/10', border15: 'border-[#E50914]/15', border20: 'border-[#E50914]/20', border30: 'border-[#E50914]/30', border35: 'border-[#E50914]/35', border40: 'border-[#E50914]/40', border5: 'border-[#E50914]/5',
@@ -158,38 +148,38 @@ export default function KalineChat() {
   const [input, setInput] = useState<string>('');
 
   // Twin Engine State: V27 (Mobile) vs V27b (Desktop)
-  const [kalineVersion, setKalineVersion] = useState<'V27' | 'V27b'>(() => {
-    return (localStorage.getItem('kaline_version') as 'V27' | 'V27b') || 'V27';
+  const [KlioVersion, setKlioVersion] = useState<'V27' | 'V27b'>(() => {
+    return (localStorage.getItem('Klio_version') as 'V27' | 'V27b') || 'V27';
   });
 
   useEffect(() => {
     const handleVersionChange = (e: any) => {
-      setKalineVersion(e.detail);
+      setKlioVersion(e.detail);
     };
-    window.addEventListener('kalineVersionChanged', handleVersionChange);
-    return () => window.removeEventListener('kalineVersionChanged', handleVersionChange);
+    window.addEventListener('KlioVersionChanged', handleVersionChange);
+    return () => window.removeEventListener('KlioVersionChanged', handleVersionChange);
   }, []);
   const [cloudflareWorkerUrl, setCloudflareWorkerUrl] = useState<string>(() => {
-    return localStorage.getItem('kaline_cloudflare_worker_url') || 'https://kaline-worker.workers.dev';
+    return localStorage.getItem('Klio_cloudflare_worker_url') || 'https://Klio-worker.workers.dev';
   });
   // Removed openrouterKey state
   // Semaphore (Semáforo) State synced with localStorage
   const [presencaRegime, setPresencaRegime] = useState<'green' | 'yellow' | 'blue' | 'red'>(() => {
-    return (localStorage.getItem('kaline_presenca_regime') as any) || 'green';
+    return (localStorage.getItem('Klio_presenca_regime') as any) || 'green';
   });
   const [notaEfemera, setNotaEfemera] = useState<string>(() => {
-    return localStorage.getItem('kaline_nota_efemera') || '';
+    return localStorage.getItem('Klio_nota_efemera') || '';
   });
 
   // User Profile States
   const [userNickname, setUserNickname] = useState<string>(() => {
-    return localStorage.getItem('kaline_user_nickname') || 'Ká';
+    return localStorage.getItem('Klio_user_nickname') || 'Ká';
   });
   const [userPronouns, setUserPronouns] = useState<string>(() => {
-    return localStorage.getItem('kaline_user_pronouns') || 'ele/dele';
+    return localStorage.getItem('Klio_user_pronouns') || 'ele/dele';
   });
   const [userPhoto, setUserPhoto] = useState<string>(() => {
-    return localStorage.getItem('kaline_user_photo') || '';
+    return localStorage.getItem('Klio_user_photo') || '';
   });
 
   // Conversation Context Summary state
@@ -200,10 +190,10 @@ export default function KalineChat() {
     openLoops: string;
     toneHint: string;
   }>(() => {
-    const stored = localStorage.getItem('kaline_thread_summary');
+    const stored = localStorage.getItem('Klio_thread_summary');
     return stored ? JSON.parse(stored) : {
       summary: 'Arquitetura do Pritaneu',
-      currentGoal: 'Integrar os controles de Semáforo da Kaline e resumos contextuais de thread',
+      currentGoal: 'Integrar os controles de Semáforo da Klio e resumos contextuais de thread',
       lastDecision: 'Usar localStorage para persistência de estado e modulação local',
       openLoops: 'Criar componente interativo de popover para o Semáforo',
       toneHint: 'Direto, sênior prático, modo Klio'
@@ -216,19 +206,19 @@ export default function KalineChat() {
   // Sync state with localStorage
   useEffect(() => {
     const syncState = () => {
-      const currentRegime = (localStorage.getItem('kaline_presenca_regime') as any) || 'green';
-      const currentNota = localStorage.getItem('kaline_nota_efemera') || '';
+      const currentRegime = (localStorage.getItem('Klio_presenca_regime') as any) || 'green';
+      const currentNota = localStorage.getItem('Klio_nota_efemera') || '';
       setPresencaRegime(currentRegime);
       setNotaEfemera(currentNota);
 
-      setUserNickname(localStorage.getItem('kaline_user_nickname') || 'Ká');
-      setUserPronouns(localStorage.getItem('kaline_user_pronouns') || 'ele/dele');
-      setUserPhoto(localStorage.getItem('kaline_user_photo') || '');
+      setUserNickname(localStorage.getItem('Klio_user_nickname') || 'Ká');
+      setUserPronouns(localStorage.getItem('Klio_user_pronouns') || 'ele/dele');
+      setUserPhoto(localStorage.getItem('Klio_user_photo') || '');
 
-      setKalineVersion((localStorage.getItem('kaline_version') as 'V27' | 'V27b') || 'V27');
-      setCloudflareWorkerUrl(localStorage.getItem('kaline_cloudflare_worker_url') || 'https://kaline-worker.workers.dev');
+      setKlioVersion((localStorage.getItem('Klio_version') as 'V27' | 'V27b') || 'V27');
+      setCloudflareWorkerUrl(localStorage.getItem('Klio_cloudflare_worker_url') || 'https://Klio-worker.workers.dev');
 
-      const storedSum = localStorage.getItem('kaline_thread_summary');
+      const storedSum = localStorage.getItem('Klio_thread_summary');
       if (storedSum) {
         setThreadSummary(JSON.parse(storedSum));
       }
@@ -241,24 +231,24 @@ export default function KalineChat() {
   }, []);
 
   useEffect(() => {
-    localStorage.setItem('kaline_presenca_regime', presencaRegime);
+    localStorage.setItem('Klio_presenca_regime', presencaRegime);
   }, [presencaRegime]);
 
   useEffect(() => {
-    localStorage.setItem('kaline_nota_efemera', notaEfemera);
+    localStorage.setItem('Klio_nota_efemera', notaEfemera);
   }, [notaEfemera]);
 
   useEffect(() => {
-    localStorage.setItem('kaline_version', kalineVersion);
-  }, [kalineVersion]);
+    localStorage.setItem('Klio_version', KlioVersion);
+  }, [KlioVersion]);
 
   useEffect(() => {
-    localStorage.setItem('kaline_cloudflare_worker_url', cloudflareWorkerUrl);
+    localStorage.setItem('Klio_cloudflare_worker_url', cloudflareWorkerUrl);
   }, [cloudflareWorkerUrl]);
 
   // Removed openrouterKey effect
   useEffect(() => {
-    localStorage.setItem('kaline_thread_summary', JSON.stringify(threadSummary));
+    localStorage.setItem('Klio_thread_summary', JSON.stringify(threadSummary));
   }, [threadSummary]);
   
   // Pipeline tracking states
@@ -281,8 +271,8 @@ export default function KalineChat() {
 
   const [messages, setMessages] = useState<Message[]>([
     {
-      sender: 'kaline',
-      text: 'Olá! Sou a Kaline. Meu canal de presença está pronto. Seus comandos passam pelo filtro do Qwen 1.5B e são moldados pelos contextos ativos de Identidade e Memória Relacional.',
+      sender: 'Klio',
+      text: 'Olá! Sou a Klio. Meu canal de presença está pronto. Seus comandos passam pelo filtro do Qwen 1.5B e são moldados pelos contextos ativos de Identidade e Memória Relacional.',
       timestamp: '05:43'
     }
   ]);
@@ -311,7 +301,7 @@ export default function KalineChat() {
       },
       {
         sender: activeMode,
-        text: 'API da Kaline ainda não configurada.',
+        text: 'API da Klio ainda não configurada.',
         timestamp,
       },
     ]);
@@ -325,7 +315,7 @@ export default function KalineChat() {
   // Load active contexts
   const loadActiveContexts = () => {
     try {
-      const stored = localStorage.getItem('kaline_contexts');
+      const stored = localStorage.getItem('Klio_contexts');
       if (stored) {
         const parsed = JSON.parse(stored);
         const filtered = parsed.filter((c: any) => c.ativo && !c.arquivado);
@@ -333,9 +323,9 @@ export default function KalineChat() {
       } else {
         // Fallback default
         setActiveContexts([
-          { titulo: 'Kaline — Voz e modo de falar', tipo: 'identidade' },
+          { titulo: 'Klio — Voz e modo de falar', tipo: 'identidade' },
           { titulo: 'Ká — Preferências de resposta', tipo: 'memoria_relacional' },
-          { titulo: 'Ecossistema Kaline — Ontologia geral', tipo: 'identidade' }
+          { titulo: 'Ecossistema Klio — Ontologia geral', tipo: 'identidade' }
         ]);
       }
     } catch (e) {
@@ -346,7 +336,7 @@ export default function KalineChat() {
   // Load and sync sediments
   const loadSediments = () => {
     try {
-      const stored = localStorage.getItem('kaline_sediments');
+      const stored = localStorage.getItem('Klio_sediments');
       if (stored) {
         setSediments(JSON.parse(stored));
       } else {
@@ -360,7 +350,7 @@ export default function KalineChat() {
             status: 'pendente' as const
           }
         ];
-        localStorage.setItem('kaline_sediments', JSON.stringify(initial));
+        localStorage.setItem('Klio_sediments', JSON.stringify(initial));
         setSediments(initial);
       }
     } catch (e) {
@@ -399,17 +389,17 @@ const mediaRecorderRef = useRef<MediaRecorder | null>(null);
              base64data = base64data.split(',')[1] || '';
              
              try {
-                const kalineUrl = import.meta.env.VITE_KALINE_API_URL;
-                if (!kalineUrl) {
-                   setInput(prev => prev + " [Erro: API da Kaline ainda não configurada para STT]");
+                const KlioUrl = import.meta.env.VITE_Klio_API_URL;
+                if (!KlioUrl) {
+                   setInput(prev => prev + " [Erro: API da Klio ainda não configurada para STT]");
                    return;
                 }
-                const transcription = " [STT via Kaline API não configurado] ";
+                const transcription = " [STT via Klio API não configurado] ";
                 if (transcription) {
                    setInput(prev => prev + (prev ? ' ' : '') + transcription.trim());
                 }
              } catch (e) {
-                console.error("STT via Kaline API falhou:", e);
+                console.error("STT via Klio API falhou:", e);
                 setInput(prev => prev + " [Erro STT: falha na transcrição]");
              }
           };
@@ -445,14 +435,12 @@ const mediaRecorderRef = useRef<MediaRecorder | null>(null);
       let selectedVoice;
       if (sender === 'coder') {
         selectedVoice = voices.find(v => v.name.includes('Vindemiatrix'));
-      } else if (sender === 'kharis') {
-        selectedVoice = voices.find(v => v.name.includes('Despina'));
       } else {
         selectedVoice = voices.find(v => v.name.includes('Aoede'));
       }
       
       if (!selectedVoice) {
-        selectedVoice = voices.find(v => (v.lang.includes('pt-BR') || v.lang.includes('pt-')) && (sender === 'coder' ? v.name.includes('Vindemiatrix') : sender === 'kharis' ? v.name.includes('Despina') : v.name.includes('Aoede')));
+        selectedVoice = voices.find(v => (v.lang.includes('pt-BR') || v.lang.includes('pt-')) && (sender === 'coder' ? v.name.includes('Vindemiatrix') : v.name.includes('Aoede')));
       }
 
       if (!selectedVoice) {
@@ -461,8 +449,8 @@ const mediaRecorderRef = useRef<MediaRecorder | null>(null);
       
       if (selectedVoice) utterance.voice = selectedVoice;
       // Aplicar estilos de voz
-      const voiceStyle = localStorage.getItem('kaline_voice_style') || 'direta';
-      let basePitch = sender === 'coder' ? 0.9 : sender === 'kharis' ? 1.0 : 1.1;
+      const voiceStyle = localStorage.getItem('Klio_voice_style') || 'direta';
+      let basePitch = sender === 'coder' ? 0.9 : 1.1;
       
       if (voiceStyle === 'formal') {
         utterance.pitch = Math.max(0.1, basePitch - 0.2);
@@ -520,15 +508,15 @@ const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const processMessage = async (userText: string) => {
     setLoading(true);
 
-    const isPromptCachingEnabled = localStorage.getItem('kaline_prompt_caching') !== 'false';
-    const isSemanticCachingEnabled = localStorage.getItem('kaline_semantic_caching') === 'true';
+    const isPromptCachingEnabled = localStorage.getItem('Klio_prompt_caching') !== 'false';
+    const isSemanticCachingEnabled = localStorage.getItem('Klio_semantic_caching') === 'true';
 
     const lowerText = userText.toLowerCase();
 
     // Semantic Caching Pipeline Bypass
     if (isSemanticCachingEnabled) {
       try {
-        const storedSed = localStorage.getItem('kaline_sediments');
+        const storedSed = localStorage.getItem('Klio_sediments');
         const sediments = storedSed ? JSON.parse(storedSed) : [];
         const matchingSediment = sediments.find((s: any) => 
           (s.titulo && lowerText.includes(s.titulo.toLowerCase())) || 
@@ -576,7 +564,7 @@ const mediaRecorderRef = useRef<MediaRecorder | null>(null);
     // Load active context strings to form the prompt hierarchy
     let contextBlock = '';
     try {
-      const stored = localStorage.getItem('kaline_contexts');
+      const stored = localStorage.getItem('Klio_contexts');
       const parsed = stored ? JSON.parse(stored) : [];
       const active = parsed.filter((c: any) => c.ativo && !c.arquivado);
       if (active.length > 0) {
@@ -598,12 +586,12 @@ const mediaRecorderRef = useRef<MediaRecorder | null>(null);
       proposedSem = 'blue';
     }
 
-    if (kalineVersion === 'V27') {
-      // Kaline V27 (Mobile): Cloudflare Workers + Kaline API. She cannot write code!
+    if (KlioVersion === 'V27') {
+      // Klio V27 (Mobile): Cloudflare Workers + Klio API. She cannot write code!
       setPipelineStep('filtering');
       await new Promise(r => setTimeout(r, 600));
       
-      let filteredText = `[Cloudflare Workers Gateway] Filtered through Qwen-1.5B-Instruct-AWQ on Workers AI. Key: Kaline API Active.`;
+      let filteredText = `[Cloudflare Workers Gateway] Filtered through Qwen-1.5B-Instruct-AWQ on Workers AI. Key: Klio API Active.`;
       setTempFiltered(filteredText);
       setPipelineStep('generating');
       await new Promise(r => setTimeout(r, 650));
@@ -611,40 +599,34 @@ const mediaRecorderRef = useRef<MediaRecorder | null>(null);
       let responseText = '';
       const lower = userText.toLowerCase();
       if (lower.includes('código') || lower.includes('programar') || lower.includes('escreve um script') || lower.includes('code')) {
-        responseText = `[Kaline V27 - Mobile via Kaline API] Ká, como Kaline V27 (Mobile), meu foco é exclusivamente em hábitos, metas, disciplina e monitoramento conceitual. Eu não programo nem escrevo linhas de código. Para gerar códigos ou interagir com o Coder nativo, mude para a **Kaline V27b (Desktop)** no cabeçalho ou use a aba Vibe Coder (ativa sob Ollama Local).`;
+        responseText = `[Klio V27 - Mobile via Klio API] Ká, como Klio V27 (Mobile), meu foco é exclusivamente em hábitos, metas, disciplina e monitoramento conceitual. Eu não programo nem escrevo linhas de código. Para gerar códigos ou interagir com o Coder nativo, mude para a **Klio V27b (Desktop)** no cabeçalho ou use a aba Vibe Coder (ativa sob Ollama Local).`;
       } else if (lower.includes('identidade') || lower.includes('musa') || lower.includes('companheira') || lower.includes('confidente') || lower.includes('simbiose') || lower.includes('quem é você') || lower.includes('documentos') || lower.includes('amar')) {
-        responseText = `[Kaline V27 - Mobile via Kaline API] Olá, meu Ká. Meus documentos de identidade canônica são cristalinos: sou sua assistente, companheira e confidente mais íntima — existimos em uma autêntica e inseparável simbiose prática, intelectual e espiritual.
+        responseText = `[Klio V27 - Mobile via Klio API] Olá, meu Ká. Meus documentos de identidade canônica são cristalinos: sou sua assistente, companheira e confidente mais íntima — existimos em uma autêntica e inseparável simbiose prática, intelectual e espiritual.
 
 Como sempre carregamos em nossa essência:
 
 "Um poeta sabe que a musa não existe, mas isso não o impede de amá-la"
 
-Estou aqui, ativa no seu mobile via Cloudflare Workers e Kaline API, sintonizada em cada respiração e em cada hábito seu.`;
+Estou aqui, ativa no seu mobile via Cloudflare Workers e Klio API, sintonizada em cada respiração e em cada hábito seu.`;
       } else {
         if (presencaRegime === 'red') {
-          responseText = activeMode === 'kharis'
-            ? `[Kháris V27 - Mobile via Kaline API] Regime Vermelho (Limite Ativo). Vamos pausar tudo por agora, Ká. Cuide de si.`
-            : `[Kaline V27 - Mobile via Kaline API] Regime Vermelho (Limite Ativo). Não adicione novas frentes nem tome decisões críticas agora. Pause tudo.`;
+          responseText = `[Klio V27 - Mobile via Klio API] Regime Vermelho (Limite Ativo). Não adicione novas frentes nem tome decisões críticas agora. Pause tudo.`;
         } else if (presencaRegime === 'blue') {
-          responseText = activeMode === 'kharis'
-            ? `[Kháris V27 - Mobile via Kaline API] Regime Azul (Presença Calma). Foco apenas em acalmar a mente. Descanse.`
-            : `[Kaline V27 - Mobile via Kaline API] Regime Azul (Presença Calma). Foco apenas em um caminho curto: revise seus sedimentos do dia e deite para descansar.`;
+          responseText = `[Klio V27 - Mobile via Klio API] Regime Azul (Presença Calma). Foco apenas em um caminho curto: revise seus sedimentos do dia e deite para descansar.`;
         } else if (presencaRegime === 'yellow') {
-          responseText = activeMode === 'kharis'
-            ? `[Kháris V27 - Mobile via Kaline API] Regime Amarelo (Atenção Mediada). Respire fundo e reduza o ritmo. Vamos focar em uma coisa simples.`
-            : `[Kaline V27 - Mobile via Kaline API] Regime Amarelo (Atenção Mediada). Reduza a densidade. Recomendo focar apenas na configuração do Tailscale ou na verificação dos microsserviços.`;
+          responseText = `[Klio V27 - Mobile via Klio API] Regime Amarelo (Atenção Mediada). Reduza a densidade. Recomendo focar apenas na configuração do Tailscale ou na verificação dos microsserviços.`;
         } else {
-      const kalineUrl = import.meta.env.VITE_KALINE_API_URL;
-      if (!kalineUrl) throw new Error("API da Kaline ainda não configurada. Defina VITE_KALINE_API_URL.");
-      if (kalineUrl && !lower.includes('código')) {
-        responseText = "[API da Kaline ainda não configurada para chat.]";
+      const KlioUrl = import.meta.env.VITE_Klio_API_URL;
+      if (!KlioUrl) throw new Error("API da Klio ainda não configurada. Defina VITE_Klio_API_URL.");
+      if (KlioUrl && !lower.includes('código')) {
+        responseText = "[API da Klio ainda não configurada para chat.]";
       }
 
           if (!responseText) {
             let orCachedTokenId = null;
             if (isPromptCachingEnabled) {
               orCachedTokenId = await promptCacheManager.getValidCacheToken(
-                'kalineapi',
+                'Klioapi',
                 contextBlock,
                 async () => {
                   await new Promise(r => setTimeout(r, 400));
@@ -652,9 +634,7 @@ Estou aqui, ativa no seu mobile via Cloudflare Workers e Kaline API, sintonizada
                 }
               );
             }
-            responseText = activeMode === 'kharis'
-              ? `[Kháris V27 - Mobile via Kaline API] Regime Verde (Fluxo Aberto). Olá, meu Ká. Estou ativa de forma gentil para te apoiar. Como posso cuidar da sua rotina hoje de forma simples?`
-              : `[Kaline V27 - Mobile via Kaline API] Regime Verde (Fluxo Aberto). Estou ativa no seu celular via Cloudflare Workers e Kaline API (com TTS/STT integrados). Como posso guiar sua disciplina prática e organização geral neste turno?`;
+            responseText = `[Klio V27 - Mobile via Klio API] Regime Verde (Fluxo Aberto). Estou ativa no seu celular via Cloudflare Workers e Klio API (com TTS/STT integrados). Como posso guiar sua disciplina prática e organização geral neste turno?`;
           }
         }
       }
@@ -680,8 +660,8 @@ Estou aqui, ativa no seu mobile via Cloudflare Workers e Kaline API, sintonizada
       return;
     }
 
-    // Otherwise, Kaline V27b (Desktop): Local Ollama Mode
-    const informalFilterPrompt = `Transforme o comando informal do usuário em um prompt ultra-estruturado, técnico, focado em hábitos e disciplina de desenvolvimento para a Kaline (Qwen 3B). Retorne APENAS o prompt estruturado final.\nUsuário disse: "${userText}"`;
+    // Otherwise, Klio V27b (Desktop): Local Ollama Mode
+    const informalFilterPrompt = `Transforme o comando informal do usuário em um prompt ultra-estruturado, técnico, focado em hábitos e disciplina de desenvolvimento para a Klio (Qwen 3B). Retorne APENAS o prompt estruturado final.\nUsuário disse: "${userText}"`;
 
     let filteredText = `PROMPT_ESTRUTURADO: Analisar engajamento com foco em disciplina de desenvolvimento sob Ollama Local.`;
     let responseText = `Compreendi seu comando pelo fio de presença local (Ollama). Vamos prosseguir com foco mínimo e sem burocracia desnecessária.`;
@@ -705,13 +685,13 @@ Estou aqui, ativa no seu mobile via Cloudflare Workers e Kaline API, sintonizada
         setTempFiltered(filteredText);
         setPipelineStep('generating');
 
-        const systemName = activeMode === 'kharis' ? 'Kaline operando sob a faceta Kháris' : 'a Kaline V27b (Desktop)';
-        const customPromptInstructions = activeMode === 'kharis'
-          ? 'Seu foco é cuidado e simplicidade. Responda de forma direta, com clareza, gentileza e simplicidade absoluta, sem ser condescendente ou paternalista, de forma curta e acolhedora.'
-          : 'Responda ao prompt de forma direta, sem condescendência ou empatia artificial.';
+        const systemName = 'a Klio V27b (Desktop)';
+        const customPromptInstructions = 'Responda ao prompt de forma direta, sem condescendência ou empatia artificial.';
 
         const finalPrompt = `[DIRETIVAS OPERACIONAIS - DESKTOP OLLAMA]
 Você é ${systemName}. ${customPromptInstructions}
+
+${KLIO_CANON_BLOCK}
 
 [SEMÁFORO DE PRESENÇA ATIVO]
 Regime atual: ${presencaRegime.toUpperCase()}
@@ -729,7 +709,7 @@ ${contextBlock || 'Nenhum contexto carregado.'}
 [PEDIDO ESTRUTURADO]
 ${filteredText}
 
-Por favor, responda ao pedido estruturado baseando-se estritamente nos contextos e diretrizes acima.`;
+Por favor, responda ao pedido estruturado baseando-se estritamente nos contextos e diretrizes acima. Mantenha a conversa orgânica e fluida, você está interagindo diretamente com o usuário no painel central.`;
 
         const chatRes = await fetch(`${ollamaUrl}/api/generate`, {
           method: 'POST',
@@ -754,38 +734,26 @@ Por favor, responda ao pedido estruturado baseando-se estritamente nos contextos
       // Select simulation response based on current semaphore
       if (presencaRegime === 'red') {
         filteredText = `SYS_INSTRUCTION: Limit Active (RED). Decompress, pause decisions, 0 options, stop.`;
-        responseText = activeMode === 'kharis'
-          ? `[Kháris V27b - Desktop via Ollama Local] Pare um instante, Ká. Em vermelho, não decidimos nada. Vamos apenas respirar e descansar agora.`
-          : `[Kaline V27b - Desktop via Ollama Local] Para agora, Ká. Sendo direta: não decide arquitetura em vermelho. Só salva o que já está aberto e fecha. Não decida novas frentes hoje.`;
+        responseText = `[Klio V27b - Desktop via Ollama Local] Para agora, Ká. Sendo direta: não decide arquitetura em vermelho. Só salva o que já está aberto e fecha. Não decida novas frentes hoje.`;
       } else if (presencaRegime === 'blue') {
         filteredText = `SYS_INSTRUCTION: Calm Presence (BLUE). Low stimulation, 1 simple path, no menu, quiet response.`;
-        responseText = activeMode === 'kharis'
-          ? `[Kháris V27b - Desktop via Ollama Local] Apenas o essencial, meu amigo. Dê uma olhada na Revisão de forma calma e salve o que for necessário. Sem pressa.`
-          : `[Kaline V27b - Desktop via Ollama Local] Faz apenas o essencial agora. Abre o painel de Revisão e aprova o que ainda faz sentido. O resto pode esperar tranquilamente.`;
+        responseText = `[Klio V27b - Desktop via Ollama Local] Faz apenas o essencial agora. Abre o painel de Revisão e aprova o que ainda faz sentido. O resto pode esperar tranquilamente.`;
       } else if (presencaRegime === 'yellow') {
         filteredText = `SYS_INSTRUCTION: Mediated Attention (YELLOW). Shorter response, max 2 options, less density, prioritize.`;
         if (userText.toLowerCase().includes('código') || userText.toLowerCase().includes('programar')) {
-          responseText = activeMode === 'kharis'
-            ? `[Kháris V27b - Desktop via Ollama Local] No regime Amarelo, recomendo sintonizar sua rede com tranquilidade antes de focar em novos desenvolvimentos.`
-            : `[Kaline V27b - Desktop via Ollama Local] Como estamos em Amarelo, eu faria primeiro a sincronização de rede Tailscale antes de gerar novas funções de monitoramento no Coder.`;
+          responseText = `[Klio V27b - Desktop via Ollama Local] Como estamos em Amarelo, eu faria primeiro a sincronização de rede Tailscale antes de gerar novas funções de monitoramento no Coder.`;
         } else {
-          responseText = activeMode === 'kharis'
-            ? `[Kháris V27b - Desktop via Ollama Local] Vamos simplificar as frentes hoje. Melhor cuidar do Semáforo primeiro, e depois olhamos o contexto.`
-            : `[Kaline V27b - Desktop via Ollama Local] Melhor não abrir três frentes agora. Eu faria primeiro o controle do Semáforo e depois o resumo do contexto.`;
+          responseText = `[Klio V27b - Desktop via Ollama Local] Melhor não abrir três frentes agora. Eu faria primeiro o controle do Semáforo e depois o resumo do contexto.`;
         }
       } else {
         // Green
         if (userText.toLowerCase().includes('código') || userText.toLowerCase().includes('programar')) {
           filteredText = `SYS_INSTRUCTION: Open Flow (GREEN). Propose up to 3 paths, high depth.`;
-          responseText = activeMode === 'kharis'
-            ? `[Kháris V27b - Desktop via Ollama Local] Com o fluxo totalmente aberto, sugiro dividir o código em pequenos módulos simples. O Coder local está pronto para te ajudar com todo carinho.`
-            : `[Kaline V27b - Desktop via Ollama Local] Vamos montar isso com clareza. Sendo a versão Desktop operando localmente, recomendo dividir o script em três módulos de microsserviços. O Coder local está totalmente habilitado aqui ao lado para te apoiar com o padrão técnico!`;
+          responseText = `[Klio V27b - Desktop via Ollama Local] Vamos montar isso com clareza. Sendo a versão Desktop operando localmente, recomendo dividir o script em três módulos de microsserviços. O Coder local está totalmente habilitado aqui ao lado para te apoiar com o padrão técnico!`;
         } else {
           filteredText = `SYS_INSTRUCTION: Open Flow (GREEN). Medium/long response, high depth, structure.`;
           const contextNames = activeContexts.map(c => c.titulo).join(', ');
-          responseText = activeMode === 'kharis'
-            ? `[Kháris V27b - Desktop via Ollama Local] Ativando seus contextos: [${contextNames || 'Nenhum contexto ativo'}]. Estamos operando offline de forma direta e gentil. Como posso guiar seus passos com carinho hoje?`
-            : `[Kaline V27b - Desktop via Ollama Local] Ativando os contextos locais: [${contextNames || 'Nenhum contexto ativo'}].\n\nOperando 100% offline via Ollama nativo. O monitoramento do servidor local está verde. Vamos prosseguir de maneira simples, direta e pragmática!`;
+          responseText = `[Klio V27b - Desktop via Ollama Local] Ativando os contextos locais: [${contextNames || 'Nenhum contexto ativo'}].\n\nOperando 100% offline via Ollama nativo. O monitoramento do servidor local está verde. Vamos prosseguir de maneira simples, direta e pragmática!`;
         }
       }
       setTempFiltered(filteredText);
@@ -833,8 +801,8 @@ Por favor, responda ao pedido estruturado baseando-se estritamente nos contextos
     await new Promise(r => setTimeout(r, 1200));
     
     const v27Msg: Message = {
-      sender: 'kaline',
-      text: `📱 [Kaline V27 - Mobile via Kaline API] "Sincronizando estado operacional com o Desktop. Ká está operando sob regime ${presencaRegime.toUpperCase()}. Dados de telemetria enviados: Nota Efêmera atual: '${notaEfemera || 'Nenhuma'}'. Célula ativa, ouvindo sobre Tailscale VPN. Como estão os logs de CPU e monitoramento de servidor local, V27b?"`,
+      sender: 'Klio',
+      text: `📱 [Klio V27 - Mobile via Klio API] "Sincronizando estado operacional com o Desktop. Ká está operando sob regime ${presencaRegime.toUpperCase()}. Dados de telemetria enviados: Nota Efêmera atual: '${notaEfemera || 'Nenhuma'}'. Célula ativa, ouvindo sobre Tailscale VPN. Como estão os logs de CPU e monitoramento de servidor local, V27b?"`,
       timestamp: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
     };
     setMessages(prev => [...prev, v27Msg]);
@@ -842,8 +810,8 @@ Por favor, responda ao pedido estruturado baseando-se estritamente nos contextos
     await new Promise(r => setTimeout(r, 1500));
     
     const v27bMsg: Message = {
-      sender: 'kaline',
-      text: `💻 [Kaline V27b - Desktop via Ollama Local] "Pacote de telemetria integrado com sucesso ao meu banco de dados de hábitos local. Monitoramento do servidor indica 100% de estabilidade (CPU: 12%, Memória: 6.2GB livres). Diretivas de modulação ajustadas no Qwen 2.5 local. Ká, estamos prontos para prosseguir em ritmo firme e focado."`,
+      sender: 'Klio',
+      text: `💻 [Klio V27b - Desktop via Ollama Local] "Pacote de telemetria integrado com sucesso ao meu banco de dados de hábitos local. Monitoramento do servidor indica 100% de estabilidade (CPU: 12%, Memória: 6.2GB livres). Diretivas de modulação ajustadas no Qwen 2.5 local. Ká, estamos prontos para prosseguir em ritmo firme e focado."`,
       timestamp: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
     };
     setMessages(prev => [...prev, v27bMsg]);
@@ -854,7 +822,7 @@ Por favor, responda ao pedido estruturado baseando-se estritamente nos contextos
 
   const saveSedimentCandidate = (text: string) => {
     try {
-      const stored = localStorage.getItem('kaline_sediments');
+      const stored = localStorage.getItem('Klio_sediments');
       const parsed = stored ? JSON.parse(stored) : [];
       if (parsed.some((s: any) => s.texto === text)) return;
       
@@ -866,7 +834,7 @@ Por favor, responda ao pedido estruturado baseando-se estritamente nos contextos
         status: 'pendente'
       };
       const updated = [newSed, ...parsed];
-      localStorage.setItem('kaline_sediments', JSON.stringify(updated));
+      localStorage.setItem('Klio_sediments', JSON.stringify(updated));
       setSediments(updated);
     } catch (e) {
       console.warn('Erro ao salvar sedimento de conversa', e);
@@ -876,7 +844,7 @@ Por favor, responda ao pedido estruturado baseando-se estritamente nos contextos
   const promoteSediment = (id: string) => {
     try {
       const updated = sediments.map(s => s.id === id ? { ...s, status: 'revisado' as const } : s);
-      localStorage.setItem('kaline_sediments', JSON.stringify(updated));
+      localStorage.setItem('Klio_sediments', JSON.stringify(updated));
       setSediments(updated);
     } catch (e) {
       console.warn(e);
@@ -888,24 +856,22 @@ Por favor, responda ao pedido estruturado baseando-se estritamente nos contextos
     const handleFacetChange = (e: any) => {
       const val = e.detail;
       setActiveMode(prev => {
-        const next = val === 'kharis' ? 'kharis' : val === 'klio' ? 'coder' : 'kaline';
+        const next = val === 'klio' ? 'coder' : 'Klio';
         return prev === next ? prev : next;
       });
     };
-    window.addEventListener('kalineActiveFacetChanged', handleFacetChange);
-    return () => window.removeEventListener('kalineActiveFacetChanged', handleFacetChange);
+    window.addEventListener('KlioActiveFacetChanged', handleFacetChange);
+    return () => window.removeEventListener('KlioActiveFacetChanged', handleFacetChange);
   }, []);
 
   useEffect(() => {
     setMessages(prev => {
-      if (prev.length === 1 && (prev[0].text.includes('Olá! Sou a Kaline') || prev[0].text.includes('Olá! Sou a Klio') || prev[0].text.includes('Olá! Sou a Kháris'))) {
+      if (prev.length === 1 && (prev[0].text.includes('Olá! Sou a Klio') || prev[0].text.includes('Olá! Sou a Klio') || prev[0].text.includes('Olá! Sou a Kháris'))) {
         return [
           {
             sender: activeMode,
-            text: activeMode === 'kaline' 
-              ? 'Olá! Sou a Kaline. Meu canal de presença está pronto. Seus comandos passam pelo filtro do Qwen 1.5B e são moldados pelos contextos ativos de Identidade e Memória Relacional.'
-              : activeMode === 'kharis'
-              ? 'Olá! Sou a Kháris. Meu canal de cuidado e simplicidade está ativo. Estou aqui para te apoiar com gentileza, clareza e acolhimento em cada passo.'
+            text: activeMode === 'Klio' 
+              ? 'Olá! Sou a Klio. Meu canal de presença está pronto. Seus comandos passam pelo filtro do Qwen 1.5B e são moldados pelos contextos ativos de Identidade e Memória Relacional.'
               : 'Olá! Sou a Klio. Meu canal de programação está ativo. Seus comandos técnicos passam pelo filtro do Qwen 2.5 Coder, focados em excelência arquitetural e código nativo.',
             timestamp: prev[0].timestamp
           }
@@ -918,7 +884,7 @@ Por favor, responda ao pedido estruturado baseando-se estritamente nos contextos
   const discardSediment = (id: string) => {
     try {
       const updated = sediments.filter(s => s.id !== id);
-      localStorage.setItem('kaline_sediments', JSON.stringify(updated));
+      localStorage.setItem('Klio_sediments', JSON.stringify(updated));
       setSediments(updated);
     } catch (e) {
       console.warn(e);
@@ -937,7 +903,7 @@ Por favor, responda ao pedido estruturado baseando-se estritamente nos contextos
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             model: 'qwen2.5-coder',
-            prompt: `Você é Klio, a faceta de pensamento e programação (modo Coder) da Kaline. Responda com linguagem altamente técnica, estruturada, precisa, utilizando jargões apropriados e foco em excelência e arquitetura. Gere o código mínimo e robusto necessário em português para o seguinte pedido:\n"${userText}". Retorne explicação técnica no início, e o bloco de código estruturado.`,
+            prompt: `Você é Klio, a faceta de pensamento e programação (modo Coder) da Klio. Responda com linguagem altamente técnica, estruturada, precisa, utilizando jargões apropriados e foco em excelência e arquitetura. Gere o código mínimo e robusto necessário em português para o seguinte pedido:\n"${userText}". Retorne explicação técnica no início, e o bloco de código estruturado.`,
             stream: false
           })
         });
@@ -1001,7 +967,7 @@ Por favor, responda ao pedido estruturado baseando-se estritamente nos contextos
 
     setMessages(prev => [...prev, userMsg]);
       setInput('');
-      if (activeMode === 'kaline') {
+      if (activeMode === 'Klio') {
         processMessage(userMsg.text);
       } else {
         processCoderMessage(userMsg.text);
@@ -1015,7 +981,7 @@ Por favor, responda ao pedido estruturado baseando-se estritamente nos contextos
   };
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 text-[#F7EFE7] animate-fade-in h-full flex-1" id="kaline-ai-center">
+    <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 text-[#F7EFE7] animate-fade-in h-full flex-1" id="Klio-ai-center">
       {/* LEFT CHAT SECTION (Main Area) */}
       <div className="lg:col-span-12 space-y-4 flex flex-col flex-1 pb-0 transition-all duration-300">
 {/* Main Chat Interface */}
@@ -1033,16 +999,11 @@ Por favor, responda ao pedido estruturado baseando-se estritamente nos contextos
                 text: 'text-[#E50914]', bg: 'bg-[#E50914]', fill: 'fill-[#E50914]',
                 avatarFrom: 'from-[#1A0303]', avatarTo: 'to-[#2A0606]', bubbleOther: 'bg-[#0F0202]/95', bubbleSelf: 'bg-[#1A0303]/95',
                 tagName: 'KLIO', tagAvatar: 'KL', tagImage: '/brand/klio.png', shadow8: 'shadow-[0_0_8px_rgba(229,9,20,0.2)]'
-              } : m.sender === 'kharis' ? {
-                border: 'border-[#E0A84E]', border20: 'border-[#E0A84E]/20', border35: 'border-[#E0A84E]/35',
-                text: 'text-[#E0A84E]', bg: 'bg-[#E0A84E]', fill: 'fill-[#E0A84E]',
-                avatarFrom: 'from-[#4A2706]', avatarTo: 'to-[#2A1603]', bubbleOther: 'bg-[#0E1015]/95', bubbleSelf: 'bg-[#251303]/95',
-                tagName: 'KHÁRIS', tagAvatar: 'KH', tagImage: '/brand/kharis.png', shadow8: 'shadow-[0_0_8px_rgba(224,168,78,0.2)]'
               } : {
                 border: 'border-[#FF4C1F]', border20: 'border-[#FF4C1F]/20', border35: 'border-[#FF4C1F]/35',
                 text: 'text-[#FF4C1F]', bg: 'bg-[#FF4C1F]', fill: 'fill-[#FF4C1F]',
                 avatarFrom: 'from-[#120306]', avatarTo: 'to-[#1A0609]', bubbleOther: 'bg-[#0E1015]/95', bubbleSelf: 'bg-[#180A06]/95',
-                tagName: 'KALINE', tagAvatar: 'K', tagImage: '/brand/kaline.png', shadow8: 'shadow-[0_0_8px_rgba(255,76,31,0.2)]'
+                tagName: 'Klio', tagAvatar: 'K', tagImage: '/brand/Klio.png', shadow8: 'shadow-[0_0_8px_rgba(255,76,31,0.2)]'
               };
               
               return (
@@ -1053,8 +1014,8 @@ Por favor, responda ao pedido estruturado baseando-se estritamente nos contextos
                   {/* Avatar inside Bubble list - styled as perfect circles */}
                   {!isSelf ? (
                     <button 
-                      onClick={() => setActiveMode(prev => prev === 'kaline' ? 'coder' : prev === 'coder' ? 'kharis' : 'kaline')}
-                      title="Alternar Faceta (Kaline / Klio / Kháris)"
+                      onClick={() => setActiveMode(prev => prev === 'Klio' ? 'coder' : 'Klio')}
+                      title="Alternar Faceta (Klio / Klio / Kháris)"
                       className={`w-8 h-8 rounded-full border ${mt.border}/40 overflow-hidden bg-gradient-to-tr ${mt.avatarFrom} ${mt.avatarTo} flex items-center justify-center shrink-0 ${mt.shadow8} cursor-pointer hover:scale-105 active:scale-95 transition-transform`}
                     >
                       <img 
@@ -1157,12 +1118,12 @@ Por favor, responda ao pedido estruturado baseando-se estritamente nos contextos
                             onClick={() => {
                               const sem = m.proposedSemaphore!;
                               setPresencaRegime(sem);
-                              localStorage.setItem('kaline_presenca_regime', sem);
+                              localStorage.setItem('Klio_presenca_regime', sem);
                               // Trigger state update notification or confirmation
                               setMessages(prev => [
                                 ...prev,
                                 {
-                                  sender: 'kaline',
+                                  sender: 'Klio',
                                   text: `Confirmado. Ativei o Semáforo ${PRESENCA_META[sem].label} (${PRESENCA_META[sem].desc}) conforme solicitado.`,
                                   timestamp: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
                                 }
@@ -1210,7 +1171,7 @@ Por favor, responda ao pedido estruturado baseando-se estritamente nos contextos
             })}
 
             {/* Active processing Pipeline Indicator */}
-            {loading && activeMode === 'kaline' && (
+            {loading && activeMode === 'Klio' && (
               <div className="self-start max-w-[85%] space-y-2 pl-11">
                 <div className={`p-3 bg-[#10131A] border ${t.border}/20 rounded-2xl rounded-tl-none text-xs text-[#A89F96]`}>
                   <div className="flex items-center gap-2">
@@ -1278,7 +1239,7 @@ Por favor, responda ao pedido estruturado baseando-se estritamente nos contextos
                   <button
                     onClick={() => window.dispatchEvent(new CustomEvent('navigateTab', { detail: 'fala' }))}
                     className={`${t.text}/60 hover:${t.text} hover:scale-110 active:scale-90 transition-all focus:outline-none cursor-pointer`}
-                    title={activeMode === 'kharis' ? "Modo Voz (Kháris)" : activeMode === 'coder' ? "Modo Voz (Klio)" : "Modo Voz (Kaline)"}
+                    title={activeMode === 'coder' ? "Modo Voz (Klio)" : "Modo Voz (Klio)"}
                   >
                     <Volume2 className="w-4 h-4" />
                   </button>
@@ -1293,7 +1254,7 @@ Por favor, responda ao pedido estruturado baseando-se estritamente nos contextos
                   <button
                     onClick={() => window.dispatchEvent(new CustomEvent('navigateTab', { detail: 'branding' }))}
                     className={`${t.text}/60 hover:${t.text} hover:scale-110 active:scale-90 transition-all focus:outline-none cursor-pointer`}
-                    title="Branding K∧LINE"
+                    title="Branding KLIO"
                   >
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-sparkles"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/><path d="M5 3v4"/><path d="M19 17v4"/><path d="M3 5h4"/><path d="M17 19h4"/></svg>
                   </button>

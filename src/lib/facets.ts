@@ -1,8 +1,5 @@
 export type FacetId =
-  | 'kaline'
   | 'klio'
-  | 'kharis'
-  | 'kuanyin'
   | 'hestia'
   | 'hefaistia'
   | 'codice';
@@ -14,9 +11,9 @@ export const FACETS: Record<FacetId, {
   role: string;
   description: string;
 }> = {
-  kaline: {
-    id: 'kaline',
-    name: 'Kaline',
+  klio: {
+    id: 'klio',
+    name: 'Klio',
     color: '#C98A65',
     role: 'Totalidade',
     description: 'Presença central, memória, orquestração e decisão.'
@@ -28,20 +25,7 @@ export const FACETS: Record<FacetId, {
     role: 'Vibe Code',
     description: 'Arquitetura, raciocínio técnico, prompts, revisão de código e implementação guiada.'
   },
-  kharis: {
-    id: 'kharis',
-    name: 'Kháris',
-    color: '#E0A84E',
-    role: 'Cuidado',
-    description: 'Acolhimento, simplicidade, presença gentil e linguagem reguladora.'
-  },
-  kuanyin: {
-    id: 'kuanyin',
-    name: 'Kuan-Yin',
-    color: '#BE185D',
-    role: 'Comercial',
-    description: 'Negócios, Guardiões, clientes, serviços, agendamentos e pagamentos.'
-  },
+
   hestia: {
     id: 'hestia',
     name: 'Héstia',

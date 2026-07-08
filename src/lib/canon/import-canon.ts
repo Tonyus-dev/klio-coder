@@ -4,7 +4,7 @@ export function importTotalidadeCanonToLocalStorage(): number {
   if (typeof window === 'undefined') return 0;
 
   try {
-    const rawData = localStorage.getItem('kaline_contexts');
+    const rawData = localStorage.getItem('klio_contexts');
     let contexts: any[] = [];
     
     if (rawData) {
@@ -40,7 +40,7 @@ export function importTotalidadeCanonToLocalStorage(): number {
     }
 
     if (addedCount > 0) {
-      localStorage.setItem('kaline_contexts', JSON.stringify(contexts));
+      localStorage.setItem('klio_contexts', JSON.stringify(contexts));
     }
 
     return addedCount;

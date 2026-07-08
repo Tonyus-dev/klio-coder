@@ -3,7 +3,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { X, Mic, Square, RotateCcw, Volume2, MessageSquare, Paperclip, Activity, Settings } from 'lucide-react';
 
 export type KlioVoiceState = 'idle' | 'recording' | 'transcribing' | 'thinking' | 'speaking' | 'done' | 'error';
-export type ActiveMode = 'kaline' | 'klio' | 'kharis';
+export type ActiveMode = 'Klio' | 'klio';
 export type VoiceStyle = 'direta' | 'calorosa' | 'formal';
 
 interface Message {
@@ -14,35 +14,34 @@ interface Message {
 
 export default function ModoFalaPanel({ onClose }: { onClose: () => void }) {
   const [activeMode, setActiveMode] = useState<ActiveMode>(() => {
-    const saved = localStorage.getItem('kaline_active_dialogue_facet');
-    if (saved === 'kharis') return 'kharis';
+    const saved = localStorage.getItem('Klio_active_dialogue_facet');
     if (saved === 'klio') return 'klio';
-    return 'kaline';
+    return 'Klio';
   });
 
   useEffect(() => {
-    localStorage.setItem('kaline_active_dialogue_facet', activeMode);
-    window.dispatchEvent(new CustomEvent('kalineActiveFacetChanged', { detail: activeMode }));
+    localStorage.setItem('Klio_active_dialogue_facet', activeMode);
+    window.dispatchEvent(new CustomEvent('KlioActiveFacetChanged', { detail: activeMode }));
   }, [activeMode]);
 
   useEffect(() => {
     const handleFacetChange = (e: any) => {
       const val = e.detail;
       setActiveMode(prev => {
-        const next = val === 'kharis' ? 'kharis' : val === 'klio' ? 'klio' : 'kaline';
+        const next = val === 'klio' ? 'klio' : 'Klio';
         return prev === next ? prev : next;
       });
     };
-    window.addEventListener('kalineActiveFacetChanged', handleFacetChange);
-    return () => window.removeEventListener('kalineActiveFacetChanged', handleFacetChange);
+    window.addEventListener('KlioActiveFacetChanged', handleFacetChange);
+    return () => window.removeEventListener('KlioActiveFacetChanged', handleFacetChange);
   }, []);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [voiceStyle, setVoiceStyle] = useState<VoiceStyle>(() => {
-    return (localStorage.getItem('kaline_voice_style') as VoiceStyle) || 'direta';
+    return (localStorage.getItem('Klio_voice_style') as VoiceStyle) || 'direta';
   });
 
   useEffect(() => {
-    localStorage.setItem('kaline_voice_style', voiceStyle);
+    localStorage.setItem('Klio_voice_style', voiceStyle);
   }, [voiceStyle]);
 
   const [currentState, setCurrentState] = useState<KlioVoiceState>('idle');
@@ -53,7 +52,7 @@ export default function ModoFalaPanel({ onClose }: { onClose: () => void }) {
   const historyRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const t = activeMode === 'kaline' ? {
+  const t = activeMode === 'Klio' ? {
     primary: '#FF4C1F',
     primaryClass: 'text-[#FF4C1F]',
     primaryBgClass: 'bg-[#FF4C1F]',
@@ -63,19 +62,7 @@ export default function ModoFalaPanel({ onClose }: { onClose: () => void }) {
     primaryBorder30: 'border-[#FF4C1F]/30',
     primaryBorder50: 'border-[#FF4C1F]/50',
     hoverPrimaryBg20: 'hover:bg-[#FF4C1F]/20',
-    title: 'Kaline',
-    subtitle: 'Motor de Fala Ativo'
-  } : activeMode === 'kharis' ? {
-    primary: '#E0A84E',
-    primaryClass: 'text-[#E0A84E]',
-    primaryBgClass: 'bg-[#E0A84E]',
-    primaryBg10: 'bg-[#E0A84E]/10',
-    primaryBg20: 'bg-[#E0A84E]/20',
-    primaryBorder20: 'border-[#E0A84E]/20',
-    primaryBorder30: 'border-[#E0A84E]/30',
-    primaryBorder50: 'border-[#E0A84E]/50',
-    hoverPrimaryBg20: 'hover:bg-[#E0A84E]/20',
-    title: 'Kháris',
+    title: 'Klio',
     subtitle: 'Motor de Fala Ativo'
   } : {
     primary: '#E50914',
@@ -154,20 +141,18 @@ export default function ModoFalaPanel({ onClose }: { onClose: () => void }) {
     
     if (activeMode === 'klio') {
       selectedVoice = voices.find(v => v.name.includes('Vindemiatrix'));
-    } else if (activeMode === 'kharis') {
-      selectedVoice = voices.find(v => v.name.includes('Despina'));
     } else {
       selectedVoice = voices.find(v => v.name.includes('Aoede'));
     }
     
     if (!selectedVoice) {
-      selectedVoice = voices.find(v => (v.lang.includes('pt-BR') || v.lang.includes('pt-')) && (activeMode === 'klio' ? v.name.includes('Vindemiatrix') : activeMode === 'kharis' ? v.name.includes('Despina') : v.name.includes('Aoede')));
+      selectedVoice = voices.find(v => (v.lang.includes('pt-BR') || v.lang.includes('pt-')) && (activeMode === 'klio' ? v.name.includes('Vindemiatrix') : v.name.includes('Aoede')));
     }
     if (!selectedVoice) {
       selectedVoice = voices.find(v => v.lang.includes('pt-BR') || v.lang.includes('pt-'));
     }
     
-    let basePitch = activeMode === 'klio' ? 0.9 : activeMode === 'kharis' ? 1.0 : 1.1;
+    let basePitch = activeMode === 'klio' ? 0.9 : 1.1;
     if (voiceStyle === 'formal') {
       utterance.pitch = Math.max(0.1, basePitch - 0.2);
       utterance.rate = 0.9;
@@ -200,12 +185,12 @@ export default function ModoFalaPanel({ onClose }: { onClose: () => void }) {
         {/* Mode Switcher Tabs */}
         <div className="absolute left-1/2 -translate-x-1/2 flex items-center bg-[#10131A] p-1 rounded-full border border-[#252936]">
           <button
-            onClick={() => setActiveMode('kaline')}
+            onClick={() => setActiveMode('Klio')}
             className={`px-4 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-widest transition-colors ${
-              activeMode === 'kaline' ? 'bg-[#252936] text-[#F7EFE7]' : 'text-[#A89F96] hover:text-[#F7EFE7]'
+              activeMode === 'Klio' ? 'bg-[#252936] text-[#F7EFE7]' : 'text-[#A89F96] hover:text-[#F7EFE7]'
             }`}
           >
-            Kaline
+            Klio
           </button>
           <button
             onClick={() => setActiveMode('klio')}
@@ -215,14 +200,7 @@ export default function ModoFalaPanel({ onClose }: { onClose: () => void }) {
           >
             Klio
           </button>
-          <button
-            onClick={() => setActiveMode('kharis')}
-            className={`px-4 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-widest transition-colors ${
-              activeMode === 'kharis' ? 'bg-[#252936] text-[#F7EFE7]' : 'text-[#A89F96] hover:text-[#F7EFE7]'
-            }`}
-          >
-            Kháris
-          </button>
+
         </div>
 
         <div className="flex items-center gap-2">

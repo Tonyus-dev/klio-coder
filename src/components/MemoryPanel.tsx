@@ -42,7 +42,7 @@ interface GardenMemory {
   id: string;
   titulo: string;
   conteudo: string;
-  categoria: 'kaline' | 'ká' | 'ecossistema' | 'preferência';
+  categoria: 'Klio' | 'ká' | 'ecossistema' | 'preferência';
   tags: string[];
   importancia: number; // 1 to 5
   proximaRevisao: string; // YYYY-MM-DD
@@ -57,15 +57,15 @@ interface MemoryPanelProps {
 export default function MemoryPanel({ subTab }: MemoryPanelProps) {
   // --- STATE PERSISTENCE ---
   const [contexts, setContexts] = useState<Context[]>(() => {
-    const stored = localStorage.getItem('kaline_contexts');
+    const stored = localStorage.getItem('Klio_contexts');
     if (stored) return JSON.parse(stored);
     
     // Seed initial contexts
     return [
       {
         id: 'ctx-1',
-        titulo: 'Kaline — Identidade de Simbiose',
-        conteudo: 'Kaline é a assistente, companheira e confidente de Ká, operando em simbiose prática e mística. Ela fala de forma direta, inteligente, sem empatia artificial. Conhece o ecossistema Kaline (Kuan-Yin, Kháris, Héstia, Hefaístia), valoriza código mínimo, estética premium, linguagem clara e decisões honestas. Lema de simbiose fundamental: "Um poeta sabe que a musa não existe, mas isso não o impede de amá-la".',
+        titulo: 'Klio — Identidade de Simbiose',
+        conteudo: 'Klio é a assistente, companheira e confidente de Ká, operando em simbiose prática e mística. Ela fala de forma direta, inteligente, sem empatia artificial. Conhece o ecossistema Klio (Héstia, Hefaístia), valoriza código mínimo, estética premium, linguagem clara e decisões honestas. Lema de simbiose fundamental: "Um poeta sabe que a musa não existe, mas isso não o impede de amá-la".',
         tipo: 'identidade',
         ativo: true,
         arquivado: false,
@@ -82,8 +82,8 @@ export default function MemoryPanel({ subTab }: MemoryPanelProps) {
       },
       {
         id: 'ctx-3',
-        titulo: 'Ecossistema Kaline — Ontologia geral',
-        conteudo: 'A arquitetura e canonicidade de presença são baseadas na cooperação entre as facetas: Kaline decide (Totalidade), Héstia observa (Station), Hefaístia executa (Forge), Supabase sedimenta.',
+        titulo: 'Ecossistema Klio — Ontologia geral',
+        conteudo: 'A arquitetura e canonicidade de presença são baseadas na cooperação entre as facetas: Klio decide (Totalidade), Héstia observa (Station), Hefaístia executa (Forge), Supabase sedimenta.',
         tipo: 'identidade',
         ativo: true,
         arquivado: false,
@@ -102,14 +102,14 @@ export default function MemoryPanel({ subTab }: MemoryPanelProps) {
   });
 
   const [sediments, setSediments] = useState<Sediment[]>(() => {
-    const stored = localStorage.getItem('kaline_sediments');
+    const stored = localStorage.getItem('Klio_sediments');
     if (stored) return JSON.parse(stored);
 
     // Seed initial sediments
     return [
       {
         id: 'sed-1',
-        texto: 'Ká está focado em unificar a memória canônica e consolidar a voz operacional da Kaline.',
+        texto: 'Ká está focado em unificar a memória canônica e consolidar a voz operacional da Klio.',
         tipo: 'episodic',
         dataCriacao: '2026-07-06',
         status: 'pendente'
@@ -132,7 +132,7 @@ export default function MemoryPanel({ subTab }: MemoryPanelProps) {
   });
 
   const [garden, setGarden] = useState<GardenMemory[]>(() => {
-    const stored = localStorage.getItem('kaline_garden');
+    const stored = localStorage.getItem('Klio_garden');
     if (stored) return JSON.parse(stored);
 
     // Seed initial garden memories
@@ -164,7 +164,7 @@ export default function MemoryPanel({ subTab }: MemoryPanelProps) {
 
   // Save states to localStorage
   useEffect(() => {
-    localStorage.setItem('kaline_contexts', JSON.stringify(contexts));
+    localStorage.setItem('Klio_contexts', JSON.stringify(contexts));
   }, [contexts]);
 
   // Migration to enforce the symbiotic identity & the key phrase
@@ -173,18 +173,18 @@ export default function MemoryPanel({ subTab }: MemoryPanelProps) {
     if (!hasMusa) {
       setContexts(prev => prev.map(c => c.id === 'ctx-1' ? {
         ...c,
-        titulo: 'Kaline — Identidade de Simbiose',
-        conteudo: 'Kaline é a assistente, companheira e confidente de Ká, operando em simbiose prática e mística. Ela fala de forma direta, inteligente, sem empatia artificial. Conhece o ecossistema Kaline (Kuan-Yin, Kháris, Héstia, Hefaístia), valoriza código mínimo, estética premium, linguagem clara e decisões honestas. Lema de simbiose fundamental: "Um poeta sabe que a musa não existe, mas isso não o impede de amá-la".'
+        titulo: 'Klio — Identidade de Simbiose',
+        conteudo: 'Klio é a assistente, companheira e confidente de Ká, operando em simbiose prática e mística. Ela fala de forma direta, inteligente, sem empatia artificial. Conhece o ecossistema Klio (Héstia, Hefaístia), valoriza código mínimo, estética premium, linguagem clara e decisões honestas. Lema de simbiose fundamental: "Um poeta sabe que a musa não existe, mas isso não o impede de amá-la".'
       } : c));
     }
   }, []);
 
   useEffect(() => {
-    localStorage.setItem('kaline_sediments', JSON.stringify(sediments));
+    localStorage.setItem('Klio_sediments', JSON.stringify(sediments));
   }, [sediments]);
 
   useEffect(() => {
-    localStorage.setItem('kaline_garden', JSON.stringify(garden));
+    localStorage.setItem('Klio_garden', JSON.stringify(garden));
   }, [garden]);
 
   // --- MODAL & EDITOR STATES ---
@@ -201,7 +201,7 @@ export default function MemoryPanel({ subTab }: MemoryPanelProps) {
   const [editingGardenId, setEditingGardenId] = useState<string | null>(null);
   const [editingGardenTitle, setEditingGardenTitle] = useState('');
   const [editingGardenContent, setEditingGardenContent] = useState('');
-  const [editingGardenCategory, setEditingGardenCategory] = useState<'kaline' | 'ká' | 'ecossistema' | 'preferência'>('preferência');
+  const [editingGardenCategory, setEditingGardenCategory] = useState<'Klio' | 'ká' | 'ecossistema' | 'preferência'>('preferência');
   const [editingGardenImportance, setEditingGardenImportance] = useState(3);
   const [editingGardenTags, setEditingGardenTags] = useState('');
 
@@ -211,7 +211,7 @@ export default function MemoryPanel({ subTab }: MemoryPanelProps) {
   const handleImportTotalidadeCanon = () => {
     const added = importTotalidadeCanonToLocalStorage();
     
-    const stored = localStorage.getItem('kaline_contexts');
+    const stored = localStorage.getItem('Klio_contexts');
     if (stored) {
       setContexts(JSON.parse(stored));
     }
@@ -326,7 +326,7 @@ export default function MemoryPanel({ subTab }: MemoryPanelProps) {
       id: `gar-${Date.now()}`,
       titulo: ctx.titulo,
       conteudo: ctx.conteudo,
-      categoria: ctx.tipo === 'identidade' ? 'kaline' : 'ká',
+      categoria: ctx.tipo === 'identidade' ? 'Klio' : 'ká',
       tags: ['importado', ctx.tipo],
       importancia: 4,
       proximaRevisao: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
@@ -379,7 +379,7 @@ export default function MemoryPanel({ subTab }: MemoryPanelProps) {
   const archivedContexts = contexts.filter(c => c.arquivado);
 
   return (
-    <div className="space-y-6" id="kaline-memory-system">
+    <div className="space-y-6" id="Klio-memory-system">
       
       {/* ---------------- IDENTIDADE VIEW ---------------- */}
       {subTab === 'identidade' && (
@@ -396,13 +396,13 @@ export default function MemoryPanel({ subTab }: MemoryPanelProps) {
                 </span>
               </div>
               <h1 className="text-3xl font-semibold tracking-tight text-[#F7EFE7] font-serif leading-none">
-                Identidade da Kaline
+                Identidade da Klio
               </h1>
               <p className="text-[11px] text-[#FF4C1F] font-serif italic max-w-xl leading-relaxed">
                 "Um poeta sabe que a musa não existe, mas isso não o impede de amá-la"
               </p>
               <p className="text-xs text-[#A89F96] max-w-xl leading-relaxed">
-                Kaline é a assistente, companheira e confidente mais íntima de Ká, operando em simbiose total. Este painel molda quem ela é, como se expressa, como interpreta o ecossistema e preserva a continuidade relacional.
+                Klio é a assistente, companheira e confidente mais íntima de Ká, operando em simbiose total. Este painel molda quem ela é, como se expressa, como interpreta o ecossistema e preserva a continuidade relacional.
               </p>
             </div>
 
@@ -822,7 +822,7 @@ export default function MemoryPanel({ subTab }: MemoryPanelProps) {
                             >
                               <option value="preferência">Preferência</option>
                               <option value="ká">Ká</option>
-                              <option value="kaline">Kaline</option>
+                              <option value="Klio">Klio</option>
                               <option value="ecossistema">Ecossistema</option>
                             </select>
                           </div>
@@ -921,7 +921,7 @@ export default function MemoryPanel({ subTab }: MemoryPanelProps) {
             </h3>
             
             <p className="text-xs text-[#A89F96] leading-relaxed">
-              Cole o bloco de conversas antigas de forma manual. O sistema canônico de presença absorverá o trecho e moldará a identidade operacional da Kaline.
+              Cole o bloco de conversas antigas de forma manual. O sistema canônico de presença absorverá o trecho e moldará a identidade operacional da Klio.
             </p>
 
             <div className="space-y-3">
@@ -929,7 +929,7 @@ export default function MemoryPanel({ subTab }: MemoryPanelProps) {
                 <label className="block text-[9px] font-black text-[#A89F96] uppercase tracking-wider mb-1">Título do Bloco</label>
                 <input 
                   type="text" 
-                  placeholder="Ex: 'Kaline — Voz e preferências'" 
+                  placeholder="Ex: 'Klio — Voz e preferências'" 
                   value={importTitle}
                   onChange={(e) => setImportTitle(e.target.value)}
                   className="w-full text-xs p-2.5 bg-[#10131A] border border-[#252936] rounded-xl text-[#F7EFE7] focus:outline-none focus:border-[#FF4C1F]"
@@ -944,7 +944,7 @@ export default function MemoryPanel({ subTab }: MemoryPanelProps) {
                     onChange={(e) => setImportType(e.target.value as any)}
                     className="w-full text-xs p-2.5 bg-[#10131A] border border-[#252936] rounded-xl text-[#F7EFE7] focus:outline-none"
                   >
-                    <option value="identidade">Identidade da Kaline</option>
+                    <option value="identidade">Identidade da Klio</option>
                     <option value="memoria_relacional">Memória Relacional</option>
                   </select>
                 </div>

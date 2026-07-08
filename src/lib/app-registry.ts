@@ -1,4 +1,4 @@
-// APP_REGISTRY Canônico da Kaline Pritaneu V27
+// APP_REGISTRY Canônico da Klio Pritaneu V27
 // Define os domínios de trabalho, facetas de IA, permissões e status.
 import { FACETS } from './facets';
 
@@ -20,14 +20,14 @@ export interface DomainRegistry {
 }
 
 export const APP_REGISTRY: Record<string, DomainRegistry> = {
-  kaline: {
-    id: 'kaline',
-    name: 'Kaline',
+  klio: {
+    id: 'klio',
+    name: 'Klio',
     icon: 'Compass',
-    color: '#C98A65', // Cobre Kaline
+    color: '#C98A65', // Cobre Klio
     description: 'Gestão pessoal, agenda, jurídico, corpo e presença.',
     surfaces: [
-      { id: 'chat', name: 'Presença Chat', description: 'Canal de diálogo com filtro Qwen 1.5B', status: 'real', path: '/kaline' },
+      { id: 'chat', name: 'Presença Chat', description: 'Canal de diálogo com filtro Qwen 1.5B', status: 'real', path: '/klio' },
       { id: 'agenda', name: 'Agenda Pessoal', description: 'Compromissos e rituais diários', status: 'real', path: '/agenda' },
       { id: 'juridico', name: 'Jurídico', description: 'Salvaguardas e contratos legais', status: 'mock', path: '/juridico' }
     ]
@@ -44,39 +44,11 @@ export const APP_REGISTRY: Record<string, DomainRegistry> = {
         name: 'Vibe Code',
         description: 'Arquitetura, prompts, revisão e implementação assistida.',
         status: 'real',
-        path: '/kaline'
+        path: '/klio'
       }
     ]
   },
-  kharis: {
-    id: 'kharis',
-    name: 'Kháris',
-    icon: 'Heart',
-    color: FACETS.kharis.color,
-    description: FACETS.kharis.description,
-    surfaces: [
-      {
-        id: 'cuidado',
-        name: 'Cuidado e Simplicidade',
-        description: 'Faceta de acolhimento e presença reguladora.',
-        status: 'real',
-        path: '/kaline'
-      },
-      { id: 'codice', name: 'Códice', description: 'Documentação pedagógica e guias de rotina', status: 'mock', path: '/codice' },
-      { id: 'eco', name: 'Câmara do Eco', description: 'Ambiente acústico de foco analítico', status: 'mock', path: '/eco' }
-    ]
-  },
-  kuanyin: {
-    id: 'kuanyin',
-    name: 'Kuan-Yin',
-    icon: 'Activity',
-    color: '#BE185D', // Magenta Comercial
-    description: 'Negócio, gestão de clientes e guardiões.',
-    surfaces: [
-      { id: 'negocios', name: 'Painel Comercial', description: 'Acompanhamento financeiro comercial', status: 'mock', path: '/kuanyin' },
-      { id: 'guardioes', name: 'Guardiões', description: 'Supervisão de acessos administrativos', status: 'mock', path: '/guardioes' }
-    ]
-  },
+
   drive: {
     id: 'drive',
     name: 'Drive',

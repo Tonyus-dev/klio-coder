@@ -94,11 +94,11 @@ export default function PritaneuPanel({ onNavigateTab }: PritaneuPanelProps) {
           <div className="flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-[#FF4C1F] shadow-[0_0_8px_#FF4C1F] animate-pulse"></span>
             <span className="text-[9px] font-black uppercase tracking-widest text-[#A89F96]">
-              Kaline Pritaneu v27 • Fogo Central da Estação
+              Klio Pritaneu v27 • Fogo Central da Estação
             </span>
           </div>
           <h1 className="text-4xl font-semibold tracking-tight text-[#F7EFE7] font-serif leading-none">
-            Kaline Pritaneu
+            Klio Pritaneu
           </h1>
           <p className="text-xs text-[#A89F96] max-w-xl leading-relaxed">
             O fogo central entre a nuvem, a estação e a forja.
@@ -144,17 +144,17 @@ export default function PritaneuPanel({ onNavigateTab }: PritaneuPanelProps) {
                 <span className="text-amber-500 font-bold flex items-center gap-1">Não verificado</span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="flex items-center gap-1.5"><Cloud className="w-3.5 h-3.5 text-[#C98A65]" /> Kaline API:</span>
+                <span className="flex items-center gap-1.5"><Cloud className="w-3.5 h-3.5 text-[#C98A65]" /> Klio API:</span>
                 <span className="text-amber-500 font-bold flex items-center gap-1">Não verificado</span>
               </div>
             </div>
           </div>
 
           <button 
-            onClick={() => onNavigateTab('kaline')}
+            onClick={() => onNavigateTab('Klio')}
             className="mt-6 w-full py-2 border border-[#C98A65]/20 hover:border-[#C98A65] text-[#C98A65] text-[10px] font-black rounded-lg uppercase tracking-wider transition-all flex items-center justify-center gap-1 bg-[#C98A65]/5"
           >
-            Ir para Chat Kaline <ArrowRight className="w-3.5 h-3.5" />
+            Ir para Chat Klio <ArrowRight className="w-3.5 h-3.5" />
           </button>
         </div>
 
@@ -171,7 +171,7 @@ export default function PritaneuPanel({ onNavigateTab }: PritaneuPanelProps) {
             <div className="space-y-1">
               <h3 className="text-base font-black uppercase text-[#EAB308]">Héstia Station</h3>
               <p className="text-[11px] text-[#A89F96] leading-relaxed">
-                Servidor físico e daemon de monitoramento de processos. Volume `/KALINE` local para armazenamento e sincronização de notas.
+                Servidor físico e daemon de monitoramento de processos. Volume `/Klio` local para armazenamento e sincronização de notas.
               </p>
             </div>
 
@@ -246,7 +246,7 @@ export default function PritaneuPanel({ onNavigateTab }: PritaneuPanelProps) {
             <h3 className="text-xs font-black uppercase tracking-wider text-[#F7EFE7] flex items-center gap-2">
               <Layers className="w-4.5 h-4.5 text-[#FF4C1F]" /> Registro de Facetas & Domínios Ativos
             </h3>
-            <p className="text-[10px] text-[#A89F96]">Orquestração canônica da Kaline baseada no APP_REGISTRY.</p>
+            <p className="text-[10px] text-[#A89F96]">Orquestração canônica da Klio baseada no APP_REGISTRY.</p>
           </div>
 
           {/* Import assistant button */}

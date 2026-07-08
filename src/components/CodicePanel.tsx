@@ -63,7 +63,7 @@ export default function CodicePanel() {
             <Library className="w-5 h-5" /> Códice
           </h2>
           <p className="text-xs text-[#A89F96] mt-1 font-medium tracking-wide">
-            Biblioteca Viva da Estação Kaline
+            Biblioteca Viva da Estação Klio
           </p>
           <p className="text-[9px] font-mono text-[#A89F96]/60 mt-1 truncate max-w-xs">
             {getCodiceUrl()}

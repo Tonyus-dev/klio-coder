@@ -82,7 +82,7 @@ export default function StationPanel() {
             Héstia Station
           </h1>
           <p className="text-xs text-[#A89F96] max-w-xl leading-relaxed">
-            Corpo físico da Kaline. Servidor local físico de armazenamento `/KALINE`, monitoramento de processos nativos e controle de serviços do sistema.
+            Corpo físico da Klio. Servidor local físico de armazenamento `/Klio`, monitoramento de processos nativos e controle de serviços do sistema.
           </p>
         </div>
 
@@ -172,7 +172,7 @@ export default function StationPanel() {
         <div className="bg-[#0B0D12] border border-[#252936] rounded-[24px] p-5 text-[#F7EFE7] space-y-4 shadow-sm">
           <div className="flex justify-between items-center">
             <h3 className="text-[11px] font-extrabold uppercase tracking-widest text-[#A89F96] flex items-center gap-2">
-              <HardDrive className="w-4 h-4 text-[#EAB308]" /> Volumes & /KALINE
+              <HardDrive className="w-4 h-4 text-[#EAB308]" /> Volumes & /Klio
             </h3>
             {isMock && <span className="bg-amber-500/10 border border-amber-500/20 text-amber-400 text-[8px] font-bold px-1.5 py-0.5 rounded uppercase tracking-wider">Simulado</span>}
           </div>
@@ -185,7 +185,7 @@ export default function StationPanel() {
 
             <div className="flex justify-between items-center border-b border-[#252936]/40 pb-2">
               <span>Notas Localizadas:</span>
-              <span className="text-[#F7EFE7] font-bold">{statusData.storage.kalineFilesCount} arquivos</span>
+              <span className="text-[#F7EFE7] font-bold">{statusData.storage.KlioFilesCount} arquivos</span>
             </div>
 
             <div className="space-y-1">

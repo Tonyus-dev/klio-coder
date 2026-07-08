@@ -19,7 +19,7 @@ export interface HestiaStatus {
     used: string;
     available: string;
     percent: number;
-    kalineFilesCount: number;
+    KlioFilesCount: number;
   };
   services: {
     name: string;
@@ -38,7 +38,7 @@ const DEFAULT_HESTIA_URL = 'http://127.0.0.1:4517';
 
 export function getHestiaUrl(): string {
   if (typeof window !== 'undefined') {
-    const stored = localStorage.getItem('kaline_hestia_url');
+    const stored = localStorage.getItem('Klio_hestia_url');
     if (stored) return stored;
   }
   return (import.meta.env.VITE_HESTIA_URL as string | undefined) || DEFAULT_HESTIA_URL;
@@ -47,7 +47,7 @@ export function getHestiaUrl(): string {
 export function setHestiaUrl(url: string): void {
   if (typeof window === 'undefined') return;
   const clean = url.endsWith('/') ? url.slice(0, -1) : url;
-  localStorage.setItem('kaline_hestia_url', clean);
+  localStorage.setItem('Klio_hestia_url', clean);
 }
 
 export async function fetchHestiaStatus(baseUrl?: string): Promise<RuntimeEnvelope<HestiaStatus>> {
@@ -85,12 +85,12 @@ export async function fetchHestiaStatus(baseUrl?: string): Promise<RuntimeEnvelo
         percent: 46
       },
       storage: {
-        path: '/KALINE',
+        path: '/Klio',
         total: '512 GB',
         used: '124 GB',
         available: '388 GB',
         percent: 24,
-        kalineFilesCount: 84
+        KlioFilesCount: 84
       },
       services: [
         { name: 'jellyfin', active: true, description: 'Servidor de mídia de alta fidelidade' },
@@ -100,12 +100,12 @@ export async function fetchHestiaStatus(baseUrl?: string): Promise<RuntimeEnvelo
       ],
       presence: {
         mode: 'presence',
-        activeWindow: 'Kaline Pritaneu v27 - VS Code',
+        activeWindow: 'Klio Pritaneu v27 - VS Code',
         timeInFocusToday: '4h 12m',
         recentEvents: [
           { time: '05:43', event: 'Daemon local sincronizado com sucesso', level: 'success' },
           { time: '05:01', event: 'Mudança de estado: presença iniciada no desktop', level: 'info' },
-          { time: '04:15', event: 'Varredura em /KALINE encontrou 3 novas notas', level: 'info' },
+          { time: '04:15', event: 'Varredura em /Klio encontrou 3 novas notas', level: 'info' },
           { time: '03:10', event: 'Syncthing relatou conflito de sincronização resolvido', level: 'warn' }
         ]
       }
