@@ -1,13 +1,13 @@
 import { createClient } from '@supabase/supabase-js';
 import type { Database } from './database.types';
 
-// O Supabase será ativado na etapa final. 
-// Para inicializar, você precisará preencher as variáveis no seu .env:
-// VITE_SUPABASE_URL=sua_url
-// VITE_SUPABASE_ANON_KEY=sua_chave
+export const isSupabaseConfigured =
+  Boolean(import.meta.env.VITE_SUPABASE_URL) &&
+  Boolean(import.meta.env.VITE_SUPABASE_ANON_KEY);
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://mock.supabase.co';
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || 'mock-key';
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || '';
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || '';
 
-export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey);
-
+export const supabase = isSupabaseConfigured
+  ? createClient<Database>(supabaseUrl, supabaseAnonKey)
+  : null;

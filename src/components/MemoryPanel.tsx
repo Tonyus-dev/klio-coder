@@ -1,3 +1,4 @@
+import { KLIO_STORAGE_KEYS } from '../lib/klio-persistence';
 import React, { useState, useEffect } from 'react';
 import { importTotalidadeCanonToLocalStorage } from '../lib/canon';
 import { 
@@ -102,7 +103,7 @@ export default function MemoryPanel({ subTab }: MemoryPanelProps) {
   });
 
   const [sediments, setSediments] = useState<Sediment[]>(() => {
-    const stored = localStorage.getItem('Klio_sediments');
+    const stored = localStorage.getItem(KLIO_STORAGE_KEYS.localMemoryCandidates);
     if (stored) return JSON.parse(stored);
 
     // Seed initial sediments
@@ -180,7 +181,7 @@ export default function MemoryPanel({ subTab }: MemoryPanelProps) {
   }, []);
 
   useEffect(() => {
-    localStorage.setItem('Klio_sediments', JSON.stringify(sediments));
+    localStorage.setItem(KLIO_STORAGE_KEYS.localMemoryCandidates, JSON.stringify(sediments));
   }, [sediments]);
 
   useEffect(() => {
