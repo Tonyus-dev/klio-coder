@@ -26,19 +26,4 @@ Para entender a base arquitetural e comportamental da inteligência deste reposi
 ## Próximos Passos
 - Implementar o **PromptForge Core**.
 
-## Deploy no Cloudflare Pages
 
-Configuração:
-
-- Production branch: `main`
-- Build command: `npm run build`
-- Build output directory: `dist`
-
-Secret necessário:
-
-- `OPENROUTER_API_KEY`
-
-Endpoints:
-
-- `/api/health`
-- `/api/prompt-forge`
