@@ -542,7 +542,7 @@ const mediaRecorderRef = useRef<MediaRecorder | null>(null);
           setPipelineStep('generating');
           await new Promise(r => setTimeout(r, 300));
 
-          let responseText = `**[Semantic Cache Hit ⚡]**\nRecuperei isso diretamente da sua Sedimentação, sem custo de LLM:\n\n**${matchingSediment.titulo}**\n${matchingSediment.conteudo}`;
+          let responseText = `**[Rascunho local de sessão]**\n\nEncontrei um candidato local não confirmado relacionado ao pedido.\n\nIsto não é memória técnica confirmada, não é sedimentação real e não é banco vetorial.\n\n**${matchingSediment.titulo}**\n${matchingSediment.conteudo}`;
           if (matchingSediment.tags && matchingSediment.tags.length > 0) {
             responseText += `\n\n*Tags: ${matchingSediment.tags.join(', ')}*`;
           }
@@ -715,39 +715,24 @@ Por favor, responda ao pedido estruturado baseando-se estritamente nos contextos
           responseText = chatData.response.trim();
         }
       } catch (err) {
-        console.warn('Ollama local offline, falling back to clean simulation pipeline');
+        console.warn('Ollama local offline');
+        setMessages(prev => [...prev, {
+          sender: activeMode,
+          text: `Klio Local indisponível: Ollama não respondeu em ${ollamaUrl}. Inicie o Ollama ou altere para o modo Online.`,
+          timestamp: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
+        }]);
+        setLoading(false);
+        return;
       }
     } else {
-      await new Promise(r => setTimeout(r, 850));
-      
-      // Select simulation response based on current semaphore
-      if (presencaRegime === 'red') {
-        filteredText = `SYS_INSTRUCTION: Limit Active (RED). Decompress, pause decisions, 0 options, stop.`;
-        responseText = `[Klio Local - via Ollama] Para agora, Ká. Sendo direta: não decide arquitetura em vermelho. Só salva o que já está aberto e fecha. Não decida novas frentes hoje.`;
-      } else if (presencaRegime === 'blue') {
-        filteredText = `SYS_INSTRUCTION: Calm Presence (BLUE). Low stimulation, 1 simple path, no menu, quiet response.`;
-        responseText = `[Klio Local - via Ollama] Faz apenas o essencial agora. Abre o painel de Revisão e aprova o que ainda faz sentido. O resto pode esperar tranquilamente.`;
-      } else if (presencaRegime === 'yellow') {
-        filteredText = `SYS_INSTRUCTION: Mediated Attention (YELLOW). Shorter response, max 2 options, less density, prioritize.`;
-        if (userText.toLowerCase().includes('código') || userText.toLowerCase().includes('programar')) {
-          responseText = `[Klio Local - via Ollama] Como estamos em Amarelo, vamos focar em organizar os prompts e planejar a arquitetura.`;
-        } else {
-          responseText = `[Klio Local - via Ollama] Melhor não abrir três frentes agora. Eu faria primeiro o controle do Semáforo e depois o resumo do contexto.`;
-        }
-      } else {
-        // Green
-        if (userText.toLowerCase().includes('código') || userText.toLowerCase().includes('programar')) {
-          filteredText = `SYS_INSTRUCTION: Open Flow (GREEN). Propose up to 3 paths, high depth.`;
-          responseText = `[Klio Local - via Ollama] Vamos montar isso com clareza. Recomendo dividir a arquitetura em módulos. O motor coder separado/futuro poderá te apoiar com a implementação real!`;
-        } else {
-          filteredText = `SYS_INSTRUCTION: Open Flow (GREEN). Medium/long response, high depth, structure.`;
-          const contextNames = activeContexts.map(c => c.titulo).join(', ');
-          responseText = `[Klio Local - via Ollama] Ativando os contextos locais: [${contextNames || 'Nenhum contexto ativo'}]. Vamos prosseguir de maneira simples, direta e pragmática!`;
-        }
-      }
-      setTempFiltered(filteredText);
-      setPipelineStep('generating');
-      await new Promise(r => setTimeout(r, 650));
+      console.warn('Ollama local offline');
+      setMessages(prev => [...prev, {
+        sender: activeMode,
+        text: `Klio Local indisponível: Ollama não respondeu em ${ollamaUrl}. Inicie o Ollama ou altere para o modo Online.`,
+        timestamp: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
+      }]);
+      setLoading(false);
+      return;
     }
 
     if (proposedSem) {
@@ -771,13 +756,13 @@ Por favor, responda ao pedido estruturado baseando-se estritamente nos contextos
     setLoading(false);
 
     if (userText.length > 25) {
-      saveSedimentCandidate(userText);
+      saveLocalMemoryCandidate(userText);
     }
   };
 
   // handleCrossTalk removido para adequar MVP técnico
 
-  const saveSedimentCandidate = (text: string) => {
+  const saveLocalMemoryCandidate = (text: string) => {
     try {
       const stored = localStorage.getItem(KLIO_STORAGE_KEYS.localMemoryCandidates);
       const parsed = stored ? JSON.parse(stored) : [];
@@ -798,7 +783,7 @@ Por favor, responda ao pedido estruturado baseando-se estritamente nos contextos
     }
   };
 
-  const promoteSediment = (id: string) => {
+  const markLocalCandidateReviewed = (id: string) => {
     try {
       const updated = sediments.map(s => s.id === id ? { ...s, status: 'revisado' as const } : s);
       localStorage.setItem(KLIO_STORAGE_KEYS.localMemoryCandidates, JSON.stringify(updated));
@@ -838,7 +823,7 @@ Por favor, responda ao pedido estruturado baseando-se estritamente nos contextos
     });
   }, [activeMode]);
 
-  const discardSediment = (id: string) => {
+  const discardLocalCandidate = (id: string) => {
     try {
       const updated = sediments.filter(s => s.id !== id);
       localStorage.setItem(KLIO_STORAGE_KEYS.localMemoryCandidates, JSON.stringify(updated));
@@ -877,20 +862,24 @@ Por favor, responda ao pedido estruturado baseando-se estritamente nos contextos
           }
         }
       } catch (err) {
-        console.warn('Ollama coder offline, simulating vibe-coder');
+        console.warn('Ollama coder offline');
+        setMessages(prev => [...prev, {
+          sender: 'coder',
+          text: `Vibe Code indisponível: o modelo local qwen2.5-coder não respondeu. Nenhum código foi gerado.`,
+          timestamp: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
+        }]);
+        setLoading(false);
+        return;
       }
     } else {
-      await new Promise(r => setTimeout(r, 1200));
-      if (userText.toLowerCase().includes('data') || userText.toLowerCase().includes('calendário')) {
-        code = `// Retorna data formatada localmente sem precisar de moment.js ou date-fns\nexport const getLocalDate = () => new Date().toLocaleDateString('pt-BR');`;
-        answerText = `Recomendo mitigar a dependência de bibliotecas externas pesadas. A API nativa do JavaScript resolve a formatação de datas com menor overhead e maior eficiência:`;
-      } else if (userText.toLowerCase().includes('buscar') || userText.toLowerCase().includes('api')) {
-        code = `// Fetch ultra minimalista com timeout integrado\nconst fetchWithTimeout = (url, ms = 5000) => \n  Promise.race([fetch(url), new Promise((_, reject) => setTimeout(() => reject('Timeout'), ms))]);`;
-        answerText = `Abaixo, apresento um padrão de requisição robusto com controle de timeout integrado utilizando as APIs nativas Fetch e Promise, sem introduzir dependências adicionais no build:`;
-      } else {
-        code = `// Abstração de estado simplificada utilizando closures e setters funcionais\nconst toggleState = (setter) => setter(prev => !prev);`;
-        answerText = `Snippet sugerido para revisão (prévia textual não aplicada no sistema):`;
-      }
+      console.warn('Ollama coder offline (not connected)');
+      setMessages(prev => [...prev, {
+        sender: 'coder',
+        text: `Vibe Code indisponível: o modelo local qwen2.5-coder não respondeu. Nenhum código foi gerado.`,
+        timestamp: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
+      }]);
+      setLoading(false);
+      return;
     }
 
     setMessages(prev => [
@@ -1060,7 +1049,7 @@ Por favor, responda ao pedido estruturado baseando-se estritamente nos contextos
                       {m.semanticCached && (
                         <div className="mb-2 text-[8px] font-bold uppercase tracking-widest text-[#3B82F6] flex items-center gap-1.5 opacity-80">
                           <span className="w-1.5 h-1.5 rounded-full bg-[#3B82F6] animate-pulse"></span>
-                          Semantic Cache Hit
+                          Rascunho local
                         </div>
                       )}
                       <p className="whitespace-pre-wrap break-words">{m.text}</p>
