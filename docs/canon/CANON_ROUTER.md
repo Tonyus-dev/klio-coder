@@ -19,8 +19,12 @@ Para cada tarefa, leia apenas o documento canônico necessário.
 
 ## Pontes lógicas obrigatórias
 
+Para decisões sobre memória compartilhada, handoff entre facetas, sync Online/Local e escopo entre Kaline/Klio/Kháris/Kuan, ler primeiro docs/canon/KLINE_LEDGER.md.
+
+
 | Situação | Documento a consultar |
 | :--- | :--- |
+| Memória compartilhada, handoff entre facetas, sync Online/Local e escopo K∧LINE | `KLINE_LEDGER.md` |
 | Quem é Kaline? Quem é Klio? Relação entre Kaline e facetas | `Identity.md` |
 | Klio como modo técnico privado de Kaline | `KLIO.md` |
 | Pensar vs executar; proposta vs ação; liberdade técnica | `LIBERTY.md` |
@@ -53,11 +57,12 @@ Evitar:
 Precedência canônica:
 
 1. Identity.md — raiz da identidade.
-2. KLIO.md — aplicação técnica privada.
-3. LIBERTY.md — liberdade de pensamento e trava de execução.
-4. Context.md — memória, sedimentação e continuidade.
-5. PRESENTE.md — presença honesta e modulação do gesto.
-6. README/AGENTS — instruções operacionais do repositório.
+2. KLINE_LEDGER.md — arquitetura de persistência e handoff entre facetas.
+3. KLIO.md — aplicação técnica privada.
+4. LIBERTY.md — liberdade de pensamento e trava de execução.
+5. Context.md — memória, sedimentação e continuidade.
+6. PRESENTE.md — presença honesta e modulação do gesto.
+7. README/AGENTS — instruções operacionais do repositório.
 
 ## Regra anti-duplicação
 
