@@ -6,6 +6,9 @@ Este diretório contém a "Fonte da Verdade" (Source of Truth) inegociável para
 
 ## Ordem de Leitura Obrigatória
 
+Para uso operacional por agentes e IAs codificadoras, comece por CANON_ROUTER.md.
+Ele indica qual documento canônico consultar conforme a tarefa.
+
 Qualquer agente, IA, ou humano que precise entender, interagir ou alterar o comportamento deste sistema deve ler estes documentos na seguinte ordem:
 
 1. **[`Identity.md`](./Identity.md)**
