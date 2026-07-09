@@ -1,3 +1,4 @@
+import { KLIO_STORAGE_KEYS } from '../lib/klio-persistence';
 import React, { useState, useRef, useEffect } from 'react';
 import { promptCacheManager } from '../lib/PromptCacheManager';
 import { cacheStatsTracker } from '../lib/CacheStatsTracker';
@@ -307,7 +308,7 @@ export default function KlioChat() {
       },
       {
         sender: activeMode,
-        text: 'API da Klio ainda não configurada.',
+        text: runtimeMode === 'online' ? 'Análise de arquivos não implementada no modo online.' : 'API da Klio ainda não configurada.',
         timestamp,
       },
     ]);
@@ -342,7 +343,7 @@ export default function KlioChat() {
   // Load and sync sediments
   const loadSediments = () => {
     try {
-      const stored = localStorage.getItem('Klio_sediments');
+      const stored = localStorage.getItem(KLIO_STORAGE_KEYS.localMemoryCandidates);
       if (stored) {
         setSediments(JSON.parse(stored));
       } else {
@@ -356,7 +357,7 @@ export default function KlioChat() {
             status: 'pendente' as const
           }
         ];
-        localStorage.setItem('Klio_sediments', JSON.stringify(initial));
+        localStorage.setItem(KLIO_STORAGE_KEYS.localMemoryCandidates, JSON.stringify(initial));
         setSediments(initial);
       }
     } catch (e) {
@@ -397,7 +398,7 @@ const mediaRecorderRef = useRef<MediaRecorder | null>(null);
              try {
                 const KlioUrl = import.meta.env.VITE_KLIO_API_URL;
                 if (!KlioUrl) {
-                   setInput(prev => prev + " [Erro: API da Klio ainda não configurada para STT]");
+                   setInput(prev => prev + (runtimeMode === 'online' ? " [Erro: STT online não configurado]" : " [Erro: API da Klio ainda não configurada para STT]"));
                    return;
                 }
                 const transcription = " [STT via Klio API não configurado] ";
@@ -522,7 +523,7 @@ const mediaRecorderRef = useRef<MediaRecorder | null>(null);
     // Semantic Caching Pipeline Bypass
     if (isSemanticCachingEnabled) {
       try {
-        const storedSed = localStorage.getItem('Klio_sediments');
+        const storedSed = localStorage.getItem(KLIO_STORAGE_KEYS.localMemoryCandidates);
         const sediments = storedSed ? JSON.parse(storedSed) : [];
         const matchingSediment = sediments.find((s: any) => 
           (s.titulo && lowerText.includes(s.titulo.toLowerCase())) || 
@@ -534,7 +535,7 @@ const mediaRecorderRef = useRef<MediaRecorder | null>(null);
         }
         if (matchingSediment) {
           setPipelineStep('filtering');
-          setTempFiltered(`[Semantic Caching Hit] Recuperando diretamente dos Sedimentos (banco vetorial local)`);
+          setTempFiltered(`[Cache local de sessão] Recuperando rascunho local de sessão. Isto não é memória confirmada nem banco vetorial.`);
           cacheStatsTracker.recordHit('semantic', 0.0002);
           await new Promise(r => setTimeout(r, 400));
           
@@ -610,7 +611,7 @@ const mediaRecorderRef = useRef<MediaRecorder | null>(null);
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             action: 'generate',
-            mode: 'code',
+            mode: activeMode === 'coder' ? 'vibecode' : 'code',
             idea: userText
           })
         });
@@ -778,7 +779,7 @@ Por favor, responda ao pedido estruturado baseando-se estritamente nos contextos
 
   const saveSedimentCandidate = (text: string) => {
     try {
-      const stored = localStorage.getItem('Klio_sediments');
+      const stored = localStorage.getItem(KLIO_STORAGE_KEYS.localMemoryCandidates);
       const parsed = stored ? JSON.parse(stored) : [];
       if (parsed.some((s: any) => s.texto === text)) return;
       
@@ -790,7 +791,7 @@ Por favor, responda ao pedido estruturado baseando-se estritamente nos contextos
         status: 'pendente'
       };
       const updated = [newSed, ...parsed];
-      localStorage.setItem('Klio_sediments', JSON.stringify(updated));
+      localStorage.setItem(KLIO_STORAGE_KEYS.localMemoryCandidates, JSON.stringify(updated));
       setSediments(updated);
     } catch (e) {
       console.warn('Erro ao salvar sedimento de conversa', e);
@@ -800,7 +801,7 @@ Por favor, responda ao pedido estruturado baseando-se estritamente nos contextos
   const promoteSediment = (id: string) => {
     try {
       const updated = sediments.map(s => s.id === id ? { ...s, status: 'revisado' as const } : s);
-      localStorage.setItem('Klio_sediments', JSON.stringify(updated));
+      localStorage.setItem(KLIO_STORAGE_KEYS.localMemoryCandidates, JSON.stringify(updated));
       setSediments(updated);
     } catch (e) {
       console.warn(e);
@@ -840,7 +841,7 @@ Por favor, responda ao pedido estruturado baseando-se estritamente nos contextos
   const discardSediment = (id: string) => {
     try {
       const updated = sediments.filter(s => s.id !== id);
-      localStorage.setItem('Klio_sediments', JSON.stringify(updated));
+      localStorage.setItem(KLIO_STORAGE_KEYS.localMemoryCandidates, JSON.stringify(updated));
       setSediments(updated);
     } catch (e) {
       console.warn(e);

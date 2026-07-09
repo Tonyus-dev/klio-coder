@@ -6,228 +6,144 @@ export type Json =
   | { [key: string]: Json | undefined }
   | Json[]
 
+// Tipos-alvo da Klio Coder.
+// As tabelas serão criadas em PR futuro de Supabase/migrations.
+// Este arquivo não prova existência remota.
 export interface Database {
   public: {
     Tables: {
-      guardians: {
+      klio_threads: {
         Row: {
           id: string
-          display_name: string | null
-          nickname: string | null
-          pronouns: string | null
-          avatar_url: string | null
-          theme_preference: string | null
-          created_at: string | null
-          updated_at: string | null
-        }
-        Insert: {
-          id: string
-          display_name?: string | null
-          nickname?: string | null
-          pronouns?: string | null
-          avatar_url?: string | null
-          theme_preference?: string | null
-          created_at?: string | null
-          updated_at?: string | null
-        }
-        Update: {
-          id?: string
-          display_name?: string | null
-          nickname?: string | null
-          pronouns?: string | null
-          avatar_url?: string | null
-          theme_preference?: string | null
-          created_at?: string | null
-          updated_at?: string | null
-        }
-      }
-      businesses: {
-        Row: {
-          id: string
-          guardian_id: string
-          name: string
-          slug: string
-          description: string | null
-          public_phone: string | null
-          public_email: string | null
-          address: string | null
-          tone_notes: string | null
-          is_active: boolean | null
-          created_at: string | null
-          updated_at: string | null
+          created_at: string
+          summary: string | null
+          goal: string | null
         }
         Insert: {
           id?: string
-          guardian_id: string
-          name: string
-          slug: string
-          description?: string | null
-          public_phone?: string | null
-          public_email?: string | null
-          address?: string | null
-          tone_notes?: string | null
-          is_active?: boolean | null
-          created_at?: string | null
-          updated_at?: string | null
+          created_at?: string
+          summary?: string | null
+          goal?: string | null
         }
         Update: {
           id?: string
-          guardian_id?: string
-          name?: string
-          slug?: string
-          description?: string | null
-          public_phone?: string | null
-          public_email?: string | null
-          address?: string | null
-          tone_notes?: string | null
-          is_active?: boolean | null
-          created_at?: string | null
-          updated_at?: string | null
+          created_at?: string
+          summary?: string | null
+          goal?: string | null
         }
       }
-      services: {
+      klio_messages: {
         Row: {
           id: string
-          business_id: string
-          name: string
-          description: string | null
-          duration_minutes: number | null
-          price: number | null
-          active: boolean | null
-          created_at: string | null
-          updated_at: string | null
+          thread_id: string
+          content: string
+          role: string
+          created_at: string
         }
         Insert: {
           id?: string
-          business_id: string
-          name: string
-          description?: string | null
-          duration_minutes?: number | null
-          price?: number | null
-          active?: boolean | null
-          created_at?: string | null
-          updated_at?: string | null
+          thread_id: string
+          content: string
+          role: string
+          created_at?: string
         }
         Update: {
           id?: string
-          business_id?: string
-          name?: string
-          description?: string | null
-          duration_minutes?: number | null
-          price?: number | null
-          active?: boolean | null
-          created_at?: string | null
-          updated_at?: string | null
+          thread_id?: string
+          content?: string
+          role?: string
+          created_at?: string
         }
       }
-      clients: {
+      klio_sedimentos: {
         Row: {
           id: string
-          business_id: string
-          name: string | null
-          phone: string | null
-          email: string | null
-          portal_token: string
-          created_at: string | null
-          updated_at: string | null
+          content: string
+          level: string
+          created_at: string
         }
         Insert: {
           id?: string
-          business_id: string
-          name?: string | null
-          phone?: string | null
-          email?: string | null
-          portal_token?: string
-          created_at?: string | null
-          updated_at?: string | null
+          content: string
+          level: string
+          created_at?: string
         }
         Update: {
           id?: string
-          business_id?: string
-          name?: string | null
-          phone?: string | null
-          email?: string | null
-          portal_token?: string
-          created_at?: string | null
-          updated_at?: string | null
+          content?: string
+          level?: string
+          created_at?: string
         }
       }
-      appointments: {
+      klio_memorias: {
         Row: {
           id: string
-          business_id: string
-          client_id: string | null
-          service_id: string | null
-          requested_date: string | null
-          requested_time: string | null
-          starts_at: string | null
+          content: string
+          type: string
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          content: string
+          type: string
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          content?: string
+          type?: string
+          created_at?: string
+        }
+      }
+      klio_memory_candidates: {
+        Row: {
+          id: string
+          content: string
           status: string
-          notes: string | null
-          created_at: string | null
-          updated_at: string | null
+          created_at: string
         }
         Insert: {
           id?: string
-          business_id: string
-          client_id?: string | null
-          service_id?: string | null
-          requested_date?: string | null
-          requested_time?: string | null
-          starts_at?: string | null
-          status?: string
-          notes?: string | null
-          created_at?: string | null
-          updated_at?: string | null
+          content: string
+          status: string
+          created_at?: string
         }
         Update: {
           id?: string
-          business_id?: string
-          client_id?: string | null
-          service_id?: string | null
-          requested_date?: string | null
-          requested_time?: string | null
-          starts_at?: string | null
+          content?: string
           status?: string
-          notes?: string | null
-          created_at?: string | null
-          updated_at?: string | null
+          created_at?: string
         }
       }
-      payment_proofs: {
+      klio_settings: {
         Row: {
           id: string
-          appointment_id: string | null
-          client_id: string | null
-          amount: number | null
-          reference: string | null
-          notes: string | null
-          status: string
-          created_at: string | null
-          updated_at: string | null
+          key: string
+          value: Json
+          updated_at: string
         }
         Insert: {
           id?: string
-          appointment_id?: string | null
-          client_id?: string | null
-          amount?: number | null
-          reference?: string | null
-          notes?: string | null
-          status?: string
-          created_at?: string | null
-          updated_at?: string | null
+          key: string
+          value: Json
+          updated_at?: string
         }
         Update: {
           id?: string
-          appointment_id?: string | null
-          client_id?: string | null
-          amount?: number | null
-          reference?: string | null
-          notes?: string | null
-          status?: string
-          created_at?: string | null
-          updated_at?: string | null
+          key?: string
+          value?: Json
+          updated_at?: string
         }
       }
+    }
+    Views: {
+      [_ in never]: never
+    }
+    Functions: {
+      [_ in never]: never
+    }
+    Enums: {
+      [_ in never]: never
     }
   }
 }
