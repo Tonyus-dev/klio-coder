@@ -30,6 +30,7 @@ Para cada tarefa, leia apenas o documento canônico necessário.
 | PromptForge, PR, debug, decisão técnica | `KLIO.md` + `LIBERTY.md` |
 | Mock, fallback falso, funcionalidade real | `KLIO.md` + `LIBERTY.md` |
 | Sedimentação técnica futura | `Context.md` + `KLIO.md` |
+| Supabase da Klio, schema técnico, Ledger técnico, memória técnica, sync, RLS, migrations, audit, storage | `KLIO_SUPABASE.md` |
 | Dúvida de identidade ou conflito entre docs | `Identity.md` primeiro |
 
 ## Regra de economia
@@ -54,10 +55,11 @@ Precedência canônica:
 
 1. Identity.md — raiz da identidade.
 2. KLIO.md — aplicação técnica privada.
-3. LIBERTY.md — liberdade de pensamento e trava de execução.
-4. Context.md — memória, sedimentação e continuidade.
-5. PRESENTE.md — presença honesta e modulação do gesto.
-6. README/AGENTS — instruções operacionais do repositório.
+3. KLIO_SUPABASE.md — arquitetura de persistência, schemas, migrations e limites.
+4. LIBERTY.md — liberdade de pensamento e trava de execução.
+5. Context.md — memória, sedimentação e continuidade.
+6. PRESENTE.md — presença honesta e modulação do gesto.
+7. README/AGENTS — instruções operacionais do repositório.
 
 ## Regra anti-duplicação
 

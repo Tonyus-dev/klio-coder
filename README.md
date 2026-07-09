@@ -43,3 +43,13 @@ Isso não é memória técnica confirmada.
 A persistência remota em Supabase será adicionada em PR futuro.
 
 Se Supabase não estiver configurado, nenhuma função deve fingir persistência remota.
+
+## Klio Supabase Architecture
+
+A Klio Coder terá persistência técnica no Supabase K∧LINE compartilhado.
+
+O Supabase da Klio será textual e estruturado: mensagens, decisões, eventos, handoffs, sedimentos, memórias aprovadas, auditoria e referências.
+
+Arquivos pesados ficam fora do Supabase.
+
+Este PR documenta a arquitetura. Nenhuma migration ou implementação foi criada.
