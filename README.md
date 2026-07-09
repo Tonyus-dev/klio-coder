@@ -19,9 +19,15 @@ Para entender a base arquitetural e comportamental da inteligência deste reposi
 - O modo Vibe Code **não executa comandos** nem aplica patches em arquivos automaticamente. 
 - O Coder é um motor real que será separado ou configurável posteriormente.
 - Absolutamente nada é aplicado ou executado no sistema sem confirmação explícita do desenvolvedor.
-- Não possui um backend ativo rodando localmente (Supabase, Cloudflare Worker, etc. não integrados).
-- Não há IA online de terceiros configurada diretamente.
 - Sem telemetria fake, sem login, sem "Héstia Station" ou painéis comerciais.
+
+### Estado do runtime
+
+- Online: existe endpoint Cloudflare Pages Function em `/api/prompt-forge`.
+- Online só responde com IA real se `OPENROUTER_API_KEY` estiver configurada no ambiente Cloudflare.
+- Local: depende de Ollama real em execução.
+- Supabase: preparado por fronteira de persistência, mas ainda sem migrations/Auth/RLS.
+- Nenhum runtime deve simular resposta real quando a integração estiver indisponível.
 
 ## Próximos Passos
 - Implementar o **PromptForge Core**.
