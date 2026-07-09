@@ -1,9 +1,11 @@
 # Klio Coder (MVP Privado Técnico)
 
-## Estado Atual do Repositório
-Este repositório é o app separado da Klio. A Klio é o assistente técnico privado para o desenvolvedor (Antônio), desenhada para preparar intenções, forjar prompts complexos e organizar especificações de código.
+## Identidade e Estado Atual
+Este repositório contém o ambiente do Klio Coder. **Klio não é uma entidade separada ou inteligência artificial à parte**. Klio é a manifestação técnica e privada da **Kaline**, desenhada como ferramenta exclusiva para Antônio para preparar intenções, forjar prompts complexos e organizar especificações de código.
 
-**Atenção:** Klio não é a versão pública V27, nem o Kuan, nem o Guardião.
+Para entender a base arquitetural e comportamental da inteligência deste repositório, a leitura do diretório `docs/canon/` é **obrigatória**.
+
+**Atenção:** O Klio Coder é um chassi técnico privado. Ele não faz parte da Kaline V27 pública, nem manifesta as facetas voltadas ao comércio ou público final.
 
 ### O que a Klio faz (Escopo Permitido):
 - Conversa, organiza intenção e cria prompts (`Klio Chat`).
@@ -23,3 +25,20 @@ Este repositório é o app separado da Klio. A Klio é o assistente técnico pri
 
 ## Próximos Passos
 - Implementar o **PromptForge Core**.
+
+## Deploy no Cloudflare Pages
+
+Configuração:
+
+- Production branch: `main`
+- Build command: `npm run build`
+- Build output directory: `dist`
+
+Secret necessário:
+
+- `OPENROUTER_API_KEY`
+
+Endpoints:
+
+- `/api/health`
+- `/api/prompt-forge`
