@@ -27,3 +27,13 @@ Para entender a base arquitetural e comportamental da inteligência deste reposi
 - Implementar o **PromptForge Core**.
 
 
+
+## Persistência
+
+Neste momento, a Klio usa estado local apenas para preferências, rascunhos de sessão e candidatos locais não confirmados.
+
+Isso não é memória técnica confirmada.
+
+A persistência remota em Supabase será adicionada em PR futuro.
+
+Se Supabase não estiver configurado, nenhuma função deve fingir persistência remota.
