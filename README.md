@@ -43,3 +43,13 @@ Isso não é memória técnica confirmada.
 A persistência remota em Supabase será adicionada em PR futuro.
 
 Se Supabase não estiver configurado, nenhuma função deve fingir persistência remota.
+
+## K∧LINE Ledger
+
+A persistência futura da Klio não será uma memória isolada.
+
+A Klio Coder usará o K∧LINE Ledger / Mnemósine Ledger: um registro append-only de eventos aprováveis, com faceta de origem, faceta de destino, visibilidade e status de revisão.
+
+Esse Ledger permitirá sincronização futura entre Online/Local e handoff controlado entre Klio, Kaline, Kháris e Kuan.
+
+Neste PR, o Ledger é apenas decisão arquitetural documentada. Nenhuma migration, API ou sync real foi implementado.
